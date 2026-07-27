@@ -8,3 +8,5 @@ BenchmarkDotNet.Artifacts/
 TestResults/
 *.user
 *.suo
+.codegraph/
+!*.slnx
