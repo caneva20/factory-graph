@@ -1,0 +1,43 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  build-test-pack:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - name: Restore
+        run: dotnet restore FactoryGraph.slnx
+
+      - name: Build
+        run: dotnet build FactoryGraph.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test FactoryGraph.slnx --configuration Release --no-build
+
+      - name: Pack core
+        run: dotnet pack src/FactoryGraph/FactoryGraph.csproj --configuration Release --no-build
+
+      - name: Pack Mermaid exporter
+        run: dotnet pack src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj --configuration Release --no-build
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages
+          path: artifacts/packages/*.*nupkg
+          if-no-files-found: error

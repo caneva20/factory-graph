@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <PackageId>FactoryGraph</PackageId>
+    <Description>Factory graph planning processor.</Description>
+  </PropertyGroup>
+</Project>

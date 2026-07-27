@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/FactoryGraph/FactoryGraph.csproj" />
+    <Project Path="src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/FactoryGraph.Tests/FactoryGraph.Tests.csproj" />
+  </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/FactoryGraph.Benchmarks/FactoryGraph.Benchmarks.csproj" />
+  </Folder>
+</Solution>
