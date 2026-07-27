@@ -1,10 +1,10 @@
 # FactoryGraph
 
-FactoryGraph is a .NET library for computing steady-state production graphs. The repository also hosts exporters for presenting computed graphs.
+FactoryGraph is a .NET library for computing steady-state production graphs. The repository also hosts exporters for
+presenting computed graphs.
 
-The repository is currently a foundation for the processor work tracked in [Factory Planner issue #28](https://github.com/caneva20/factory-planner/issues/28). Domain contracts and solver behavior will be added through focused follow-up issues.
-
-Issues and backlog work are tracked in the [Factory Planner issue tracker](https://github.com/caneva20/factory-planner/issues).
+Issues and backlog work are tracked in
+the [Factory Planner issue tracker](https://github.com/caneva20/factory-planner/issues).
 
 ## Projects
 
@@ -28,3 +28,5 @@ dotnet pack src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.cspr
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development, scenario, package, and versioning conventions.
+
+See [docs/contracts.md](docs/contracts.md) for graph identity, topology, planning mode, result, and numeric semantics.

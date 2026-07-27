@@ -2,5 +2,6 @@
   <PropertyGroup>
     <PackageId>FactoryGraph</PackageId>
     <Description>Factory graph planning processor.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 </Project>
