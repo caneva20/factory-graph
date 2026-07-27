@@ -1,0 +1,4 @@
+interface:
+  display_name: "Todo"
+  short_description: "Review and create GitHub todo issues"
+  default_prompt: "Use $todo to clarify the objective, check for duplicates, choose contextual labels and a project Priority, obtain approval, create the GitHub issue, and add it to the requested or saved default Project."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Todo Migrate"
+  short_description: "Migrate TODO.md into GitHub Issues"
+  default_prompt: "Use $todo-migrate to migrate TODO.md into idempotently marked GitHub issues in the requested or saved default Project, using its Priority field and removing the file only after verification and approval."

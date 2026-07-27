@@ -1,0 +1,4 @@
+interface:
+  display_name: "Todos"
+  short_description: "List, review, and complete GitHub todos"
+  default_prompt: "Use $todos to list or review GitHub todo issues in the requested or saved default Project using its Priority field, or complete one with evidence."
