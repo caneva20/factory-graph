@@ -13,6 +13,10 @@ Every defect fix retains its failing scenario as a regression test.
 
 Focused unit tests should normally verify one behavior with one explicit assertion. If a test needs unrelated assertions, split it. Scenario tests call one complete-result assertion helper; that helper compares the full result and reports all relevant element and metric differences.
 
+## Issue Tracking
+
+Issues are tracked in [`caneva20/factory-planner`](https://github.com/caneva20/factory-planner/issues), not in this repository. Use fully qualified references such as `caneva20/factory-planner#28` in commits and pull requests. Use `Closes caneva20/factory-planner#28` when merging the change should close the issue.
+
 ## Scenario Fixtures
 
 Machine-readable scenarios live under `tests/FactoryGraph.Tests/Scenarios` and are grouped by behavior rather than implementation class. Each scenario also has a dedicated page under `docs/scenarios`.

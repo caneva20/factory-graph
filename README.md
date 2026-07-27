@@ -4,6 +4,8 @@ FactoryGraph is a .NET library for computing steady-state production graphs. The
 
 The repository is currently a foundation for the processor work tracked in [Factory Planner issue #28](https://github.com/caneva20/factory-planner/issues/28). Domain contracts and solver behavior will be added through focused follow-up issues.
 
+Issues and backlog work are tracked in the [Factory Planner issue tracker](https://github.com/caneva20/factory-planner/issues).
+
 ## Projects
 
 | Project                              | Purpose                             | Package                         |

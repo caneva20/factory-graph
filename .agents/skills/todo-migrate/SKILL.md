@@ -7,9 +7,13 @@ description: Use when a file-backed TODO.md backlog must be migrated into GitHub
 
 Move legacy backlog history to GitHub Issues without losing state or provenance.
 
+## Issue Repository
+
+All issue operations target `caneva20/factory-planner`. The current repository contains the implementation, but does not host its own backlog.
+
 ## Project And Priority
 
-Use a project explicitly requested for the migration. Otherwise read `git config --local --get todo.project-owner` and `git config --local --get todo.project-number`. If either is missing, list projects for the repository owner, ask the user to choose once, and save both values in local Git config. Do not change the saved default unless the user asks.
+Use a project explicitly requested for the migration. Otherwise read `git config --local --get todo.project-owner` and `git config --local --get todo.project-number`. If either is missing, run `gh project list --owner caneva20 --format json`, ask the user to choose once, and save both values in local Git config. Do not change the saved default unless the user asks.
 
 Fetch the selected project and fields with `gh project view` and `gh project field-list`. Require one single-select field named `Priority`. Its current options are the only valid priorities; never create or apply priority labels.
 
@@ -18,10 +22,10 @@ Old priorities are not authoritative. Confirm active priorities against the proj
 ## Preflight And Setup
 
 1. Run `gh auth status`.
-2. Run `gh repo view --json nameWithOwner,url,owner`.
+2. Run `gh repo view caneva20/factory-planner --json nameWithOwner,url,owner`.
 3. Resolve the selected/default project and its `Priority` field. If Projects access is missing, stop with the reported remediation, normally `gh auth refresh --hostname github.com --scopes project`.
 4. Read `TODO.md`; confirm 12 active and 39 completed entries.
-5. Run `gh label list --limit 100`. If missing, create only the backlog label with `gh label create todo --color 0E8A16 --description "Tracked backlog work"`:
+5. Run `gh label list --repo caneva20/factory-planner --limit 100`. If missing, create only the backlog label with `gh label create todo --repo caneva20/factory-planner --color 0E8A16 --description "Tracked backlog work"`:
 
 | Name | Color | Description |
 |---|---|---|
@@ -36,7 +40,7 @@ Every migrated issue body ends with a deterministic marker:
 <!-- housing-game-todo-legacy:T### -->
 ```
 
-Fetch bodies with `gh issue list --state all --label todo --limit 200 --json number,body,state,labels,url`. Reuse one exact marker match; stop on multiple matches; create only when none exists.
+Fetch bodies with `gh issue list --repo caneva20/factory-planner --state all --label todo --limit 200 --json number,body,state,labels,url`. Reuse one exact marker match; stop on multiple matches; create only when none exists.
 
 ## Active Item Workflow
 
@@ -47,7 +51,7 @@ For each active item, in source order:
 3. Confirm one priority from the selected project's current `Priority` options.
 4. Draft a title and body with `Objective`, `Context`, unchecked `Acceptance Criteria`, `Legacy ID`, `Created`, and the marker.
 5. Show the full draft, `todo` label, destination project, and project priority; require explicit approval.
-6. Create the issue with the `todo` label, add it to the selected project with `gh project item-add`, and set its `Priority` with `gh project item-edit`.
+6. Create the issue with `gh issue create --repo caneva20/factory-planner`, add it to the selected project with `gh project item-add`, and set its `Priority` with `gh project item-edit`.
 7. Verify the project item, then report its number and URL. If refinement proves the item obsolete, require approval before closing it as `not planned`.
 
 Do not invoke a full feature-design workflow.
@@ -59,7 +63,7 @@ For each completed item, in source order:
 1. Select an exact current project priority option from source evidence or use the user-approved migration default.
 2. Preserve the outcome as `Objective`.
 3. Record `Legacy ID`, `Created`, `Completed`, the selected-priority note, a checked acceptance criterion, and the marker.
-4. Create with the `todo` label, add it to the selected project, set its project `Priority`, then run `gh issue close <number> --reason completed`.
+4. Create with `gh issue create --repo caneva20/factory-planner`, add it to the selected project, set its project `Priority`, then run `gh issue close <number> --repo caneva20/factory-planner --reason completed`.
 
 Completed history does not require individual user questions or draft approval.
 
