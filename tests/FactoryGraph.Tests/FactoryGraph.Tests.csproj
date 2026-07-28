@@ -18,4 +18,8 @@
     <ProjectReference Include="../../src/FactoryGraph/FactoryGraph.csproj" />
     <ProjectReference Include="../../src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Scenarios/**/*" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

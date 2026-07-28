@@ -21,9 +21,9 @@ Issues are tracked in [`caneva20/factory-planner`](https://github.com/caneva20/f
 
 Machine-readable scenarios live under `tests/FactoryGraph.Tests/Scenarios` and are grouped by behavior rather than implementation class. Each scenario also has a dedicated page under `docs/scenarios`.
 
-The executable fixture schema and runner will be introduced with the scenario-framework work. Do not establish an alternative ad hoc fixture format in feature tests.
+Each scenario folder contains `scenario.json`, `initial.mmd`, and `expected.mmd`. The shared runner discovers named fixture cases, passes each request to the processor, and compares the complete result using the fixture's numeric policy. Use named parameter sets for meaningful variations instead of copying fixtures.
 
-Use [docs/scenarios.md](docs/scenarios.md) as the catalog entry point. The [scenario authoring guide](docs/scenarios/authoring.md) defines fixture contents, coverage dimensions, diagrams, and case-selection guidance.
+Use [docs/scenarios.md](docs/scenarios.md) as the catalog entry point. The [scenario authoring guide](docs/scenarios/authoring.md) defines the JSON format, fixture contents, coverage dimensions, diagrams, and red-green-refactor workflow.
 
 ## Packages and Versions
 

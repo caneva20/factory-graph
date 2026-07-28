@@ -6,4 +6,5 @@ See the [scenario authoring guide](scenarios/authoring.md) for required fixture 
 
 ## Index
 
-No scenarios have been added yet.
+- [Single node](scenarios/single-node.md) proves fixture loading, parameterized cases, runner execution, and complete-result comparison on one machine group.
+- [Simple chain](scenarios/simple-chain.md) proves the same path for a connection between two machine groups.

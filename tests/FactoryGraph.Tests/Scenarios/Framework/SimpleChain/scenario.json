@@ -1,0 +1,192 @@
+{
+  "name": "simple-chain",
+  "description": "Two machine groups transfer an intermediate item to satisfy one output target.",
+  "dimensions": {
+    "graphShape": "simple-chain",
+    "constraints": ["target"],
+    "resourceConditions": ["unlimited-supply", "balanced-output"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "ore", "name": "Ore" },
+        { "id": "plate", "name": "Plate" },
+        { "id": "gear", "name": "Gear" }
+      ],
+      "recipes": [
+        {
+          "id": "smelt",
+          "name": "Smelt",
+          "inputs": [{ "itemId": "ore", "amount": 1 }],
+          "outputs": [{ "itemId": "plate", "amount": 1 }]
+        },
+        {
+          "id": "assemble-gear",
+          "name": "Assemble gear",
+          "inputs": [{ "itemId": "plate", "amount": 2 }],
+          "outputs": [{ "itemId": "gear", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "recipeId": "smelt",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "recipeId": "assemble-gear",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "plate",
+          "capacity": null
+        }
+      ],
+      "supplies": [
+        {
+          "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "ore",
+          "capacity": null
+        }
+      ],
+      "demands": [
+        {
+          "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "sourceMachineGroupId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "gear",
+          "capacity": null
+        }
+      ],
+      "surplusSinks": []
+    },
+    "targets": [
+      {
+        "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+        "demandId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+        "rate": 3
+      }
+    ],
+    "mode": "targetDriven",
+    "objective": "meetTargetsMinimizeExternalSupply",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "ore", "name": "Ore" },
+        { "id": "plate", "name": "Plate" },
+        { "id": "gear", "name": "Gear" }
+      ],
+      "recipes": [
+        {
+          "id": "smelt",
+          "name": "Smelt",
+          "inputs": [{ "itemId": "ore", "amount": 1 }],
+          "outputs": [{ "itemId": "plate", "amount": 1 }]
+        },
+        {
+          "id": "assemble-gear",
+          "name": "Assemble gear",
+          "inputs": [{ "itemId": "plate", "amount": 2 }],
+          "outputs": [{ "itemId": "gear", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "recipeId": "smelt",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 6,
+          "effectiveMachineCount": 3,
+          "requiredWholeMachineCount": 3,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "ore", "rate": 6 }],
+          "outputRates": [{ "itemId": "plate", "rate": 6 }]
+        },
+        {
+          "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "recipeId": "assemble-gear",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 3,
+          "effectiveMachineCount": 1.5,
+          "requiredWholeMachineCount": 2,
+          "utilization": 0.75,
+          "inputRates": [{ "itemId": "plate", "rate": 6 }],
+          "outputRates": [{ "itemId": "gear", "rate": 3 }]
+        }
+      ],
+      "connections": [
+        {
+          "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "plate",
+          "capacity": null,
+          "flowRate": 6
+        }
+      ],
+      "supplies": [
+        {
+          "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "ore",
+          "capacity": null,
+          "requiredRate": 6,
+          "providedRate": 6,
+          "deficitRate": 0
+        }
+      ],
+      "demands": [
+        {
+          "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "sourceMachineGroupId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "gear",
+          "capacity": null,
+          "deliveredRate": 3
+        }
+      ],
+      "surplusSinks": [],
+      "targets": [
+        {
+          "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
+          "demandId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "requestedRate": 3,
+          "achievedRate": 3,
+          "surplusRate": 0,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": []
+  },
+  "cases": [
+    {
+      "name": "balanced",
+      "parameters": {}
+    }
+  ]
+}

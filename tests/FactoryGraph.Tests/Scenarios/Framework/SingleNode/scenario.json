@@ -1,0 +1,155 @@
+{
+  "name": "single-node",
+  "description": "One machine group converts an external input into a targeted output.",
+  "dimensions": {
+    "graphShape": "single-node",
+    "constraints": ["target"],
+    "resourceConditions": ["unlimited-supply", "balanced-output"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "ore", "name": "Ore" },
+        { "id": "plate", "name": "Plate" }
+      ],
+      "recipes": [
+        {
+          "id": "smelt",
+          "name": "Smelt",
+          "inputs": [{ "itemId": "ore", "amount": 1 }],
+          "outputs": [{ "itemId": "plate", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "recipeId": "smelt",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [],
+      "supplies": [
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "ore",
+          "capacity": null
+        }
+      ],
+      "demands": [
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "plate",
+          "capacity": null
+        }
+      ],
+      "surplusSinks": []
+    },
+    "targets": [
+      {
+        "id": "44444444-4444-4444-4444-444444444444",
+        "demandId": "33333333-3333-3333-3333-333333333333",
+        "rate": "${rate}"
+      }
+    ],
+    "mode": "targetDriven",
+    "objective": "meetTargetsMinimizeExternalSupply",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "ore", "name": "Ore" },
+        { "id": "plate", "name": "Plate" }
+      ],
+      "recipes": [
+        {
+          "id": "smelt",
+          "name": "Smelt",
+          "inputs": [{ "itemId": "ore", "amount": 1 }],
+          "outputs": [{ "itemId": "plate", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "recipeId": "smelt",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": "${rate}",
+          "effectiveMachineCount": "${effectiveMachineCount}",
+          "requiredWholeMachineCount": "${requiredWholeMachineCount}",
+          "utilization": "${utilization}",
+          "inputRates": [{ "itemId": "ore", "rate": "${rate}" }],
+          "outputRates": [{ "itemId": "plate", "rate": "${rate}" }]
+        }
+      ],
+      "connections": [],
+      "supplies": [
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "ore",
+          "capacity": null,
+          "requiredRate": "${rate}",
+          "providedRate": "${rate}",
+          "deficitRate": 0
+        }
+      ],
+      "demands": [
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "plate",
+          "capacity": null,
+          "deliveredRate": "${rate}"
+        }
+      ],
+      "surplusSinks": [],
+      "targets": [
+        {
+          "id": "44444444-4444-4444-4444-444444444444",
+          "demandId": "33333333-3333-3333-3333-333333333333",
+          "requestedRate": "${rate}",
+          "achievedRate": "${rate}",
+          "surplusRate": 0,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": []
+  },
+  "cases": [
+    {
+      "name": "whole-rate",
+      "parameters": {
+        "rate": 4,
+        "effectiveMachineCount": 2,
+        "requiredWholeMachineCount": 2,
+        "utilization": 1
+      }
+    },
+    {
+      "name": "fractional-rate",
+      "parameters": {
+        "rate": 2.5,
+        "effectiveMachineCount": 1.25,
+        "requiredWholeMachineCount": 2,
+        "utilization": 0.625
+      }
+    }
+  ]
+}
