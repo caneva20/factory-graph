@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace FactoryGraph.Contracts;
 
 /// <summary>
@@ -72,6 +74,7 @@ public enum GraphElementKind
 /// </summary>
 /// <param name="Kind">The graph-element type.</param>
 /// <param name="Id">The string or canonical GUID representation of the element ID.</param>
+[method: JsonConstructor]
 public sealed record GraphElementReference(
     GraphElementKind Kind,
     string Id)

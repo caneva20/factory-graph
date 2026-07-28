@@ -1,0 +1,246 @@
+{
+  "name": "invalid-requests",
+  "description": "Request validation reports identity, topology, objective, and numeric errors before solving.",
+  "dimensions": {
+    "graphShape": "single-node-and-disconnected",
+    "constraints": ["validation", "capacity", "target"],
+    "resourceConditions": ["invalid-input", "zero-boundary"]
+  },
+  "request": {
+    "graph": {
+      "items": "${items}",
+      "recipes": [
+        {
+          "id": "smelt",
+          "name": "Smelt",
+          "inputs": [{ "itemId": "${recipeInputItem}", "amount": "${recipeAmount}" }],
+          "outputs": [{ "itemId": "${recipeOutputItem}", "amount": 1 }]
+        }
+      ],
+      "machineGroups": "${machineGroups}",
+      "connections": "${connections}",
+      "supplies": [
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "${supplyItem}",
+          "capacity": "${supplyCapacity}"
+        }
+      ],
+      "demands": [
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "${demandItem}",
+          "capacity": "${demandCapacity}"
+        }
+      ],
+      "surplusSinks": []
+    },
+    "targets": [
+      {
+        "id": "${targetId}",
+        "demandId": "33333333-3333-3333-3333-333333333333",
+        "rate": "${targetRate}"
+      }
+    ],
+    "mode": "targetDriven",
+    "objective": "${objective}",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000000001,
+        "relativeTolerance": 0.000000001,
+        "nearZeroThreshold": 0.000000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "${status}",
+    "graph": null,
+    "diagnostics": "${diagnostics}",
+    "bottlenecks": []
+  },
+  "cases": [
+    {
+      "name": "duplicate-item-id",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "ore", "name": "Duplicate ore" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "ore",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [],
+        "supplyItem": "ore",
+        "supplyCapacity": null,
+        "demandItem": "ore",
+        "demandCapacity": null,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 1,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.id.duplicate", "severity": "error", "message": "The item ID 'ore' is duplicated.", "elements": [{ "kind": "item", "id": "ore" }] }]
+      }
+    },
+    {
+      "name": "missing-target-id",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [],
+        "supplyItem": "ore",
+        "supplyCapacity": null,
+        "demandItem": "plate",
+        "demandCapacity": null,
+        "targetId": "00000000-0000-0000-0000-000000000000",
+        "targetRate": 1,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.id.required", "severity": "error", "message": "Each target must have a nonempty ID.", "elements": [] }]
+      }
+    },
+    {
+      "name": "missing-connection-endpoint",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [{ "id": "55555555-5555-5555-5555-555555555555", "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111", "destinationMachineGroupId": "99999999-9999-9999-9999-999999999999", "itemId": "plate", "capacity": null }],
+        "supplyItem": "ore",
+        "supplyCapacity": null,
+        "demandItem": "plate",
+        "demandCapacity": null,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 1,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.reference.not-found", "severity": "error", "message": "Connection '55555555-5555-5555-5555-555555555555' references missing destination machine group '99999999-9999-9999-9999-999999999999'.", "elements": [{ "kind": "connection", "id": "55555555-5555-5555-5555-555555555555" }, { "kind": "machineGroup", "id": "99999999-9999-9999-9999-999999999999" }] }]
+      }
+    },
+    {
+      "name": "incompatible-connection-item",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [{ "id": "55555555-5555-5555-5555-555555555555", "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111", "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111", "itemId": "ore", "capacity": null }],
+        "supplyItem": "ore",
+        "supplyCapacity": null,
+        "demandItem": "plate",
+        "demandCapacity": null,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 1,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.item.incompatible", "severity": "error", "message": "Connection '55555555-5555-5555-5555-555555555555' source does not produce item 'ore'.", "elements": [{ "kind": "connection", "id": "55555555-5555-5555-5555-555555555555" }, { "kind": "machineGroup", "id": "11111111-1111-1111-1111-111111111111" }] }]
+      }
+    },
+    {
+      "name": "unsupported-objective",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [],
+        "supplyItem": "ore",
+        "supplyCapacity": null,
+        "demandItem": "plate",
+        "demandCapacity": null,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 1,
+        "objective": "maximizeTargetOutput",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.objective.unsupported", "severity": "error", "message": "Solve objective 'MaximizeTargetOutput' is unsupported for planning mode 'TargetDriven'.", "elements": [] }]
+      }
+    },
+    {
+      "name": "non-finite-recipe-rate",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": "NaN",
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [],
+        "supplyItem": "ore",
+        "supplyCapacity": null,
+        "demandItem": "plate",
+        "demandCapacity": null,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 1,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.number.non-finite", "severity": "error", "message": "Recipe 'smelt'.Inputs amount must be finite.", "elements": [{ "kind": "recipe", "id": "smelt" }] }]
+      }
+    },
+    {
+      "name": "zero-machine-rate",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 0, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [],
+        "supplyItem": "ore",
+        "supplyCapacity": null,
+        "demandItem": "plate",
+        "demandCapacity": null,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 1,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.number.positive-required", "severity": "error", "message": "Machine group '11111111-1111-1111-1111-111111111111'.ActivityRatePerMachine must be positive.", "elements": [{ "kind": "machineGroup", "id": "11111111-1111-1111-1111-111111111111" }] }]
+      }
+    },
+    {
+      "name": "negative-supply-capacity",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [],
+        "supplyItem": "ore",
+        "supplyCapacity": -1,
+        "demandItem": "plate",
+        "demandCapacity": null,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 1,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "invalidRequest",
+        "diagnostics": [{ "code": "validation.number.negative", "severity": "error", "message": "Supply '22222222-2222-2222-2222-222222222222'.Capacity must be nonnegative.", "elements": [{ "kind": "supply", "id": "22222222-2222-2222-2222-222222222222" }] }]
+      }
+    },
+    {
+      "name": "disconnected-zero-boundaries-at-tolerance",
+      "parameters": {
+        "items": [{ "id": "ore", "name": "Ore" }, { "id": "plate", "name": "Plate" }],
+        "recipeInputItem": "ore",
+        "recipeOutputItem": "plate",
+        "recipeAmount": 1,
+        "machineGroups": [{ "id": "11111111-1111-1111-1111-111111111111", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": 0, "activityCapacity": 0 }, { "id": "66666666-6666-6666-6666-666666666666", "recipeId": "smelt", "activityRatePerMachine": 1, "availableMachineCount": null, "activityCapacity": null }],
+        "connections": [],
+        "supplyItem": "ore",
+        "supplyCapacity": -0.0000000000005,
+        "demandItem": "plate",
+        "demandCapacity": 0,
+        "targetId": "44444444-4444-4444-4444-444444444444",
+        "targetRate": 0,
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "optimal",
+        "diagnostics": []
+      }
+    }
+  ]
+}

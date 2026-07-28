@@ -39,7 +39,7 @@ An `ItemConnection` carries one item between machine groups. The source recipe m
 
 A `Supply` feeds a machine-group input. A `Demand` drains a machine-group output. A `Target` sets a requested rate for a demand. A `SurplusSink` accepts excess output.
 
-Contracts permit malformed values. Validation reports duplicate IDs, missing endpoints, incompatible items, and invalid numbers.
+Contracts permit malformed values. `FactoryGraphProcessor` reports duplicate IDs, missing endpoints, incompatible items, and invalid numbers before solving. See [Request Validation](validation.md) for the complete rules and diagnostic codes.
 
 ## Planning Modes
 
