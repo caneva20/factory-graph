@@ -89,3 +89,7 @@ The default absolute and relative tolerances are `1e-9`; the default near-zero t
 ## Collection Ownership
 
 Contract records expose collections as `IReadOnlyList<T>` without copying them. Callers must not modify collections while a request is in use. Processors must not mutate requests or their collections.
+
+## Future Constraints
+
+The requirements and compatibility boundaries for future fixed, minimum, and maximum graph values are documented in [Future Graph Constraints](future-constraints.md). The current contracts intentionally do not expose a speculative generalized constraint API.

@@ -29,4 +29,4 @@ dotnet pack src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.cspr
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development, scenario, package, and versioning conventions.
 
-See [docs/contracts.md](docs/contracts.md) for graph identity, topology, planning mode, result, and numeric semantics.
+See [docs/contracts.md](docs/contracts.md) for graph identity, topology, planning mode, result, and numeric semantics. Future fixed and bounded value requirements are documented in [docs/future-constraints.md](docs/future-constraints.md).
