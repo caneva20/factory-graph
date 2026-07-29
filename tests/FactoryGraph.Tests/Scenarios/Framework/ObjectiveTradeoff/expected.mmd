@@ -1,0 +1,12 @@
+flowchart TB
+    subgraph supply[Minimize external supply]
+        supplyRaw[Raw: 1] --> supplyCheap[Supply-efficient: 1 activity]
+        supplyCheap -->|Intermediate: 1| supplyFinish[Finish: 1 activity]
+        supplyCheap --> supplyWaste[Waste: 10]
+        supplyFinish --> supplyProduct[Product: 1 delivered]
+    end
+    subgraph surplus[Minimize surplus]
+        surplusRaw[Raw: 2] --> surplusClean[Surplus-free: 1 activity]
+        surplusClean -->|Intermediate: 1| surplusFinish[Finish: 1 activity]
+        surplusFinish --> surplusProduct[Product: 1 delivered]
+    end

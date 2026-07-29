@@ -1,0 +1,488 @@
+{
+  "name": "branched-assembly",
+  "description": "Two raw-material branches merge into a final assembly while an intermediate splits to a second target and a co-product leaves as surplus.",
+  "dimensions": {
+    "graphShape": "fan-in-fan-out",
+    "constraints": ["targets", "machine-count", "activity", "connection", "supply", "product-outlet", "surplus-outlet"],
+    "resourceConditions": ["multiple-targets", "co-product-surplus", "disconnected-section", "binding-capacities"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "ore", "name": "Ore" },
+        { "id": "copper", "name": "Copper" },
+        { "id": "plate", "name": "Plate" },
+        { "id": "wire", "name": "Wire" },
+        { "id": "frame", "name": "Frame" },
+        { "id": "circuit", "name": "Circuit" },
+        { "id": "machine", "name": "Machine" },
+        { "id": "slag", "name": "Slag" },
+        { "id": "unused", "name": "Unused" }
+      ],
+      "recipes": [
+        {
+          "id": "smelt",
+          "name": "Smelt",
+          "inputs": [{ "itemId": "ore", "amount": 1 }],
+          "outputs": [
+            { "itemId": "plate", "amount": 2 },
+            { "itemId": "slag", "amount": 0.5 }
+          ]
+        },
+        {
+          "id": "draw-wire",
+          "name": "Draw wire",
+          "inputs": [{ "itemId": "copper", "amount": 1 }],
+          "outputs": [{ "itemId": "wire", "amount": 3 }]
+        },
+        {
+          "id": "make-frame",
+          "name": "Make frame",
+          "inputs": [{ "itemId": "plate", "amount": 2 }],
+          "outputs": [{ "itemId": "frame", "amount": 1 }]
+        },
+        {
+          "id": "make-circuit",
+          "name": "Make circuit",
+          "inputs": [
+            { "itemId": "plate", "amount": 1 },
+            { "itemId": "wire", "amount": 2 }
+          ],
+          "outputs": [{ "itemId": "circuit", "amount": 1 }]
+        },
+        {
+          "id": "assemble-machine",
+          "name": "Assemble machine",
+          "inputs": [
+            { "itemId": "frame", "amount": 1 },
+            { "itemId": "circuit", "amount": 1 }
+          ],
+          "outputs": [{ "itemId": "machine", "amount": 1 }]
+        },
+        {
+          "id": "idle-process",
+          "name": "Idle process",
+          "inputs": [],
+          "outputs": [{ "itemId": "unused", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "recipeId": "smelt",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": 4,
+          "activityCapacity": 6.5
+        },
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "recipeId": "draw-wire",
+          "activityRatePerMachine": 4,
+          "availableMachineCount": 1,
+          "activityCapacity": null
+        },
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "recipeId": "make-frame",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": 3,
+          "activityCapacity": null
+        },
+        {
+          "id": "44444444-4444-4444-4444-444444444444",
+          "recipeId": "make-circuit",
+          "activityRatePerMachine": 1.5,
+          "availableMachineCount": 2,
+          "activityCapacity": null
+        },
+        {
+          "id": "55555555-5555-5555-5555-555555555555",
+          "recipeId": "assemble-machine",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": 2,
+          "activityCapacity": null
+        },
+        {
+          "id": "66666666-6666-6666-6666-666666666666",
+          "recipeId": "idle-process",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinationMachineGroupId": "33333333-3333-3333-3333-333333333333",
+          "itemId": "plate",
+          "capacity": 10
+        },
+        {
+          "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "plate",
+          "capacity": 3
+        },
+        {
+          "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "wire",
+          "capacity": 6
+        },
+        {
+          "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "55555555-5555-5555-5555-555555555555",
+          "itemId": "frame",
+          "capacity": 3
+        },
+        {
+          "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "sourceMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "55555555-5555-5555-5555-555555555555",
+          "itemId": "circuit",
+          "capacity": 3
+        }
+      ],
+      "supplies": [
+        {
+          "id": "77777777-7777-7777-7777-777777777777",
+          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "ore",
+          "capacity": 6.5
+        },
+        {
+          "id": "88888888-8888-8888-8888-888888888888",
+          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "itemId": "copper",
+          "capacity": 2
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "99999999-9999-9999-9999-999999999999",
+          "sourceMachineGroupId": "33333333-3333-3333-3333-333333333333",
+          "itemId": "frame",
+          "capacity": 2
+        },
+        {
+          "id": "aaaaaaaa-1111-1111-1111-111111111111",
+          "sourceMachineGroupId": "55555555-5555-5555-5555-555555555555",
+          "itemId": "machine",
+          "capacity": 3
+        },
+        {
+          "id": "cccccccc-1111-1111-1111-111111111111",
+          "sourceMachineGroupId": "66666666-6666-6666-6666-666666666666",
+          "itemId": "unused",
+          "capacity": null
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "bbbbbbbb-1111-1111-1111-111111111111",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "slag",
+          "capacity": 3.25
+        }
+      ]
+    },
+    "targets": [
+      {
+        "id": "dddddddd-1111-1111-1111-111111111111",
+        "productOutletId": "99999999-9999-9999-9999-999999999999",
+        "rate": 2
+      },
+      {
+        "id": "eeeeeeee-1111-1111-1111-111111111111",
+        "productOutletId": "aaaaaaaa-1111-1111-1111-111111111111",
+        "rate": 3
+      }
+    ],
+    "mode": "targetDriven",
+    "objective": "meetTargetsMinimizeExternalSupply",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "ore", "name": "Ore" },
+        { "id": "copper", "name": "Copper" },
+        { "id": "plate", "name": "Plate" },
+        { "id": "wire", "name": "Wire" },
+        { "id": "frame", "name": "Frame" },
+        { "id": "circuit", "name": "Circuit" },
+        { "id": "machine", "name": "Machine" },
+        { "id": "slag", "name": "Slag" },
+        { "id": "unused", "name": "Unused" }
+      ],
+      "recipes": [
+        {
+          "id": "smelt",
+          "name": "Smelt",
+          "inputs": [{ "itemId": "ore", "amount": 1 }],
+          "outputs": [
+            { "itemId": "plate", "amount": 2 },
+            { "itemId": "slag", "amount": 0.5 }
+          ]
+        },
+        {
+          "id": "draw-wire",
+          "name": "Draw wire",
+          "inputs": [{ "itemId": "copper", "amount": 1 }],
+          "outputs": [{ "itemId": "wire", "amount": 3 }]
+        },
+        {
+          "id": "make-frame",
+          "name": "Make frame",
+          "inputs": [{ "itemId": "plate", "amount": 2 }],
+          "outputs": [{ "itemId": "frame", "amount": 1 }]
+        },
+        {
+          "id": "make-circuit",
+          "name": "Make circuit",
+          "inputs": [
+            { "itemId": "plate", "amount": 1 },
+            { "itemId": "wire", "amount": 2 }
+          ],
+          "outputs": [{ "itemId": "circuit", "amount": 1 }]
+        },
+        {
+          "id": "assemble-machine",
+          "name": "Assemble machine",
+          "inputs": [
+            { "itemId": "frame", "amount": 1 },
+            { "itemId": "circuit", "amount": 1 }
+          ],
+          "outputs": [{ "itemId": "machine", "amount": 1 }]
+        },
+        {
+          "id": "idle-process",
+          "name": "Idle process",
+          "inputs": [],
+          "outputs": [{ "itemId": "unused", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-1111-1111-1111-111111111111",
+          "recipeId": "smelt",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": 4,
+          "activityCapacity": 6.5,
+          "activity": 6.5,
+          "effectiveMachineCount": 3.25,
+          "requiredWholeMachineCount": 4,
+          "utilization": 0.8125,
+          "inputRates": [{ "itemId": "ore", "rate": 6.5 }],
+          "outputRates": [
+            { "itemId": "plate", "rate": 13 },
+            { "itemId": "slag", "rate": 3.25 }
+          ]
+        },
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "recipeId": "draw-wire",
+          "activityRatePerMachine": 4,
+          "availableMachineCount": 1,
+          "activityCapacity": null,
+          "activity": 2,
+          "effectiveMachineCount": 0.5,
+          "requiredWholeMachineCount": 1,
+          "utilization": 0.5,
+          "inputRates": [{ "itemId": "copper", "rate": 2 }],
+          "outputRates": [{ "itemId": "wire", "rate": 6 }]
+        },
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "recipeId": "make-frame",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": 3,
+          "activityCapacity": null,
+          "activity": 5,
+          "effectiveMachineCount": 2.5,
+          "requiredWholeMachineCount": 3,
+          "utilization": 0.8333333333333334,
+          "inputRates": [{ "itemId": "plate", "rate": 10 }],
+          "outputRates": [{ "itemId": "frame", "rate": 5 }]
+        },
+        {
+          "id": "44444444-4444-4444-4444-444444444444",
+          "recipeId": "make-circuit",
+          "activityRatePerMachine": 1.5,
+          "availableMachineCount": 2,
+          "activityCapacity": null,
+          "activity": 3,
+          "effectiveMachineCount": 2,
+          "requiredWholeMachineCount": 2,
+          "utilization": 1,
+          "inputRates": [
+            { "itemId": "plate", "rate": 3 },
+            { "itemId": "wire", "rate": 6 }
+          ],
+          "outputRates": [{ "itemId": "circuit", "rate": 3 }]
+        },
+        {
+          "id": "55555555-5555-5555-5555-555555555555",
+          "recipeId": "assemble-machine",
+          "activityRatePerMachine": 2,
+          "availableMachineCount": 2,
+          "activityCapacity": null,
+          "activity": 3,
+          "effectiveMachineCount": 1.5,
+          "requiredWholeMachineCount": 2,
+          "utilization": 0.75,
+          "inputRates": [
+            { "itemId": "frame", "rate": 3 },
+            { "itemId": "circuit", "rate": 3 }
+          ],
+          "outputRates": [{ "itemId": "machine", "rate": 3 }]
+        },
+        {
+          "id": "66666666-6666-6666-6666-666666666666",
+          "recipeId": "idle-process",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 0,
+          "effectiveMachineCount": 0,
+          "requiredWholeMachineCount": 0,
+          "utilization": 0,
+          "inputRates": [],
+          "outputRates": [{ "itemId": "unused", "rate": 0 }]
+        }
+      ],
+      "connections": [
+        {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinationMachineGroupId": "33333333-3333-3333-3333-333333333333",
+          "itemId": "plate",
+          "capacity": 10,
+          "flowRate": 10
+        },
+        {
+          "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "plate",
+          "capacity": 3,
+          "flowRate": 3
+        },
+        {
+          "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "wire",
+          "capacity": 6,
+          "flowRate": 6
+        },
+        {
+          "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "55555555-5555-5555-5555-555555555555",
+          "itemId": "frame",
+          "capacity": 3,
+          "flowRate": 3
+        },
+        {
+          "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "sourceMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "55555555-5555-5555-5555-555555555555",
+          "itemId": "circuit",
+          "capacity": 3,
+          "flowRate": 3
+        }
+      ],
+      "supplies": [
+        {
+          "id": "77777777-7777-7777-7777-777777777777",
+          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "ore",
+          "capacity": 6.5,
+          "requiredRate": 6.5,
+          "providedRate": 6.5,
+          "deficitRate": 0
+        },
+        {
+          "id": "88888888-8888-8888-8888-888888888888",
+          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "itemId": "copper",
+          "capacity": 2,
+          "requiredRate": 2,
+          "providedRate": 2,
+          "deficitRate": 0
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "99999999-9999-9999-9999-999999999999",
+          "sourceMachineGroupId": "33333333-3333-3333-3333-333333333333",
+          "itemId": "frame",
+          "capacity": 2,
+          "deliveredRate": 2
+        },
+        {
+          "id": "aaaaaaaa-1111-1111-1111-111111111111",
+          "sourceMachineGroupId": "55555555-5555-5555-5555-555555555555",
+          "itemId": "machine",
+          "capacity": 3,
+          "deliveredRate": 3
+        },
+        {
+          "id": "cccccccc-1111-1111-1111-111111111111",
+          "sourceMachineGroupId": "66666666-6666-6666-6666-666666666666",
+          "itemId": "unused",
+          "capacity": null,
+          "deliveredRate": 0
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "bbbbbbbb-1111-1111-1111-111111111111",
+          "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "itemId": "slag",
+          "capacity": 3.25,
+          "flowRate": 3.25
+        }
+      ],
+      "targets": [
+        {
+          "id": "dddddddd-1111-1111-1111-111111111111",
+          "productOutletId": "99999999-9999-9999-9999-999999999999",
+          "requestedRate": 2,
+          "achievedRate": 2,
+          "surplusRate": 0,
+          "deficitRate": 0
+        },
+        {
+          "id": "eeeeeeee-1111-1111-1111-111111111111",
+          "productOutletId": "aaaaaaaa-1111-1111-1111-111111111111",
+          "requestedRate": 3,
+          "achievedRate": 3,
+          "surplusRate": 0,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": []
+  },
+  "cases": [
+    {
+      "name": "binding-capacities",
+      "parameters": {}
+    }
+  ]
+}

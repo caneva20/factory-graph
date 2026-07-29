@@ -1,0 +1,298 @@
+{
+  "name": "objective-tradeoff",
+  "description": "Two alternate production routes trade external supply against surplus while feeding one final assembly target.",
+  "dimensions": {
+    "graphShape": "alternate-routes-merge",
+    "constraints": ["target", "objective"],
+    "resourceConditions": ["supply-surplus-tradeoff"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "intermediate", "name": "Intermediate" },
+        { "id": "waste", "name": "Waste" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "cheap",
+          "name": "Supply-efficient route",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [
+            { "itemId": "intermediate", "amount": 1 },
+            { "itemId": "waste", "amount": 10 }
+          ]
+        },
+        {
+          "id": "clean",
+          "name": "Surplus-free route",
+          "inputs": [{ "itemId": "raw", "amount": 2 }],
+          "outputs": [{ "itemId": "intermediate", "amount": 1 }]
+        },
+        {
+          "id": "finish",
+          "name": "Finish product",
+          "inputs": [{ "itemId": "intermediate", "amount": 1 }],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-2222-2222-2222-222222222222",
+          "recipeId": "cheap",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "recipeId": "clean",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "33333333-2222-2222-2222-222222222222",
+          "recipeId": "finish",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "44444444-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "33333333-2222-2222-2222-222222222222",
+          "itemId": "intermediate",
+          "capacity": null
+        },
+        {
+          "id": "55555555-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "33333333-2222-2222-2222-222222222222",
+          "itemId": "intermediate",
+          "capacity": null
+        }
+      ],
+      "supplies": [
+        {
+          "id": "66666666-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "itemId": "raw",
+          "capacity": null
+        },
+        {
+          "id": "77777777-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "itemId": "raw",
+          "capacity": null
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "88888888-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "33333333-2222-2222-2222-222222222222",
+          "itemId": "product",
+          "capacity": null
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "99999999-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "itemId": "waste",
+          "capacity": null
+        }
+      ]
+    },
+    "targets": [
+      {
+        "id": "aaaaaaaa-2222-2222-2222-222222222222",
+        "productOutletId": "88888888-2222-2222-2222-222222222222",
+        "rate": 1
+      }
+    ],
+    "mode": "targetDriven",
+    "objective": "${objective}",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "intermediate", "name": "Intermediate" },
+        { "id": "waste", "name": "Waste" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "cheap",
+          "name": "Supply-efficient route",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [
+            { "itemId": "intermediate", "amount": 1 },
+            { "itemId": "waste", "amount": 10 }
+          ]
+        },
+        {
+          "id": "clean",
+          "name": "Surplus-free route",
+          "inputs": [{ "itemId": "raw", "amount": 2 }],
+          "outputs": [{ "itemId": "intermediate", "amount": 1 }]
+        },
+        {
+          "id": "finish",
+          "name": "Finish product",
+          "inputs": [{ "itemId": "intermediate", "amount": 1 }],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-2222-2222-2222-222222222222",
+          "recipeId": "cheap",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": "${cheapActivity}",
+          "effectiveMachineCount": "${cheapActivity}",
+          "requiredWholeMachineCount": "${cheapActivity}",
+          "utilization": "${cheapActivity}",
+          "inputRates": [{ "itemId": "raw", "rate": "${cheapSupply}" }],
+          "outputRates": [
+            { "itemId": "intermediate", "rate": "${cheapActivity}" },
+            { "itemId": "waste", "rate": "${surplusRate}" }
+          ]
+        },
+        {
+          "id": "22222222-2222-2222-2222-222222222222",
+          "recipeId": "clean",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": "${cleanActivity}",
+          "effectiveMachineCount": "${cleanActivity}",
+          "requiredWholeMachineCount": "${cleanActivity}",
+          "utilization": "${cleanActivity}",
+          "inputRates": [{ "itemId": "raw", "rate": "${cleanSupply}" }],
+          "outputRates": [{ "itemId": "intermediate", "rate": "${cleanActivity}" }]
+        },
+        {
+          "id": "33333333-2222-2222-2222-222222222222",
+          "recipeId": "finish",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 1,
+          "effectiveMachineCount": 1,
+          "requiredWholeMachineCount": 1,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "intermediate", "rate": 1 }],
+          "outputRates": [{ "itemId": "product", "rate": 1 }]
+        }
+      ],
+      "connections": [
+        {
+          "id": "44444444-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "33333333-2222-2222-2222-222222222222",
+          "itemId": "intermediate",
+          "capacity": null,
+          "flowRate": "${cheapActivity}"
+        },
+        {
+          "id": "55555555-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "33333333-2222-2222-2222-222222222222",
+          "itemId": "intermediate",
+          "capacity": null,
+          "flowRate": "${cleanActivity}"
+        }
+      ],
+      "supplies": [
+        {
+          "id": "66666666-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "itemId": "raw",
+          "capacity": null,
+          "requiredRate": "${cheapSupply}",
+          "providedRate": "${cheapSupply}",
+          "deficitRate": 0
+        },
+        {
+          "id": "77777777-2222-2222-2222-222222222222",
+          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "itemId": "raw",
+          "capacity": null,
+          "requiredRate": "${cleanSupply}",
+          "providedRate": "${cleanSupply}",
+          "deficitRate": 0
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "88888888-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "33333333-2222-2222-2222-222222222222",
+          "itemId": "product",
+          "capacity": null,
+          "deliveredRate": 1
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "99999999-2222-2222-2222-222222222222",
+          "sourceMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "itemId": "waste",
+          "capacity": null,
+          "flowRate": "${surplusRate}"
+        }
+      ],
+      "targets": [
+        {
+          "id": "aaaaaaaa-2222-2222-2222-222222222222",
+          "productOutletId": "88888888-2222-2222-2222-222222222222",
+          "requestedRate": 1,
+          "achievedRate": 1,
+          "surplusRate": 0,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": []
+  },
+  "cases": [
+    {
+      "name": "minimize-external-supply",
+      "parameters": {
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "cheapActivity": 1,
+        "cleanActivity": 0,
+        "cheapSupply": 1,
+        "cleanSupply": 0,
+        "surplusRate": 10
+      }
+    },
+    {
+      "name": "minimize-surplus",
+      "parameters": {
+        "objective": "meetTargetsMinimizeSurplus",
+        "cheapActivity": 0,
+        "cleanActivity": 1,
+        "cheapSupply": 0,
+        "cleanSupply": 2,
+        "surplusRate": 0
+      }
+    }
+  ]
+}

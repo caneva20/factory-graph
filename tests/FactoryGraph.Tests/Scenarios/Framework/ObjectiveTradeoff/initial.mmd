@@ -1,0 +1,7 @@
+flowchart LR
+    cheapRaw[External raw] --> cheap[Supply-efficient route]
+    cleanRaw[External raw] --> clean[Surplus-free route]
+    cheap -->|Intermediate| finish[Finish product]
+    clean -->|Intermediate| finish
+    cheap --> waste[Waste surplus]
+    finish --> product[Product target]

@@ -1,0 +1,12 @@
+flowchart LR
+    ore[External ore] --> smelt[Smelt]
+    copper[External copper] --> wire[Draw wire]
+    smelt -->|Plate| frame[Make frame]
+    smelt -->|Plate| circuit[Make circuit]
+    wire -->|Wire| circuit
+    frame -->|Frame| final[Assemble machine]
+    circuit -->|Circuit| final
+    frame --> frameOutlet[Frame target]
+    final --> machineOutlet[Machine target]
+    smelt --> slag[Slag surplus]
+    idle[Disconnected process] --> unused[Untargeted outlet]
