@@ -1,0 +1,183 @@
+{
+  "name": "resource-limits",
+  "description": "One selected capacity falls below the rate required to satisfy a product target.",
+  "dimensions": {
+    "graphShape": "simple-chain",
+    "constraints": ["machine-count", "activity", "connection", "supply", "product-outlet", "surplus-outlet"],
+    "resourceConditions": ["insufficient-capacity", "infeasible"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "part", "name": "Part" },
+        { "id": "waste", "name": "Waste" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "source",
+          "name": "Make part",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [
+            { "itemId": "part", "amount": 1 },
+            { "itemId": "waste", "amount": 1 }
+          ]
+        },
+        {
+          "id": "finish",
+          "name": "Finish product",
+          "inputs": [{ "itemId": "part", "amount": 1 }],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-3333-3333-3333-333333333333",
+          "recipeId": "source",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": "${availableMachineCount}",
+          "activityCapacity": "${activityCapacity}"
+        },
+        {
+          "id": "22222222-3333-3333-3333-333333333333",
+          "recipeId": "finish",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "22222222-3333-3333-3333-333333333333",
+          "itemId": "part",
+          "capacity": "${connectionCapacity}"
+        }
+      ],
+      "supplies": [
+        {
+          "id": "44444444-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "itemId": "raw",
+          "capacity": "${supplyCapacity}"
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "55555555-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "22222222-3333-3333-3333-333333333333",
+          "itemId": "product",
+          "capacity": "${productOutletCapacity}"
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "66666666-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "itemId": "waste",
+          "capacity": "${surplusOutletCapacity}"
+        }
+      ]
+    },
+    "targets": [
+      {
+        "id": "77777777-3333-3333-3333-333333333333",
+        "productOutletId": "55555555-3333-3333-3333-333333333333",
+        "rate": 5
+      }
+    ],
+    "mode": "targetDriven",
+    "objective": "meetTargetsMinimizeExternalSupply",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "infeasible",
+    "graph": null,
+    "diagnostics": [
+      {
+        "code": "solver.infeasible",
+        "severity": "error",
+        "message": "No solution satisfies the graph balances, targets, and capacities.",
+        "elements": []
+      }
+    ],
+    "bottlenecks": []
+  },
+  "cases": [
+    {
+      "name": "machine-count",
+      "parameters": {
+        "availableMachineCount": 4,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null
+      }
+    },
+    {
+      "name": "activity",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": 4,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null
+      }
+    },
+    {
+      "name": "connection",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": 4,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null
+      }
+    },
+    {
+      "name": "supply",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": 4,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null
+      }
+    },
+    {
+      "name": "product-outlet",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": 4,
+        "surplusOutletCapacity": null
+      }
+    },
+    {
+      "name": "surplus-outlet",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": 4
+      }
+    }
+  ]
+}

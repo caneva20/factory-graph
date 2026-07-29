@@ -10,3 +10,4 @@ See the [scenario authoring guide](scenarios/authoring.md) for required fixture 
 - [Simple chain](scenarios/simple-chain.md) proves the same path for a connection between two machine groups.
 - [Branched assembly](scenarios/branched-assembly.md) covers fan-in, fan-out, multiple targets, co-product surplus, binding capacities, and a disconnected section.
 - [Objective tradeoff](scenarios/objective-tradeoff.md) verifies route selection under both target-driven objectives.
+- [Resource limits](scenarios/resource-limits.md) verifies infeasible machine, connection, supply, product-outlet, and surplus-outlet capacities.
