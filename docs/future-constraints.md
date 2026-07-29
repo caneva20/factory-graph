@@ -13,7 +13,7 @@ A future solve request must support hard fixed, minimum, and maximum bounds on t
 | Machine-group input | Aggregate item input rate | Consume exactly 30 iron ore per minute | Consume at least 10 water per minute | Consume at most 40 coal per minute |
 | Machine-group output | Aggregate item output rate | Produce exactly 20 plates per minute | Produce at least 5 fuel per minute | Produce at most 50 steam per minute |
 | Supply | Provided rate | Import exactly 10 ore per minute | Import at least 2 water per minute | Import at most 25 crude oil per minute |
-| Demand | Delivered rate | Deliver exactly 15 plates per minute | Deliver at least 8 fuel per minute | Deliver at most 30 plastic per minute |
+| Product outlet | Delivered rate | Deliver exactly 15 plates per minute | Deliver at least 8 fuel per minute | Deliver at most 30 plastic per minute |
 | Item connection | Flow rate | Carry exactly 12 items per minute | Carry at least 3 items per minute | Carry at most 20 items per minute |
 
 Bounds are request-level requirements over a graph. Existing capacity properties remain concise ways to express common upper limits; a future generalized capability must define how duplicate limits on the same metric are combined and reported.
@@ -25,7 +25,7 @@ Surplus-sink flow and target achievement may use the same addressing principles 
 A constraint address must identify a graph element and metric without referring to editor nodes, ports, controls, or other UI types.
 
 - Machine count and activity use the machine-group `Guid`.
-- Supply, demand, and connection rates use the corresponding element `Guid`.
+- Supply, outlet, and connection rates use the corresponding element `Guid`.
 - A machine-group input or output rate uses the machine-group `Guid`, an input/output direction, and the item string ID.
 - Item-rate addressing refers to the aggregate rate for an item and direction. It does not refer to a recipe-list position or UI port.
 - A constraint address remains stable when collections are reordered and is invalid when its element or item does not exist in the request graph.
@@ -60,7 +60,7 @@ Machine-group item input and output rates are derived from activity and recipe a
 
 The same constraint semantics apply in both planning modes.
 
-In `TargetDriven` mode, constraints restrict the values that may be chosen while satisfying requested targets. A hard bound that conflicts with target fulfillment makes the request infeasible. A minimum or fixed production bound may require a compatible demand or surplus route for resulting output.
+In `TargetDriven` mode, constraints restrict the values that may be chosen while satisfying requested targets. A hard bound that conflicts with target fulfillment makes the request infeasible. A minimum or fixed production bound may require a compatible product or surplus outlet for resulting output.
 
 In `CapacityDriven` mode, constraints restrict the feasible region in which target output is maximized. Lower bounds can require baseline activity or flow even when it does not improve the objective. Upper bounds can become production bottlenecks. An achieved target continues to report surplus or deficit against its requested rate.
 
@@ -97,7 +97,7 @@ Scenario assertions must report the scenario, graph element, metric, expected bo
 
 The current contracts do not make generalized constraints impractical:
 
-- Machine groups, connections, supplies, demands, and targets have stable IDs.
+- Machine groups, connections, supplies, product outlets, surplus outlets, and targets have stable IDs.
 - Machine-group item rates can be addressed by machine-group ID, direction, and item ID.
 - Computed results expose activity, effective machine count, item rates, boundary rates, and connection flow.
 - Requests and results are independent from UI and exporter types.

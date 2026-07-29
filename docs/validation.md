@@ -21,20 +21,22 @@ References must resolve as follows:
 | Machine group | Recipe |
 | Connection | Source machine group, destination machine group, and item |
 | Supply | Destination machine group and item |
-| Demand | Source machine group and item |
-| Surplus sink | Source machine group and item |
-| Target | Demand |
+| Product outlet | Source machine group and item |
+| Surplus outlet | Source machine group and item |
+| Target | Product outlet |
 
 Validation checks item compatibility after resolving the related item, machine group, and recipe:
 
 - A connection source must produce the connection item.
 - A connection destination must consume the connection item.
 - A supply destination must consume the supplied item.
-- A demand or surplus-sink source must produce its item.
+- A product-outlet or surplus-outlet source must produce its item.
 
 An unresolved reference suppresses dependent compatibility diagnostics. This keeps one missing endpoint from producing unrelated item errors.
 
 Disconnected graph components are valid. Validation does not require every item, recipe, or machine group to participate in a path.
+
+Each product outlet may have at most one target. Separate product outlets represent separate external destinations or independently requested rates.
 
 ## Modes And Objectives
 
@@ -56,7 +58,7 @@ All `double` values must be finite. Validation applies `NumericPolicy.NearZeroTh
 | `RecipeItem.Amount` | Positive |
 | `MachineGroup.ActivityRatePerMachine` | Positive |
 | `MachineGroup.AvailableMachineCount` | Nonnegative when present |
-| Machine, connection, supply, demand, and surplus-sink capacities | Nonnegative when present |
+| Machine, connection, supply, product-outlet, and surplus-outlet capacities | Nonnegative when present |
 | `Target.Rate` | Nonnegative |
 | Numeric-policy tolerances and threshold | Nonnegative |
 | `SolverOptions.TimeLimit` | Positive when present |
@@ -75,6 +77,7 @@ Use `SolveDiagnostic.Code` for program logic. Messages describe the error for ca
 | `validation.item.incompatible` | An item does not match the recipe at a connection or boundary. |
 | `validation.mode.unsupported` | The planning mode is undefined. |
 | `validation.objective.unsupported` | The objective is undefined or incompatible with the planning mode. |
+| `validation.target.duplicate-product-outlet` | More than one target references the same product outlet. |
 | `validation.number.non-finite` | A numeric value is `NaN` or infinite. |
 | `validation.number.negative` | A value is negative where zero is permitted. |
 | `validation.number.positive-required` | A value is zero or negative where a positive value is required. |

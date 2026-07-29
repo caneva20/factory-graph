@@ -51,6 +51,14 @@ public static class ValidationDiagnosticCodes {
         public const string Unsupported = Path + ".unsupported";
     }
 
+    /// <summary>Diagnostic codes for product-outlet targets.</summary>
+    public static class Target {
+        private const string Path = ValidationDiagnosticCodes.Path + ".target";
+
+        /// <summary>More than one target references the same product outlet.</summary>
+        public const string DuplicateProductOutlet = Path + ".duplicate-product-outlet";
+    }
+
     /// <summary>Diagnostic codes for numeric values.</summary>
     public static class Number {
         private const string Path = ValidationDiagnosticCodes.Path + ".number";

@@ -109,14 +109,14 @@ public sealed record ComputedSupply(
     double DeficitRate);
 
 /// <summary>
-///     Reports the solved output delivered to an external demand.
+///     Reports the solved output delivered to a product outlet.
 /// </summary>
-/// <param name="Id">The input demand ID.</param>
+/// <param name="Id">The product-outlet ID.</param>
 /// <param name="SourceMachineGroupId">The input source machine-group ID.</param>
 /// <param name="ItemId">The input item ID.</param>
-/// <param name="Capacity">The configured demand capacity, or <c>null</c> when absent.</param>
-/// <param name="DeliveredRate">The output rate delivered to the demand.</param>
-public sealed record ComputedDemand(
+/// <param name="Capacity">The configured outlet capacity, or <c>null</c> when absent.</param>
+/// <param name="DeliveredRate">The output rate delivered to the outlet.</param>
+public sealed record ComputedProductOutlet(
     Guid Id,
     Guid SourceMachineGroupId,
     string ItemId,
@@ -124,14 +124,14 @@ public sealed record ComputedDemand(
     double DeliveredRate);
 
 /// <summary>
-///     Reports the solved output sent to a surplus sink.
+///     Reports the solved output sent to a surplus outlet.
 /// </summary>
-/// <param name="Id">The input surplus-sink ID.</param>
+/// <param name="Id">The surplus-outlet ID.</param>
 /// <param name="SourceMachineGroupId">The input source machine-group ID.</param>
 /// <param name="ItemId">The input item ID.</param>
-/// <param name="Capacity">The configured sink capacity, or <c>null</c> when absent.</param>
-/// <param name="FlowRate">The output rate sent to the sink.</param>
-public sealed record ComputedSurplusSink(
+/// <param name="Capacity">The configured outlet capacity, or <c>null</c> when absent.</param>
+/// <param name="FlowRate">The output rate sent to the outlet.</param>
+public sealed record ComputedSurplusOutlet(
     Guid Id,
     Guid SourceMachineGroupId,
     string ItemId,
@@ -142,14 +142,14 @@ public sealed record ComputedSurplusSink(
 ///     Reports achieved output and deviation for one target.
 /// </summary>
 /// <param name="Id">The input target ID.</param>
-/// <param name="DemandId">The input demand ID.</param>
+/// <param name="ProductOutletId">The input product-outlet ID.</param>
 /// <param name="RequestedRate">The requested output rate.</param>
 /// <param name="AchievedRate">The solved output rate.</param>
 /// <param name="SurplusRate">The amount by which achieved output exceeds the request.</param>
 /// <param name="DeficitRate">The amount by which achieved output falls short of the request.</param>
 public sealed record ComputedTarget(
     Guid Id,
-    Guid DemandId,
+    Guid ProductOutletId,
     double RequestedRate,
     double AchievedRate,
     double SurplusRate,
@@ -163,8 +163,8 @@ public sealed record ComputedTarget(
 /// <param name="MachineGroups">The computed machine groups.</param>
 /// <param name="Connections">The computed item connections.</param>
 /// <param name="Supplies">The computed external supplies.</param>
-/// <param name="Demands">The computed external demands.</param>
-/// <param name="SurplusSinks">The computed surplus sinks.</param>
+/// <param name="ProductOutlets">The computed product outlets.</param>
+/// <param name="SurplusOutlets">The computed surplus outlets.</param>
 /// <param name="Targets">The computed targets.</param>
 public sealed record ComputedFactoryGraph(
     IReadOnlyList<Item> Items,
@@ -172,8 +172,8 @@ public sealed record ComputedFactoryGraph(
     IReadOnlyList<ComputedMachineGroup> MachineGroups,
     IReadOnlyList<ComputedConnection> Connections,
     IReadOnlyList<ComputedSupply> Supplies,
-    IReadOnlyList<ComputedDemand> Demands,
-    IReadOnlyList<ComputedSurplusSink> SurplusSinks,
+    IReadOnlyList<ComputedProductOutlet> ProductOutlets,
+    IReadOnlyList<ComputedSurplusOutlet> SurplusOutlets,
     IReadOnlyList<ComputedTarget> Targets);
 
 /// <summary>

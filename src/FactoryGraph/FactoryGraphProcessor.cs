@@ -1,4 +1,5 @@
 using FactoryGraph.Contracts;
+using FactoryGraph.Solving;
 using FactoryGraph.Validation;
 
 namespace FactoryGraph;
@@ -7,15 +8,12 @@ namespace FactoryGraph;
 ///     Validates factory graph requests before passing them to a solve stage.
 /// </summary>
 public sealed class FactoryGraphProcessor {
-    private readonly Func<SolveRequest, SolveResult> _solveValidRequest;
+    private readonly ISolveRequestValidator _validator;
+    private readonly ISolveRequestSolver _solver;
 
-    /// <summary>
-    ///     Creates a processor that delegates valid requests to the supplied solve stage.
-    /// </summary>
-    /// <param name="solveValidRequest">The stage that solves a validated request.</param>
-    public FactoryGraphProcessor(Func<SolveRequest, SolveResult> solveValidRequest) {
-        ArgumentNullException.ThrowIfNull(solveValidRequest);
-        _solveValidRequest = solveValidRequest;
+    internal FactoryGraphProcessor(ISolveRequestValidator validator, ISolveRequestSolver solver) {
+        _validator = validator;
+        _solver = solver;
     }
 
     /// <summary>
@@ -24,10 +22,10 @@ public sealed class FactoryGraphProcessor {
     /// <param name="request">The request to validate and solve.</param>
     /// <returns>An invalid result or the result produced by the configured solve stage.</returns>
     public SolveResult Solve(SolveRequest request) {
-        var diagnostics = SolveRequestValidator.Validate(request);
+        var diagnostics = _validator.Validate(request);
 
         return diagnostics.Count > 0
             ? new SolveResult(SolveStatus.InvalidRequest, null, diagnostics, [])
-            : _solveValidRequest(request);
+            : _solver.Solve(request);
     }
 }

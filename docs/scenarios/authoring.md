@@ -72,7 +72,7 @@ The scenario catalog makes these dimensions explicit:
 
 - Graph shape, including single nodes, chains, fan-in, fan-out, splits, merges, disconnected sections, and cycles.
 - Planning mode and objective.
-- Machine, supply, demand, target, and connection constraints.
+- Machine, supply, outlet, target, and connection constraints.
 - Resource conditions such as surplus, deficit, and limited supply.
 - Feasible, invalid, infeasible, and unbounded outcomes.
 - Numeric behavior including zero, fractions, near-zero normalization, tolerance boundaries, large magnitude differences, and machine-count ceiling.

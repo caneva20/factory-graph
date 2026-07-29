@@ -47,8 +47,8 @@ public sealed class ContractShapeTests
             MachineGroups: [],
             Connections: [new ItemConnection(Guid.Empty, missingMachineGroupId, missingMachineGroupId, "missing-item")],
             Supplies: [],
-            Demands: [],
-            SurplusSinks: []);
+            ProductOutlets: [],
+            SurplusOutlets: []);
 
         Assert.Empty(graph.Items.Single().Id);
         Assert.Equal(missingMachineGroupId, graph.Connections.Single().SourceMachineGroupId);

@@ -9,7 +9,7 @@ public sealed class TargetDrivenContractTests
     {
         var machineGroupId = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var supplyId = Guid.Parse("22222222-2222-2222-2222-222222222222");
-        var demandId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+        var productOutletId = Guid.Parse("33333333-3333-3333-3333-333333333333");
         var targetId = Guid.Parse("44444444-4444-4444-4444-444444444444");
 
         var items = new[] {
@@ -32,9 +32,9 @@ public sealed class TargetDrivenContractTests
                 MachineGroups: [new MachineGroup(machineGroupId, "smelt-iron", 2)],
                 Connections: [],
                 Supplies: [new Supply(supplyId, machineGroupId, "iron-ore")],
-                Demands: [new Demand(demandId, machineGroupId, "iron-plate")],
-                SurplusSinks: []),
-            [new Target(targetId, demandId, 10)],
+                ProductOutlets: [new ProductOutlet(productOutletId, machineGroupId, "iron-plate")],
+                SurplusOutlets: []),
+            [new Target(targetId, productOutletId, 10)],
             PlanningMode.TargetDriven,
             SolveObjective.MeetTargetsMinimizeExternalSupply,
             new SolverOptions(new NumericPolicy()));
@@ -60,18 +60,18 @@ public sealed class TargetDrivenContractTests
                 ],
                 [],
                 [new ComputedSupply(supplyId, machineGroupId, "iron-ore", null, 10, 10, 0)],
-                [new ComputedDemand(demandId, machineGroupId, "iron-plate", null, 10)],
+                [new ComputedProductOutlet(productOutletId, machineGroupId, "iron-plate", null, 10)],
                 [],
-                [new ComputedTarget(targetId, demandId, 10, 10, 0, 0)]),
+                [new ComputedTarget(targetId, productOutletId, 10, 10, 0, 0)]),
             [],
             []);
 
         Assert.Equal(PlanningMode.TargetDriven, request.Mode);
         Assert.Equal(machineGroupId, result.Graph!.MachineGroups.Single().Id);
         Assert.Equal(supplyId, result.Graph.Supplies.Single().Id);
-        Assert.Equal(demandId, result.Graph.Demands.Single().Id);
+        Assert.Equal(productOutletId, result.Graph.ProductOutlets.Single().Id);
         Assert.Equal(targetId, result.Graph.Targets.Single().Id);
-        Assert.Equal(demandId, result.Graph.Targets.Single().DemandId);
+        Assert.Equal(productOutletId, result.Graph.Targets.Single().ProductOutletId);
         Assert.Equal(5, result.Graph.MachineGroups.Single().EffectiveMachineCount);
         Assert.Equal(10, result.Graph.Targets.Single().AchievedRate);
     }

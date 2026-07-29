@@ -11,7 +11,7 @@ public sealed class ValidationScenarioTests {
     [MemberData(nameof(Scenarios))]
     public void RequestValidationMatchesScenario(string scenarioName, string caseName) {
         var scenario = ScenarioLoader.Load(scenarioName, caseName);
-        var processor = new FactoryGraphProcessor(_ => scenario.Expected);
+        var processor = FactoryGraphProcessorFactory.Create(new TestSolveRequestSolver(_ => scenario.Expected));
 
         ScenarioRunner.Run(scenario, processor.Solve);
     }

@@ -60,7 +60,7 @@
           "capacity": null
         }
       ],
-      "demands": [
+      "productOutlets": [
         {
           "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
           "sourceMachineGroupId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
@@ -68,12 +68,12 @@
           "capacity": null
         }
       ],
-      "surplusSinks": []
+      "surplusOutlets": []
     },
     "targets": [
       {
         "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-        "demandId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+        "productOutletId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
         "rate": 3
       }
     ],
@@ -159,7 +159,7 @@
           "deficitRate": 0
         }
       ],
-      "demands": [
+      "productOutlets": [
         {
           "id": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
           "sourceMachineGroupId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
@@ -168,11 +168,11 @@
           "deliveredRate": 3
         }
       ],
-      "surplusSinks": [],
+      "surplusOutlets": [],
       "targets": [
         {
           "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-          "demandId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "productOutletId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
           "requestedRate": 3,
           "achievedRate": 3,
           "surplusRate": 0,

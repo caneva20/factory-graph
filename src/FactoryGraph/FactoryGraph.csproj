@@ -4,4 +4,12 @@
     <Description>Factory graph planning processor.</Description>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Highs.Native" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FactoryGraph.Tests" />
+  </ItemGroup>
 </Project>

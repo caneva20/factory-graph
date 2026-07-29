@@ -1,6 +1,6 @@
 # Simple Chain
 
-The simple-chain scenario exercises two machine groups connected by an item-specific plate flow. The expected result covers both machine groups, the connection, external supply, demand, and target.
+The simple-chain scenario exercises two machine groups connected by an item-specific plate flow. The expected result covers both machine groups, the connection, external supply, product outlet, and target.
 
 Coverage:
 

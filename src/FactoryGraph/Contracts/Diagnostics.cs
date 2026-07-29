@@ -54,19 +54,19 @@ public enum GraphElementKind
     Supply,
 
     /// <summary>
-    ///     An external demand.
+    ///     An intended-product outlet.
     /// </summary>
-    Demand,
+    ProductOutlet,
 
     /// <summary>
-    ///     A demand target.
+    ///     A product-outlet target.
     /// </summary>
     Target,
 
     /// <summary>
-    ///     A surplus sink.
+    ///     A surplus outlet.
     /// </summary>
-    SurplusSink
+    SurplusOutlet
 }
 
 /// <summary>

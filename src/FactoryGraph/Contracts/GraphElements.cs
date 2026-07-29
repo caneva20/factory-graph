@@ -81,13 +81,13 @@ public sealed record Supply(
     double? Capacity = null);
 
 /// <summary>
-///     Defines an external consumer for a machine-group output.
+///     Defines an intended-product outlet for a machine-group output.
 /// </summary>
-/// <param name="Id">The demand ID.</param>
+/// <param name="Id">The product-outlet ID.</param>
 /// <param name="SourceMachineGroupId">The producing machine-group ID.</param>
-/// <param name="ItemId">The demanded item ID.</param>
-/// <param name="Capacity">The maximum delivered rate, or <c>null</c> for unlimited demand.</param>
-public sealed record Demand(
+/// <param name="ItemId">The delivered item ID.</param>
+/// <param name="Capacity">The maximum delivered rate, or <c>null</c> for no outlet limit.</param>
+public sealed record ProductOutlet(
     Guid Id,
     Guid SourceMachineGroupId,
     string ItemId,
@@ -96,25 +96,25 @@ public sealed record Demand(
 /// <summary>
 ///     Defines an allowed destination for excess output.
 /// </summary>
-/// <param name="Id">The surplus-sink ID.</param>
+/// <param name="Id">The surplus-outlet ID.</param>
 /// <param name="SourceMachineGroupId">The producing machine-group ID.</param>
 /// <param name="ItemId">The accepted item ID.</param>
 /// <param name="Capacity">The maximum accepted rate, or <c>null</c> for unlimited surplus.</param>
-public sealed record SurplusSink(
+public sealed record SurplusOutlet(
     Guid Id,
     Guid SourceMachineGroupId,
     string ItemId,
     double? Capacity = null);
 
 /// <summary>
-///     Defines a requested output rate for a demand.
+///     Defines a requested output rate for a product outlet.
 /// </summary>
 /// <param name="Id">The target ID.</param>
-/// <param name="DemandId">The target demand ID.</param>
+/// <param name="ProductOutletId">The target product-outlet ID.</param>
 /// <param name="Rate">The requested rate per time unit.</param>
 public sealed record Target(
     Guid Id,
-    Guid DemandId,
+    Guid ProductOutletId,
     double Rate);
 
 /// <summary>
@@ -125,13 +125,13 @@ public sealed record Target(
 /// <param name="MachineGroups">The machine groups.</param>
 /// <param name="Connections">The item connections between machine groups.</param>
 /// <param name="Supplies">The external item sources.</param>
-/// <param name="Demands">The external item consumers.</param>
-/// <param name="SurplusSinks">The allowed destinations for excess output.</param>
+/// <param name="ProductOutlets">The intended-product outlets.</param>
+/// <param name="SurplusOutlets">The allowed outlets for excess output.</param>
 public sealed record FactoryGraphDefinition(
     IReadOnlyList<Item> Items,
     IReadOnlyList<Recipe> Recipes,
     IReadOnlyList<MachineGroup> MachineGroups,
     IReadOnlyList<ItemConnection> Connections,
     IReadOnlyList<Supply> Supplies,
-    IReadOnlyList<Demand> Demands,
-    IReadOnlyList<SurplusSink> SurplusSinks);
+    IReadOnlyList<ProductOutlet> ProductOutlets,
+    IReadOnlyList<SurplusOutlet> SurplusOutlets);

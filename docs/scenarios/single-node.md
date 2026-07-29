@@ -1,6 +1,6 @@
 # Single Node
 
-The single-node scenario exercises one machine group that converts an unlimited external ore supply into a targeted plate output. Its named cases cover whole and fractional machine requirements without duplicating the graph or expected result.
+The single-node scenario covers zero, near-zero, fractional, whole, tolerance-boundary, and large machine requirements for one ore-to-plate machine group.
 
 Coverage:
 

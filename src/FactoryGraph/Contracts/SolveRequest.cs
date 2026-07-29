@@ -50,7 +50,7 @@ public sealed record SolverOptions(
 ///     Defines one factory-planning request.
 /// </summary>
 /// <param name="Graph">The factory topology to solve.</param>
-/// <param name="Targets">The requested demand rates.</param>
+/// <param name="Targets">The requested product-outlet rates.</param>
 /// <param name="Mode">The planning mode.</param>
 /// <param name="Objective">The optimization objective.</param>
 /// <param name="Options">The solver options.</param>

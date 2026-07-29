@@ -38,7 +38,7 @@
           "capacity": null
         }
       ],
-      "demands": [
+      "productOutlets": [
         {
           "id": "33333333-3333-3333-3333-333333333333",
           "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
@@ -46,12 +46,12 @@
           "capacity": null
         }
       ],
-      "surplusSinks": []
+      "surplusOutlets": []
     },
     "targets": [
       {
         "id": "44444444-4444-4444-4444-444444444444",
-        "demandId": "33333333-3333-3333-3333-333333333333",
+        "productOutletId": "33333333-3333-3333-3333-333333333333",
         "rate": "${rate}"
       }
     ],
@@ -108,7 +108,7 @@
           "deficitRate": 0
         }
       ],
-      "demands": [
+      "productOutlets": [
         {
           "id": "33333333-3333-3333-3333-333333333333",
           "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
@@ -117,11 +117,11 @@
           "deliveredRate": "${rate}"
         }
       ],
-      "surplusSinks": [],
+      "surplusOutlets": [],
       "targets": [
         {
           "id": "44444444-4444-4444-4444-444444444444",
-          "demandId": "33333333-3333-3333-3333-333333333333",
+          "productOutletId": "33333333-3333-3333-3333-333333333333",
           "requestedRate": "${rate}",
           "achievedRate": "${rate}",
           "surplusRate": 0,
@@ -149,6 +149,42 @@
         "effectiveMachineCount": 1.25,
         "requiredWholeMachineCount": 2,
         "utilization": 0.625
+      }
+    },
+    {
+      "name": "zero-rate",
+      "parameters": {
+        "rate": 0,
+        "effectiveMachineCount": 0,
+        "requiredWholeMachineCount": 0,
+        "utilization": 0
+      }
+    },
+    {
+      "name": "tolerance-aware-ceiling",
+      "parameters": {
+        "rate": 4.0000001,
+        "effectiveMachineCount": 2.00000005,
+        "requiredWholeMachineCount": 2,
+        "utilization": 1.000000025
+      }
+    },
+    {
+      "name": "near-zero-rate",
+      "parameters": {
+        "rate": 0.0000000005,
+        "effectiveMachineCount": 0,
+        "requiredWholeMachineCount": 0,
+        "utilization": 0
+      }
+    },
+    {
+      "name": "large-rate",
+      "parameters": {
+        "rate": 2000000000,
+        "effectiveMachineCount": 1000000000,
+        "requiredWholeMachineCount": 1000000000,
+        "utilization": 1
       }
     }
   ]

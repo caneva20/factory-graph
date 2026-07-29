@@ -17,7 +17,7 @@ public sealed class FactoryGraphProcessorTests {
 
         var invoked = false;
 
-        var processor = new FactoryGraphProcessor(_ => {
+        var processor = Processor(_ => {
             invoked = true;
 
             return SuccessfulResult();
@@ -94,6 +94,25 @@ public sealed class FactoryGraphProcessorTests {
     }
 
     [Fact]
+    public void MultipleTargetsForOneProductOutletReturnStableDiagnostic() {
+        var request = CreateValidRequest();
+        request = request with {
+            Targets = [
+                request.Targets.Single(),
+                new Target(Guid.Parse("77777777-7777-7777-7777-777777777777"), request.Targets.Single().ProductOutletId, 2)
+            ]
+        };
+
+        var diagnostic = Assert.Single(Processor().Solve(request).Diagnostics);
+
+        Assert.Equal(ValidationDiagnosticCodes.Target.DuplicateProductOutlet, diagnostic.Code);
+        Assert.Collection(
+            diagnostic.Elements,
+            element => Assert.Equal(GraphElementKind.Target, element.Kind),
+            element => Assert.Equal(GraphElementKind.ProductOutlet, element.Kind));
+    }
+
+    [Fact]
     public void NumericPreconditionsRejectNonFiniteSignsAndProhibitedZero() {
         var baseline = CreateValidRequest();
 
@@ -163,7 +182,7 @@ public sealed class FactoryGraphProcessorTests {
                     new MachineGroup(disconnectedId, "smelt", 1)
                 ],
                 Supplies = [request.Graph.Supplies.Single() with { Capacity = -5e-13 }],
-                Demands = [request.Graph.Demands.Single() with { Capacity = 0 }]
+                ProductOutlets = [request.Graph.ProductOutlets.Single() with { Capacity = 0 }]
             },
             Targets = [request.Targets.Single() with { Rate = 0 }]
         };
@@ -171,7 +190,7 @@ public sealed class FactoryGraphProcessorTests {
         var expected = SuccessfulResult();
         SolveRequest? delegatedRequest = null;
 
-        var processor = new FactoryGraphProcessor(validRequest => {
+        var processor = Processor(validRequest => {
             delegatedRequest = validRequest;
 
             return expected;
@@ -199,7 +218,11 @@ public sealed class FactoryGraphProcessorTests {
     }
 
     private static FactoryGraphProcessor Processor() {
-        return new FactoryGraphProcessor(_ => SuccessfulResult());
+        return Processor(_ => SuccessfulResult());
+    }
+
+    private static FactoryGraphProcessor Processor(Func<SolveRequest, SolveResult> solve) {
+        return FactoryGraphProcessorFactory.Create(new TestSolveRequestSolver(solve));
     }
 
     private static SolveResult SuccessfulResult() {
@@ -209,7 +232,7 @@ public sealed class FactoryGraphProcessorTests {
     private static SolveRequest CreateValidRequest() {
         var machineGroupId = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var supplyId = Guid.Parse("22222222-2222-2222-2222-222222222222");
-        var demandId = Guid.Parse("33333333-3333-3333-3333-333333333333");
+        var productOutletId = Guid.Parse("33333333-3333-3333-3333-333333333333");
         var targetId = Guid.Parse("44444444-4444-4444-4444-444444444444");
 
         return new SolveRequest(
@@ -225,9 +248,9 @@ public sealed class FactoryGraphProcessorTests {
                 MachineGroups: [new MachineGroup(machineGroupId, "smelt", 1)],
                 Connections: [],
                 Supplies: [new Supply(supplyId, machineGroupId, "ore")],
-                Demands: [new Demand(demandId, machineGroupId, "plate")],
-                SurplusSinks: []),
-            Targets: [new Target(targetId, demandId, 1)],
+                ProductOutlets: [new ProductOutlet(productOutletId, machineGroupId, "plate")],
+                SurplusOutlets: []),
+            Targets: [new Target(targetId, productOutletId, 1)],
             PlanningMode.TargetDriven,
             SolveObjective.MeetTargetsMinimizeExternalSupply,
             new SolverOptions(new NumericPolicy()));

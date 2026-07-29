@@ -9,7 +9,7 @@ public sealed class CapacityDrivenContractTests
     {
         var machineGroupId = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         var supplyId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
-        var demandId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
+        var productOutletId = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
         var targetId = Guid.Parse("dddddddd-dddd-dddd-dddd-dddddddddddd");
 
         var items = new[] {
@@ -38,9 +38,9 @@ public sealed class CapacityDrivenContractTests
                 ],
                 Connections: [],
                 Supplies: [new Supply(supplyId, machineGroupId, "copper-ore")],
-                Demands: [new Demand(demandId, machineGroupId, "copper-plate")],
-                SurplusSinks: []),
-            [new Target(targetId, demandId, 10)],
+                ProductOutlets: [new ProductOutlet(productOutletId, machineGroupId, "copper-plate")],
+                SurplusOutlets: []),
+            [new Target(targetId, productOutletId, 10)],
             PlanningMode.CapacityDriven,
             SolveObjective.MaximizeTargetOutput,
             new SolverOptions(new NumericPolicy()));
@@ -70,9 +70,9 @@ public sealed class CapacityDrivenContractTests
                 ],
                 Connections: [],
                 Supplies: [new ComputedSupply(supplyId, machineGroupId, "copper-ore", null, 6, 6, 0)],
-                Demands: [new ComputedDemand(demandId, machineGroupId, "copper-plate", null, 6)],
-                SurplusSinks: [],
-                Targets: [new ComputedTarget(targetId, demandId, 10, 6, 0, 4)]),
+                ProductOutlets: [new ComputedProductOutlet(productOutletId, machineGroupId, "copper-plate", null, 6)],
+                SurplusOutlets: [],
+                Targets: [new ComputedTarget(targetId, productOutletId, 10, 6, 0, 4)]),
             [],
             [
                 new Bottleneck(
