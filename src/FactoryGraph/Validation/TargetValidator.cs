@@ -4,22 +4,20 @@ namespace FactoryGraph.Validation;
 
 internal sealed class TargetValidator {
     public void Validate(
-        IEnumerable<Target> targets,
-        IEnumerable<ProductOutlet> productOutlets,
+        IReadOnlyList<Target> targets,
+        IReadOnlyList<ProductOutlet> productOutlets,
         PlanningMode mode,
         NumericPolicy numericPolicy,
         ICollection<SolveDiagnostic> diagnostics) {
-        var targetList = targets.ToArray();
-
         var productOutletIds = productOutlets
             .Where(outlet => outlet.Id != Guid.Empty)
             .Select(outlet => outlet.Id)
             .ToHashSet();
 
-        var targetIds = new HashSet<Guid>();
-        var targetedProductOutlets = new HashSet<Guid>();
+        var targetIds = new HashSet<Guid>(targets.Count);
+        var targetedProductOutlets = new HashSet<Guid>(targets.Count);
 
-        foreach (var target in targetList) {
+        foreach (var target in targets) {
             var reference = Reference(GraphElementKind.Target, target.Id);
 
             if (target.Id == Guid.Empty) {
@@ -52,7 +50,7 @@ internal sealed class TargetValidator {
         }
 
         if (mode == PlanningMode.CapacityDriven
-            && !targetList.Any(target => double.IsFinite(target.Rate) && numericPolicy.NormalizeNearZero(target.Rate) > 0)) {
+            && !targets.Any(target => double.IsFinite(target.Rate) && numericPolicy.NormalizeNearZero(target.Rate) > 0)) {
             Add(
                 diagnostics,
                 ValidationDiagnosticCodes.Target.PositiveRateRequired,

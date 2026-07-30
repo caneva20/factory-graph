@@ -75,18 +75,31 @@ internal sealed class CapacityBottleneckReporter {
     private static HashSet<Guid> RelevantGroups(SolveRequest request, NumericPolicy policy) {
         var graph = request.Graph;
         var outlets = graph.ProductOutlets.ToDictionary(outlet => outlet.Id);
+        var incoming = new Dictionary<Guid, List<Guid>>(graph.MachineGroups.Count);
 
-        var relevant = request.Targets
-            .Where(target => policy.NormalizeNearZero(target.Rate) > 0)
-            .Select(target => outlets[target.ProductOutletId].SourceMachineGroupId)
-            .ToHashSet();
+        foreach (var connection in graph.Connections) {
+            if (!incoming.TryGetValue(connection.DestinationMachineGroupId, out var sources)) {
+                sources = [];
+                incoming.Add(connection.DestinationMachineGroupId, sources);
+            }
+
+            sources.Add(connection.SourceMachineGroupId);
+        }
+
+        var relevant = new HashSet<Guid>(request.Targets.Count);
+
+        foreach (var target in request.Targets) {
+            if (policy.NormalizeNearZero(target.Rate) > 0) {
+                relevant.Add(outlets[target.ProductOutletId].SourceMachineGroupId);
+            }
+        }
 
         var pending = new Queue<Guid>(relevant);
 
         while (pending.TryDequeue(out var destination)) {
-            foreach (var source in graph.Connections
-                         .Where(connection => connection.DestinationMachineGroupId == destination)
-                         .Select(connection => connection.SourceMachineGroupId)) {
+            if (!incoming.TryGetValue(destination, out var sources)) continue;
+
+            foreach (var source in sources) {
                 if (relevant.Add(source)) {
                     pending.Enqueue(source);
                 }

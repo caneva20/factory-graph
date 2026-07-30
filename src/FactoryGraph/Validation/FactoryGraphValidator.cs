@@ -41,12 +41,12 @@ internal sealed class FactoryGraphValidator {
     }
 
     private static void ValidateStringIds<T>(
-        IEnumerable<T> values,
+        IReadOnlyCollection<T> values,
         Func<T, string> getId,
         GraphElementKind kind,
         string label,
         ICollection<SolveDiagnostic> diagnostics) {
-        var seen = new HashSet<string>(StringComparer.Ordinal);
+        var seen = new HashSet<string>(values.Count, StringComparer.Ordinal);
 
         foreach (var value in values) {
             var id = getId(value);
@@ -61,12 +61,12 @@ internal sealed class FactoryGraphValidator {
     }
 
     private static void ValidateGuidIds<T>(
-        IEnumerable<T> values,
+        IReadOnlyCollection<T> values,
         Func<T, Guid> getId,
         GraphElementKind kind,
         string label,
         ICollection<SolveDiagnostic> diagnostics) {
-        var seen = new HashSet<Guid>();
+        var seen = new HashSet<Guid>(values.Count);
 
         foreach (var value in values) {
             var id = getId(value);

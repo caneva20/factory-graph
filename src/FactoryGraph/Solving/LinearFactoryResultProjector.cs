@@ -9,7 +9,12 @@ internal sealed class LinearFactoryResultProjector {
         IReadOnlyList<double> values) {
         var graph = request.Graph;
         var policy = request.Options.NumericPolicy;
-        var recipes = graph.Recipes.ToDictionary(recipe => recipe.Id, StringComparer.Ordinal);
+        var recipes = graph.Recipes.ToDictionary(
+            recipe => recipe.Id,
+            recipe => new AggregatedRecipe(
+                RecipeItemAggregator.Aggregate(recipe.Inputs),
+                RecipeItemAggregator.Aggregate(recipe.Outputs)),
+            StringComparer.Ordinal);
 
         var machineGroups = graph.MachineGroups.Select(group => {
             var activity = policy.NormalizeNearZero(values[model.Activities[group.Id]]);
@@ -96,16 +101,18 @@ internal sealed class LinearFactoryResultProjector {
             targets);
     }
 
-    private static IReadOnlyList<ItemRate> Rates(
-        IEnumerable<RecipeItem> recipeItems,
+    private static ItemRate[] Rates(
+        IReadOnlyList<RecipeItem> recipeItems,
         double activity,
         NumericPolicy policy) {
-        return recipeItems
-            .GroupBy(item => item.ItemId, StringComparer.Ordinal)
-            .Select(group => new ItemRate(
-                group.Key,
-                policy.NormalizeNearZero(group.Sum(item => item.Amount) * activity)))
-            .ToArray();
+        var result = new ItemRate[recipeItems.Count];
+
+        for (var index = 0; index < recipeItems.Count; index++) {
+            var item = recipeItems[index];
+            result[index] = new ItemRate(item.ItemId, policy.NormalizeNearZero(item.Amount * activity));
+        }
+
+        return result;
     }
 
     private static int WholeMachineCount(double effectiveMachineCount, NumericPolicy policy) {
@@ -117,4 +124,6 @@ internal sealed class LinearFactoryResultProjector {
 
         return checked((int)value);
     }
+
+    private sealed record AggregatedRecipe(RecipeItem[] Inputs, RecipeItem[] Outputs);
 }

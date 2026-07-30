@@ -43,63 +43,57 @@ internal sealed class LinearFactoryModelBuilder {
         SetCapacities(graph.ProductOutlets, outlet => outlet.Id, outlet => outlet.Capacity, productOutlets, upper);
         SetCapacities(graph.SurplusOutlets, outlet => outlet.Id, outlet => outlet.Capacity, surplusOutlets, upper);
 
-        var recipes = graph.Recipes.ToDictionary(recipe => recipe.Id, StringComparer.Ordinal);
-        var rows = new List<ModelRow>();
+        var recipes = graph.Recipes.ToDictionary(
+            recipe => recipe.Id,
+            recipe => new AggregatedRecipe(
+                RecipeItemAggregator.Aggregate(recipe.Inputs),
+                RecipeItemAggregator.Aggregate(recipe.Outputs)),
+            StringComparer.Ordinal);
+
+        var inputRowCount = 0;
+        var outputRowCount = 0;
+
+        foreach (var group in graph.MachineGroups) {
+            var recipe = recipes[group.RecipeId];
+            inputRowCount += recipe.Inputs.Length;
+            outputRowCount += recipe.Outputs.Length;
+        }
+
+        var rows = new List<ModelRow>(inputRowCount + outputRowCount);
+        var inputRows = new Dictionary<(Guid GroupId, string ItemId), Dictionary<int, double>>(inputRowCount);
+        var outputRows = new Dictionary<(Guid GroupId, string ItemId), Dictionary<int, double>>(outputRowCount);
 
         foreach (var group in graph.MachineGroups) {
             var recipe = recipes[group.RecipeId];
 
-            foreach (var item in Aggregate(recipe.Inputs)) {
-                var coefficients = new Dictionary<int, double> { [activities[group.Id]] = item.Amount };
-
-                AddFlows(
-                    coefficients,
-                    graph.Connections.Where(connection =>
-                        connection.DestinationMachineGroupId == group.Id && connection.ItemId == item.ItemId),
-                    connection => connection.Id,
-                    connections,
-                    -1);
-
-                AddFlows(
-                    coefficients,
-                    graph.Supplies.Where(supply =>
-                        supply.DestinationMachineGroupId == group.Id && supply.ItemId == item.ItemId),
-                    supply => supply.Id,
-                    supplies,
-                    -1);
-
+            foreach (var item in recipe.Inputs) {
+                var coefficients = new Dictionary<int, double>(1) { [activities[group.Id]] = item.Amount };
+                inputRows.Add((group.Id, item.ItemId), coefficients);
                 rows.Add(ModelRow.Equality(coefficients));
             }
 
-            foreach (var item in Aggregate(recipe.Outputs)) {
-                var coefficients = new Dictionary<int, double> { [activities[group.Id]] = item.Amount };
-
-                AddFlows(
-                    coefficients,
-                    graph.Connections.Where(connection =>
-                        connection.SourceMachineGroupId == group.Id && connection.ItemId == item.ItemId),
-                    connection => connection.Id,
-                    connections,
-                    -1);
-
-                AddFlows(
-                    coefficients,
-                    graph.ProductOutlets.Where(outlet =>
-                        outlet.SourceMachineGroupId == group.Id && outlet.ItemId == item.ItemId),
-                    outlet => outlet.Id,
-                    productOutlets,
-                    -1);
-
-                AddFlows(
-                    coefficients,
-                    graph.SurplusOutlets.Where(outlet =>
-                        outlet.SourceMachineGroupId == group.Id && outlet.ItemId == item.ItemId),
-                    outlet => outlet.Id,
-                    surplusOutlets,
-                    -1);
-
+            foreach (var item in recipe.Outputs) {
+                var coefficients = new Dictionary<int, double>(1) { [activities[group.Id]] = item.Amount };
+                outputRows.Add((group.Id, item.ItemId), coefficients);
                 rows.Add(ModelRow.Equality(coefficients));
             }
+        }
+
+        foreach (var connection in graph.Connections) {
+            AddFlow(outputRows, (connection.SourceMachineGroupId, connection.ItemId), connections[connection.Id]);
+            AddFlow(inputRows, (connection.DestinationMachineGroupId, connection.ItemId), connections[connection.Id]);
+        }
+
+        foreach (var supply in graph.Supplies) {
+            AddFlow(inputRows, (supply.DestinationMachineGroupId, supply.ItemId), supplies[supply.Id]);
+        }
+
+        foreach (var outlet in graph.ProductOutlets) {
+            AddFlow(outputRows, (outlet.SourceMachineGroupId, outlet.ItemId), productOutlets[outlet.Id]);
+        }
+
+        foreach (var outlet in graph.SurplusOutlets) {
+            AddFlow(outputRows, (outlet.SourceMachineGroupId, outlet.ItemId), surplusOutlets[outlet.Id]);
         }
 
         return new LinearFactoryModel(
@@ -112,11 +106,11 @@ internal sealed class LinearFactoryModelBuilder {
     }
 
     private static Dictionary<TKey, int> Index<T, TKey>(
-        IEnumerable<T> values,
+        IReadOnlyCollection<T> values,
         Func<T, TKey> key,
         ref int nextVariable)
         where TKey : notnull {
-        var result = new Dictionary<TKey, int>();
+        var result = new Dictionary<TKey, int>(values.Count);
 
         foreach (var value in values) {
             result.Add(key(value), nextVariable++);
@@ -136,21 +130,14 @@ internal sealed class LinearFactoryModelBuilder {
         }
     }
 
-    private static IReadOnlyList<RecipeItem> Aggregate(IEnumerable<RecipeItem> items) {
-        return items
-            .GroupBy(item => item.ItemId, StringComparer.Ordinal)
-            .Select(group => new RecipeItem(group.Key, group.Sum(item => item.Amount)))
-            .ToArray();
-    }
-
-    private static void AddFlows<T>(
-        IDictionary<int, double> coefficients,
-        IEnumerable<T> flows,
-        Func<T, Guid> id,
-        IReadOnlyDictionary<Guid, int> variables,
-        double coefficient) {
-        foreach (var flow in flows) {
-            coefficients[variables[id(flow)]] = coefficient;
+    private static void AddFlow(
+        IReadOnlyDictionary<(Guid GroupId, string ItemId), Dictionary<int, double>> rows,
+        (Guid GroupId, string ItemId) key,
+        int variable) {
+        if (rows.TryGetValue(key, out var coefficients)) {
+            coefficients[variable] = -1;
         }
     }
+
+    private sealed record AggregatedRecipe(RecipeItem[] Inputs, RecipeItem[] Outputs);
 }

@@ -16,8 +16,9 @@ internal sealed class HighsLinearProgramSolver : ILinearProgramSolver {
 
         var rows = additionalRow is null ? program.Rows : [.. program.Rows, additionalRow];
         var starts = new int[rows.Count + 1];
-        var indices = new List<int>();
-        var values = new List<double>();
+        var coefficientCount = rows.Sum(row => row.Coefficients.Count);
+        var indices = new List<int>(coefficientCount);
+        var values = new List<double>(coefficientCount);
         var rowLower = new double[rows.Count];
         var rowUpper = new double[rows.Count];
 

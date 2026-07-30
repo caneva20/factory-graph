@@ -255,6 +255,31 @@ public sealed class TargetDrivenSolverTests {
     }
 
     [Fact]
+    public void DuplicateRecipeItemsAreAggregatedInBalancesAndResults() {
+        var machine = Id(1);
+        var productOutlet = Id(2);
+
+        var request = Request(
+            items: ["raw", "product"],
+            recipes: [Recipe("make", [("raw", 1), ("raw", 2)], [("product", 2), ("product", 1)])],
+            groups: [Group(machine, "make")],
+            connections: [],
+            supplies: [new Supply(Id(3), machine, "raw")],
+            productOutlets: [new ProductOutlet(productOutlet, machine, "product")],
+            surplusOutlets: [],
+            targets: [new Target(Id(4), productOutlet, 6)]);
+
+        var result = FactoryGraphProcessorFactory.Create().Solve(request);
+        var computed = Machine(result, machine);
+
+        Assert.Equal(SolveStatus.Optimal, result.Status);
+        Assert.Equal(2, computed.Activity);
+        Assert.Equal(new ItemRate("raw", 6), Assert.Single(computed.InputRates));
+        Assert.Equal(new ItemRate("product", 6), Assert.Single(computed.OutputRates));
+        Assert.Equal(6, result.Graph!.Supplies.Single().ProvidedRate);
+    }
+
+    [Fact]
     public void SecondaryFailureReturnsThePrimarySolution() {
         var machine = Id(1);
         var productOutlet = Id(2);

@@ -8,15 +8,30 @@ internal sealed class CapacityDrivenModelBuilder(LinearFactoryModelBuilder facto
     public CapacityDrivenModel Build(SolveRequest request) {
         var factoryModel = factoryModelBuilder.Build(request);
         var scaleVariable = factoryModel.VariableCount;
-        var lowerBounds = factoryModel.Program.LowerBounds.Append(0d).ToArray();
-        var upperBounds = factoryModel.Program.UpperBounds.Append(Infinity).ToArray();
+        var lowerBounds = new double[scaleVariable + 1];
+        var upperBounds = new double[scaleVariable + 1];
 
-        var rows = factoryModel.Program.Rows
-            .Concat(request.Targets.Select(target => ModelRow.Equality(new Dictionary<int, double> {
+        for (var index = 0; index < scaleVariable; index++) {
+            lowerBounds[index] = factoryModel.Program.LowerBounds[index];
+            upperBounds[index] = factoryModel.Program.UpperBounds[index];
+        }
+
+        upperBounds[scaleVariable] = Infinity;
+
+        var factoryRows = factoryModel.Program.Rows;
+        var rows = new ModelRow[factoryRows.Count + request.Targets.Count];
+
+        for (var index = 0; index < factoryRows.Count; index++) {
+            rows[index] = factoryRows[index];
+        }
+
+        for (var index = 0; index < request.Targets.Count; index++) {
+            var target = request.Targets[index];
+            rows[factoryRows.Count + index] = ModelRow.Equality(new Dictionary<int, double>(2) {
                 [factoryModel.ProductOutlets[target.ProductOutletId]] = 1,
                 [scaleVariable] = -target.Rate
-            })))
-            .ToArray();
+            });
+        }
 
         var program = new LinearProgram(lowerBounds, upperBounds, rows);
 
