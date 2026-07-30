@@ -16,7 +16,8 @@ internal sealed class CapacityDrivenSolver(
         try {
             var model = modelBuilder.Build(request);
             var primaryCosts = model.PrimaryCosts();
-            var primary = Run(model.FactoryModel, primaryCosts, null, request, stopwatch);
+            using var session = linearProgramSolver.CreateSession(model.FactoryModel.Program, request.Options.NumericPolicy);
+            var primary = Run(session, primaryCosts, null, request, stopwatch);
 
             if (primary.Status != SolveStatus.Optimal) return Result(request, model, primary);
 
@@ -32,7 +33,7 @@ internal sealed class CapacityDrivenSolver(
             }
 
             var secondary = Run(
-                model.FactoryModel,
+                session,
                 model.FactoryModel.ActivityCosts(),
                 objectiveLimit,
                 request,
@@ -51,17 +52,15 @@ internal sealed class CapacityDrivenSolver(
     }
 
     private StageResult Run(
-        LinearFactoryModel model,
+        ILinearProgramSession session,
         double[] costs,
         ModelRow? objectiveLimit,
         SolveRequest request,
         Stopwatch stopwatch) {
-        var result = linearProgramSolver.Solve(
-            model.Program,
-            costs,
-            objectiveLimit,
-            Remaining(request.Options.TimeLimit, stopwatch.Elapsed),
-            request.Options.NumericPolicy);
+        var remaining = Remaining(request.Options.TimeLimit, stopwatch.Elapsed);
+        var result = objectiveLimit is null
+            ? session.Solve(costs, remaining)
+            : session.AddRowAndSolve(costs, objectiveLimit, remaining);
 
         var status = result.Status switch {
             LinearProgramStatus.Optimal => SolveStatus.Optimal,

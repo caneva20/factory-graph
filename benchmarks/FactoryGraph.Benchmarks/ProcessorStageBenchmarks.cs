@@ -41,12 +41,11 @@ public class ProcessorStageBenchmarks {
     [Benchmark]
     [BenchmarkCategory("Stage", "BackendSolve")]
     public object BackendSolve() {
-        return _state.LinearProgramSolver.Solve(
+        using var session = _state.LinearProgramSolver.CreateSession(
             _state.Model.Program,
-            _state.Costs,
-            null,
-            null,
             _state.Request.Options.NumericPolicy);
+
+        return session.Solve(_state.Costs, null);
     }
 
     [Benchmark]
@@ -114,12 +113,10 @@ public class ProcessorStageBenchmarks {
 
             var (model, costs) = CreateModel(request);
             var linearProgramSolver = new HighsLinearProgramSolver();
-            var solve = linearProgramSolver.Solve(
+            using var session = linearProgramSolver.CreateSession(
                 model.Program,
-                costs,
-                null,
-                null,
                 request.Options.NumericPolicy);
+            var solve = session.Solve(costs, null);
 
             if (solve.Status != LinearProgramStatus.Optimal) {
                 throw new InvalidOperationException($"Benchmark model returned '{solve.Status}' during setup.");

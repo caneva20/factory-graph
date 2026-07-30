@@ -22,12 +22,13 @@ internal sealed class TargetDrivenSolver(
             }
 
             var primaryCosts = model.PrimaryCosts(request.Objective);
+            using var session = linearProgramSolver.CreateSession(model.Program, request.Options.NumericPolicy);
 
             if (primaryCosts.All(cost => cost == 0)) {
-                return Result(request, model, Run(model, model.ActivityCosts(), null, request, stopwatch));
+                return Result(request, model, Run(session, model.ActivityCosts(), null, request, stopwatch));
             }
 
-            var primary = Run(model, primaryCosts, null, request, stopwatch);
+            var primary = Run(session, primaryCosts, null, request, stopwatch);
 
             if (primary.Status != SolveStatus.Optimal)
                 return Result(request, model, primary);
@@ -52,7 +53,7 @@ internal sealed class TargetDrivenSolver(
                 return Result(request, model, PrimaryFallback(primary, "The time limit expired before activity minimization."));
             }
 
-            var secondary = Run(model, model.ActivityCosts(), objectiveLimit, request, stopwatch);
+            var secondary = Run(session, model.ActivityCosts(), objectiveLimit, request, stopwatch);
 
             return secondary.Status is SolveStatus.Optimal or SolveStatus.Feasible
                 ? Result(request, model, secondary)
@@ -67,17 +68,15 @@ internal sealed class TargetDrivenSolver(
     }
 
     private StageResult Run(
-        LinearFactoryModel model,
+        ILinearProgramSession session,
         double[] costs,
         ModelRow? objectiveLimit,
         SolveRequest request,
         Stopwatch stopwatch) {
-        var result = linearProgramSolver.Solve(
-            model.Program,
-            costs,
-            objectiveLimit,
-            Remaining(request.Options.TimeLimit, stopwatch.Elapsed),
-            request.Options.NumericPolicy);
+        var remaining = Remaining(request.Options.TimeLimit, stopwatch.Elapsed);
+        var result = objectiveLimit is null
+            ? session.Solve(costs, remaining)
+            : session.AddRowAndSolve(costs, objectiveLimit, remaining);
 
         var status = result.Status switch {
             LinearProgramStatus.Optimal => SolveStatus.Optimal,

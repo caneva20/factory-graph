@@ -309,6 +309,8 @@ public sealed class TargetDrivenSolverTests {
         Assert.Equal(1, result.Graph!.ProductOutlets.Single().DeliveredRate);
         Assert.Equal(SolverDiagnosticCodes.SecondaryOptimizationIncomplete, Assert.Single(result.Diagnostics).Code);
         Assert.Equal(2, backend.CallCount);
+        Assert.Equal(1, backend.SessionCount);
+        Assert.Equal(1, backend.AddedRowCount);
     }
 
     private static SolveRequest Request(
@@ -354,20 +356,39 @@ public sealed class TargetDrivenSolverTests {
         ComputedMachineGroup group) =>
         (group.Activity, group.EffectiveMachineCount, group.RequiredWholeMachineCount, group.Utilization);
 
-    private sealed class SequenceLinearProgramSolver(params LinearProgramResult[] results) : ILinearProgramSolver {
+    private sealed class SequenceLinearProgramSolver(params LinearProgramResult[] results)
+        : ILinearProgramSolver, ILinearProgramSession {
         private readonly Queue<LinearProgramResult> _results = new(results);
 
         public int CallCount { get; private set; }
 
+        public int SessionCount { get; private set; }
+
+        public int AddedRowCount { get; private set; }
+
+        public ILinearProgramSession CreateSession(LinearProgram program, NumericPolicy numericPolicy) {
+            SessionCount++;
+
+            return this;
+        }
+
         public LinearProgramResult Solve(
-            LinearProgram program,
             IReadOnlyList<double> costs,
-            ModelRow? additionalRow,
-            TimeSpan? timeLimit,
-            NumericPolicy numericPolicy) {
+            TimeSpan? timeLimit) {
             CallCount++;
 
             return _results.Dequeue();
         }
+
+        public LinearProgramResult AddRowAndSolve(
+            IReadOnlyList<double> costs,
+            ModelRow additionalRow,
+            TimeSpan? timeLimit) {
+            AddedRowCount++;
+
+            return Solve(costs, timeLimit);
+        }
+
+        public void Dispose() { }
     }
 }

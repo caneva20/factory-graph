@@ -3,12 +3,18 @@ using FactoryGraph.Contracts;
 namespace FactoryGraph.Solving;
 
 internal interface ILinearProgramSolver {
-    LinearProgramResult Solve(
+    ILinearProgramSession CreateSession(
         LinearProgram program,
-        IReadOnlyList<double> costs,
-        ModelRow? additionalRow,
-        TimeSpan? timeLimit,
         NumericPolicy numericPolicy);
+}
+
+internal interface ILinearProgramSession : IDisposable {
+    LinearProgramResult Solve(IReadOnlyList<double> costs, TimeSpan? timeLimit);
+
+    LinearProgramResult AddRowAndSolve(
+        IReadOnlyList<double> costs,
+        ModelRow additionalRow,
+        TimeSpan? timeLimit);
 }
 
 internal enum LinearProgramStatus {

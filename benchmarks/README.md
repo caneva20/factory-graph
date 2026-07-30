@@ -42,6 +42,12 @@ Run the baseline and export Markdown and CSV results:
 dotnet run -c Release --project benchmarks/FactoryGraph.Benchmarks -- --filter '*ProcessorStageBenchmarks*' --exporters markdown csv
 ```
 
+Measure the targeted 4,096-group capacity-driven workloads separately from the regular matrix:
+
+```bash
+dotnet run -c Release --project benchmarks/FactoryGraph.Benchmarks -- --filter '*LargeGraphBenchmarks*' --exporters markdown csv
+```
+
 Profile a representative end-to-end workload with BenchmarkDotNet's EventPipe profiler:
 
 ```bash
