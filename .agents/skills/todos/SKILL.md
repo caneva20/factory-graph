@@ -9,7 +9,7 @@ GitHub Issues labeled `todo` are the only backlog source. The selected GitHub Pr
 
 ## Issue Repository
 
-All issue operations target `caneva20/factory-planner`. The current repository contains the implementation, but does not host its own backlog.
+All issue operations target the repository in the current checkout. Resolve it once with `gh repo view --json nameWithOwner,url,owner` and use its `nameWithOwner` value as `<repo>` in every issue command.
 
 ## Project Resolution
 
@@ -24,13 +24,13 @@ The project's single-select field named `Priority` and its current option order 
 ## Preflight
 
 1. Run `gh auth status`.
-2. Run `gh repo view caneva20/factory-planner --json nameWithOwner,url,owner`.
+2. Run `gh repo view --json nameWithOwner,url,owner` and capture `nameWithOwner` as `<repo>`.
 3. Resolve the selected/default project and its fields.
 4. Stop with an actionable message if any command fails; never fall back to a local file. For missing Projects access, report the `gh auth refresh --hostname github.com --scopes project` remediation.
 
 ## List Todos
 
-1. Query the selected project with `gh project item-list <number> --owner <owner> --limit 100 --format json`, restricting results to open `todo` issues in `caneva20/factory-planner`.
+1. Query the selected project with `gh project item-list <number> --owner <owner> --limit 100 --format json`, restricting results to open `todo` issues in `<repo>`.
 2. Sort by the `Priority` field's current option order, then issue number. Put items with no project priority last.
 3. Present a numbered list containing issue number, priority, title, and URL.
 4. Call out any matching issue with no project priority as invalid backlog data.
@@ -40,9 +40,9 @@ Include closed issues only when the user asks for history or completed work.
 ## Review A Todo
 
 1. Prefer an issue number or URL.
-2. For a text description, search with `gh issue list --repo caneva20/factory-planner --state all --label todo --search "<terms> in:title,body" --limit 100`.
+2. For a text description, search with `gh issue list --repo <repo> --state all --label todo --search "<terms> in:title,body" --limit 100`.
 3. If more than one plausible issue matches, show them and ask the user to choose.
-4. Read the selected issue with `gh issue view <number> --repo caneva20/factory-planner --json number,title,body,state,labels,comments,url`.
+4. Read the selected issue with `gh issue view <number> --repo <repo> --json number,title,body,state,labels,comments,url`.
 5. Match its URL to the selected project's item list and read priority from that project item. If it is absent, say that it is not in the selected project instead of inferring a priority from labels.
 6. Summarize its objective, project priority, state, acceptance criteria, and relevant discussion without inventing progress.
 
@@ -50,8 +50,8 @@ Include closed issues only when the user asks for history or completed work.
 
 1. Identify one open todo issue confidently.
 2. Confirm implementation evidence from the current work or ask the user for it. Intent alone is not evidence.
-3. Post a concise evidence comment with `gh issue comment <number> --repo caneva20/factory-planner --body "<completion evidence>"`.
-4. Close it with `gh issue close <number> --repo caneva20/factory-planner --reason completed`.
+3. Post a concise evidence comment with `gh issue comment <number> --repo <repo> --body "<completion evidence>"`.
+4. Close it with `gh issue close <number> --repo <repo> --reason completed`.
 5. Re-read the issue and report its number, title, closed state, and URL.
 
 Do not remove labels on closure; they preserve backlog history.

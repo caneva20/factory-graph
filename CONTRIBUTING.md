@@ -15,7 +15,9 @@ Focused unit tests should normally verify one behavior with one explicit asserti
 
 ## Issue Tracking
 
-Issues are tracked in [`caneva20/factory-planner`](https://github.com/caneva20/factory-planner/issues), not in this repository. Use fully qualified references such as `caneva20/factory-planner#28` in commits and pull requests. Use `Closes caneva20/factory-planner#28` when merging the change should close the issue.
+Track FactoryGraph work in this repository's [issue tracker](https://github.com/caneva20/factory-graph/issues). The shared [Factory Planner Project](https://github.com/users/caneva20/projects/3) coordinates work across repositories.
+
+Use local references such as `#18` for FactoryGraph issues. Qualify cross-repository references, such as `caneva20/factory-planner#41`. Use `Closes #18` when merging the change should close a FactoryGraph issue.
 
 ## Scenario Fixtures
 

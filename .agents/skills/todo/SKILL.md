@@ -9,7 +9,7 @@ Treat every requested todo as a draft. GitHub Issues are the only backlog source
 
 ## Issue Repository
 
-All issue operations target `caneva20/factory-planner`. The current repository contains the implementation, but does not host its own backlog.
+All issue operations target the repository in the current checkout. Resolve it once with `gh repo view --json nameWithOwner,url,owner` and use its `nameWithOwner` value as `<repo>` in every issue and label command.
 
 ## Project And Priority
 
@@ -25,31 +25,27 @@ If Projects access is missing, stop with the remediation reported by `gh` (norma
 
 ## Labels
 
-Every todo has the `todo` label. Add contextual labels when applicable:
-
-- `engine`: The work relates to the shared game engine.
-- `game:<game-id>`: The work relates to a specific game, for example `game:classic`.
-
-Contextual labels are independent. An engine-related todo for a specific game has both labels.
+Every todo has the `todo` label. Add other existing repository labels only when the user requests them or their applicability is clear. Never create a label as part of this workflow.
 
 Priority labels are forbidden. The project's `Priority` field is authoritative.
 
 ## Workflow
 
 1. Run `gh auth status` and stop with the reported remediation if authentication fails.
-2. Run `gh repo view caneva20/factory-planner --json nameWithOwner,url,owner` to confirm the target repository.
-3. Resolve and validate the destination project as described above unless the user explicitly requested no project.
-4. Review the request and search open and closed todo issues for likely duplicates with `gh issue list --repo caneva20/factory-planner --state all --label todo --search "<key terms> in:title,body" --limit 100`.
-5. State the apparent objective, affected area, destination project, applicable contextual labels, and selected project priority.
-6. Ask one short question at a time only if a material ambiguity would make the objective, labels, project, or priority unclear. Priority must exactly match a current option from the selected project's `Priority` field. Do not run a full feature-design workflow.
-7. Draft one issue using the required format below.
-8. Show the complete title, body, non-priority labels, destination project, and project priority. Require explicit user approval before creation.
-9. Create it with `gh issue create --repo caneva20/factory-planner --title "<title>" --body "<body>" --label todo`, adding `--label engine` and/or `--label "game:<game-id>"` when applicable. Capture the returned issue URL.
-10. Add the issue with `gh project item-add <number> --owner <owner> --url <issue-url> --format json` and capture the project item ID.
-11. Set `Priority` with `gh project item-edit --id <item-id> --project-id <project-id> --field-id <priority-field-id> --single-select-option-id <priority-option-id>`.
-12. Re-read the project items, verify the issue is present with the selected priority, and report its issue number and URL.
+2. Run `gh repo view --json nameWithOwner,url,owner` and capture `nameWithOwner` as `<repo>`.
+3. Run `gh label list --repo <repo> --limit 100` and require the `todo` label.
+4. Resolve and validate the destination project as described above unless the user explicitly requested no project.
+5. Review the request and search open and closed todo issues for likely duplicates with `gh issue list --repo <repo> --state all --label todo --search "<key terms> in:title,body" --limit 100`.
+6. State the apparent objective, affected area, destination project, applicable labels, and selected project priority.
+7. Ask one short question at a time only if a material ambiguity would make the objective, labels, project, or priority unclear. Priority must exactly match a current option from the selected project's `Priority` field. Do not run a full feature-design workflow.
+8. Draft one issue using the required format below.
+9. Show the complete title, body, non-priority labels, destination project, and project priority. Require explicit user approval before creation.
+10. Create it with `gh issue create --repo <repo> --title "<title>" --body "<body>" --label todo`, adding any approved existing labels. Capture the returned issue URL.
+11. Add the issue with `gh project item-add <number> --owner <owner> --url <issue-url> --format json` and capture the project item ID.
+12. Set `Priority` with `gh project item-edit --id <item-id> --project-id <project-id> --field-id <priority-field-id> --single-select-option-id <priority-option-id>`.
+13. Re-read the project items, verify the issue is present with the selected priority, and report its issue number and URL.
 
-When the user explicitly requests no project, skip project priority selection and steps 10-11.
+When the user explicitly requests no project, skip project priority selection and steps 11-12.
 
 ## Required Issue Format
 

@@ -466,7 +466,7 @@ dotnet pack src/FactoryGraph/FactoryGraph.csproj --configuration Release --no-bu
 dotnet pack src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj --configuration Release --no-build
 ```
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release conventions. Issues are tracked in the [Factory Planner issue tracker](https://github.com/caneva20/factory-planner/issues).
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release conventions. Track FactoryGraph work in the [FactoryGraph issue tracker](https://github.com/caneva20/factory-graph/issues). The shared [Factory Planner Project](https://github.com/users/caneva20/projects/3) coordinates work across repositories.
 
 ## Detailed Documentation
 

@@ -14,7 +14,7 @@ FactoryGraph stores each constraint row by nonzero variable coefficient. The bac
 
 Each planning mode performs one native linear-program solve for its primary objective and, when needed, a second solve to minimize total machine activity. Both solves share the request time limit. Model construction, bottleneck reporting, and result projection run in managed code.
 
-FactoryGraph does not define a solve-time guarantee. [Benchmark issue #34](https://github.com/caneva20/factory-planner/issues/34) will establish representative graph sizes, measurements, and performance budgets.
+FactoryGraph does not define a solve-time guarantee. [Benchmark issue #2](https://github.com/caneva20/factory-graph/issues/2) will establish representative graph sizes, measurements, and performance budgets.
 
 ## Runtime Support
 
