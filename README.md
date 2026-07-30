@@ -347,14 +347,72 @@ Diagnostics contain a stable `Code`, a caller-facing `Message`, a `Severity`, an
 
 `Bottlenecks` belongs to result modes that identify capacities limiting maximum output. The current target-driven solver returns an empty bottleneck list.
 
+## Mermaid Export
+
+Install the command-line exporter as a .NET tool:
+
+```shell
+dotnet tool install --global FactoryGraph.Exporter.Mermaid.Cli
+```
+
+Pass it a JSON-serialized `SolveRequest`. The command validates and solves the request, then writes the computed Mermaid diagram to standard output:
+
+```shell
+factory-graph-mermaid request.json > factory.mmd
+factory-graph-mermaid request.json --output factory.mmd
+cat request.json | factory-graph-mermaid - --initial --output initial.mmd
+```
+
+`--initial` exports the validated request without solved values. `--direction tb`, `--number-format <format>`, `--no-capacities`, and `--no-styles` control rendering. Run `factory-graph-mermaid --help` for the full command syntax. Input, validation, and solve failures write details to standard error and return exit code 1.
+
+Generate one diagram for each executable testing scenario:
+
+```shell
+factory-graph-mermaid \
+  --scenarios tests/FactoryGraph.Tests/Scenarios \
+  --output-dir artifacts/scenario-diagrams
+```
+
+The command preserves the scenario directory structure. Each `.mmd` file contains every named case as a subgraph, using the case's expected result. Cases without a computed graph show their status and diagnostics.
+
+The `FactoryGraph.Exporter.Mermaid` library package provides the same exporter for .NET applications.
+
+Solve the request before exporting it. A status other than `InvalidRequest` confirms that the request passed core validation. Computed export also requires a result whose `Graph` is not `null`.
+
+```csharp
+using FactoryGraph.Exporter.Mermaid;
+
+var processor = FactoryGraphProcessorFactory.Create();
+var result = processor.Solve(request);
+var exporter = new MermaidExporter();
+
+if (result.Status != SolveStatus.InvalidRequest)
+{
+    var initialDiagram = exporter.Export(request);
+}
+
+if (result.Graph is not null)
+{
+    var computedDiagram = exporter.Export(result);
+}
+```
+
+Request diagrams contain configured topology, capacities, external boundaries, and targets. Computed diagrams add solved flow, activity, machine count, utilization, deficits, surplus, and bottleneck styling. Directed connections preserve cycles in both forms.
+
+`MermaidExportOptions` controls flowchart direction, invariant numeric formatting, capacity labels, and built-in styles. Node IDs derive from the graph element kind and stable contract ID. Output ordering does not depend on collection order.
+
+`Export(IEnumerable<MermaidResultSection>)` combines named results into one flowchart. Each result becomes a subgraph with isolated node IDs.
+
+Exporter tests compare rendered text byte-for-byte with expected-output files under `tests/FactoryGraph.Tests/ExporterGoldens`. These generated-format fixtures are separate from the hand-authored diagrams used to explain scenarios.
+
 ## Numeric Behavior
 
 Factory planning uses floating-point arithmetic, so mathematically equal values can differ by small rounding errors. `NumericPolicy` defines how the library compares and reports those values:
 
-| Property | Default | Purpose |
-|---|---:|---|
-| `AbsoluteTolerance` | `1e-9` | Allows a fixed difference when comparing two values. |
-| `RelativeTolerance` | `1e-9` | Scales comparison tolerance for large values. |
+| Property            | Default | Purpose                                                    |
+|---------------------|--------:|------------------------------------------------------------|
+| `AbsoluteTolerance` |  `1e-9` | Allows a fixed difference when comparing two values.       |
+| `RelativeTolerance` |  `1e-9` | Scales comparison tolerance for large values.              |
 | `NearZeroThreshold` | `1e-12` | Reports tiny positive or negative values as positive zero. |
 
 The same policy prevents a value such as `2.0000000001` from requiring 3 whole machines when it is within tolerance of 2. Change the defaults only when the scale or precision of your domain requires it.
@@ -389,12 +447,13 @@ FactoryGraph targets .NET 10 and uses [HiGHS](https://highs.dev/) through `Highs
 
 ## Repository
 
-| Project | Purpose | Package |
-|---|---|---|
-| `src/FactoryGraph` | Contracts, validation, and planning | `FactoryGraph` |
-| `src/FactoryGraph.Exporter.Mermaid` | Mermaid output for computed graphs | `FactoryGraph.Exporter.Mermaid` |
-| `tests/FactoryGraph.Tests` | Contract, validation, solver, and scenario tests | Not packable |
-| `benchmarks/FactoryGraph.Benchmarks` | Reproducible performance benchmarks | Not packable |
+| Project                                 | Purpose                                          | Package                             |
+|-----------------------------------------|--------------------------------------------------|-------------------------------------|
+| `src/FactoryGraph`                      | Contracts, validation, and planning              | `FactoryGraph`                      |
+| `src/FactoryGraph.Exporter.Mermaid`     | Mermaid output for requests and computed graphs  | `FactoryGraph.Exporter.Mermaid`     |
+| `src/FactoryGraph.Exporter.Mermaid.Cli` | Mermaid command-line tool                        | `FactoryGraph.Exporter.Mermaid.Cli` |
+| `tests/FactoryGraph.Tests`              | Contract, validation, solver, and scenario tests | Not packable                        |
+| `benchmarks/FactoryGraph.Benchmarks`    | Reproducible performance benchmarks              | Not packable                        |
 
 .NET 10 is required. The SDK feature band is pinned by `global.json`.
 

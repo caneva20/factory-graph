@@ -2,6 +2,7 @@
   <Folder Name="/src/">
     <Project Path="src/FactoryGraph/FactoryGraph.csproj" />
     <Project Path="src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj" />
+    <Project Path="src/FactoryGraph.Exporter.Mermaid.Cli/FactoryGraph.Exporter.Mermaid.Cli.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/FactoryGraph.Tests/FactoryGraph.Tests.csproj" />

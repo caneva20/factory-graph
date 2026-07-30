@@ -1,0 +1,20 @@
+flowchart LR
+    machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa["Smelt<br/>activity/machine: 2"]
+    machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb["Assemble gear<br/>activity/machine: 2"]
+    supply_dddddddddddddddddddddddddddddddd["Supply<br/>Ore"]
+    product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee["Product<br/>Gear"]
+    target_ffffffffffffffffffffffffffffffff["Target<br/>Gear<br/>requested: 3"]
+    supply_dddddddddddddddddddddddddddddddd -->|"Ore"| machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -->|"Plate"| machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb -->|"Gear"| product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    target_ffffffffffffffffffffffffffffffff -.-> product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    classDef machine fill:#f5f1e8,stroke:#4a5568
+    classDef supply fill:#e6f4ea,stroke:#2f855a
+    classDef product fill:#e8f0fe,stroke:#2b6cb0
+    classDef surplus fill:#fff4e5,stroke:#b7791f
+    classDef target fill:#f3e8ff,stroke:#805ad5
+    classDef bottleneck stroke:#c53030,stroke-width:3px
+    class machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb machine
+    class product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee product
+    class supply_dddddddddddddddddddddddddddddddd supply
+    class target_ffffffffffffffffffffffffffffffff target

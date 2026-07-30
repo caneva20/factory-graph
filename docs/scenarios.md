@@ -2,6 +2,8 @@
 
 Each executable scenario has a dedicated page under `docs/scenarios` with its purpose, machine-readable fixtures, and initial and expected Mermaid diagrams.
 
+Scenario diagrams are hand-authored explanations. Exporter expected-output files under `tests/FactoryGraph.Tests/ExporterGoldens` test the exact generated Mermaid format and do not replace these diagrams.
+
 See the [scenario authoring guide](scenarios/authoring.md) for required fixture contents, coverage dimensions, diagrams, and case-selection guidance.
 
 ## Index

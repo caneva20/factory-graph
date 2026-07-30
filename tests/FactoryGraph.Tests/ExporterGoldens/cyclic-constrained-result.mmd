@@ -1,0 +1,26 @@
+flowchart LR
+    machine_11111111111111111111111111111111["Process A<br/>activity: 4<br/>machines: 2 / 2<br/>utilization: 100%<br/>machines available: 2"]
+    machine_22222222222222222222222222222222["Process B<br/>activity: 3<br/>machines: 1.5 / 2<br/>utilization: 75%"]
+    supply_55555555555555555555555555555555["Supply<br/>Ore<br/>required: 5<br/>provided: 4<br/>deficit: 1"]
+    product_66666666666666666666666666666666["Product<br/>Product<br/>delivered: 3"]
+    surplus_77777777777777777777777777777777["Surplus<br/>Catalyst<br/>flow: 1"]
+    target_88888888888888888888888888888888["Target<br/>Product<br/>requested: 4<br/>achieved: 3<br/>deficit: 1<br/>surplus: 0"]
+    supply_55555555555555555555555555555555 -->|"Ore: 4<br/>capacity: 5"| machine_11111111111111111111111111111111
+    machine_11111111111111111111111111111111 -->|"Catalyst: 2<br/>capacity: 2"| machine_22222222222222222222222222222222
+    machine_22222222222222222222222222222222 -->|"Catalyst: 1"| machine_11111111111111111111111111111111
+    machine_22222222222222222222222222222222 -->|"Product: 3"| product_66666666666666666666666666666666
+    machine_11111111111111111111111111111111 -->|"Catalyst: 1"| surplus_77777777777777777777777777777777
+    target_88888888888888888888888888888888 -.-> product_66666666666666666666666666666666
+    classDef machine fill:#f5f1e8,stroke:#4a5568
+    classDef supply fill:#e6f4ea,stroke:#2f855a
+    classDef product fill:#e8f0fe,stroke:#2b6cb0
+    classDef surplus fill:#fff4e5,stroke:#b7791f
+    classDef target fill:#f3e8ff,stroke:#805ad5
+    classDef bottleneck stroke:#c53030,stroke-width:3px
+    class machine_11111111111111111111111111111111,machine_22222222222222222222222222222222 machine
+    class product_66666666666666666666666666666666 product
+    class supply_55555555555555555555555555555555 supply
+    class surplus_77777777777777777777777777777777 surplus
+    class target_88888888888888888888888888888888 target
+    class machine_11111111111111111111111111111111,supply_55555555555555555555555555555555 bottleneck
+    linkStyle 1 stroke:#c53030,stroke-width:3px

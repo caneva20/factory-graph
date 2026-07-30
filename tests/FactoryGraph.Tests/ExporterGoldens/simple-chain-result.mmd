@@ -1,0 +1,20 @@
+flowchart LR
+    machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa["Smelt<br/>activity: 6<br/>machines: 3 / 3<br/>utilization: 100%"]
+    machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb["Assemble gear<br/>activity: 3<br/>machines: 1.5 / 2<br/>utilization: 75%"]
+    supply_dddddddddddddddddddddddddddddddd["Supply<br/>Ore<br/>required: 6<br/>provided: 6<br/>deficit: 0"]
+    product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee["Product<br/>Gear<br/>delivered: 3"]
+    target_ffffffffffffffffffffffffffffffff["Target<br/>Gear<br/>requested: 3<br/>achieved: 3<br/>deficit: 0<br/>surplus: 0"]
+    supply_dddddddddddddddddddddddddddddddd -->|"Ore: 6"| machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa -->|"Plate: 6"| machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+    machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb -->|"Gear: 3"| product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    target_ffffffffffffffffffffffffffffffff -.-> product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+    classDef machine fill:#f5f1e8,stroke:#4a5568
+    classDef supply fill:#e6f4ea,stroke:#2f855a
+    classDef product fill:#e8f0fe,stroke:#2b6cb0
+    classDef surplus fill:#fff4e5,stroke:#b7791f
+    classDef target fill:#f3e8ff,stroke:#805ad5
+    classDef bottleneck stroke:#c53030,stroke-width:3px
+    class machine_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,machine_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb machine
+    class product_eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee product
+    class supply_dddddddddddddddddddddddddddddddd supply
+    class target_ffffffffffffffffffffffffffffffff target

@@ -56,7 +56,7 @@ The shortened example shows the fixture structure; committed requests and expect
 
 The assertion helper compares identity-bearing collections by `id`, item-rate collections by `itemId`, diagnostics by `code`, and bottlenecks by kind and graph element. It compares other arrays in fixture order. Numeric comparisons normalize near-zero values and apply the tolerances from `request.options.numericPolicy`; all other values require exact equality.
 
-Diagrams remain independent review artifacts. Do not invoke exporter code while loading or running a scenario. Once fixture-to-exporter generation exists, contributors may regenerate diagrams explicitly and review the changes.
+Hand-authored diagrams remain independent review artifacts. Scenario loading and tests do not invoke exporter code. Contributors can generate one review diagram per scenario with `factory-graph-mermaid --scenarios <path> --output-dir <path>`; each named case appears as a subgraph.
 
 ## Workflow
 

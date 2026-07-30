@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>factory-graph-mermaid</ToolCommandName>
+    <PackageId>FactoryGraph.Exporter.Mermaid.Cli</PackageId>
+    <Description>Command-line Mermaid exporter for FactoryGraph solve requests.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FactoryGraph.Tests" />
+  </ItemGroup>
+</Project>
