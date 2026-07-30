@@ -31,7 +31,8 @@ internal static class MermaidText {
     public static string Id(string prefix, Guid id) => $"{prefix}_{id:N}";
 
     public static string Label(params IEnumerable<string> lines) {
-        return string.Join("<br/>", lines.Select(WebUtility.HtmlEncode));
+        return string.Join("<br/>", lines.Select(line =>
+            WebUtility.HtmlEncode(line).Replace("&#39;", "'", StringComparison.Ordinal)));
     }
 
     public static string Number(double value, MermaidExportOptions options) {

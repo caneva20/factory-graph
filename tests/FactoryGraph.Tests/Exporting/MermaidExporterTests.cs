@@ -131,6 +131,8 @@ public sealed class MermaidExporterTests {
         Assert.Contains("subgraph section_0[\"duplicate-item-id\"]", output);
         Assert.Contains("status: InvalidRequest", output);
         Assert.Contains("validation.id.duplicate", output);
+        Assert.Contains("The item ID 'ore' is duplicated.", output);
+        Assert.DoesNotContain("&#39;", output);
         Assert.Contains("classDef diagnostic", output);
     }
 
