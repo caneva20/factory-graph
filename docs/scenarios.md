@@ -13,3 +13,6 @@ See the [scenario authoring guide](scenarios/authoring.md) for required fixture 
 - [Branched assembly](scenarios/branched-assembly.md) covers fan-in, fan-out, multiple targets, co-product surplus, binding capacities, and a disconnected section.
 - [Objective tradeoff](scenarios/objective-tradeoff.md) verifies route selection under both target-driven objectives.
 - [Resource limits](scenarios/resource-limits.md) verifies infeasible machine, connection, supply, product-outlet, and surplus-outlet capacities.
+- [Capacity-driven single node](scenarios/capacity-driven-single-node.md) compares achieved output below and above the expected target rate.
+- [Capacity-driven constrained chain](scenarios/capacity-driven-constrained-chain.md) varies every supported capacity across a two-stage chain and verifies bottleneck reporting.
+- [Capacity-driven branched assembly](scenarios/capacity-driven-branched-assembly.md) covers proportional multiple targets, fan-in, fan-out, and coproduct surplus.

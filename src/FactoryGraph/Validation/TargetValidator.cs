@@ -6,16 +6,20 @@ internal sealed class TargetValidator {
     public void Validate(
         IEnumerable<Target> targets,
         IEnumerable<ProductOutlet> productOutlets,
+        PlanningMode mode,
         NumericPolicy numericPolicy,
         ICollection<SolveDiagnostic> diagnostics) {
+        var targetList = targets.ToArray();
+
         var productOutletIds = productOutlets
             .Where(outlet => outlet.Id != Guid.Empty)
             .Select(outlet => outlet.Id)
             .ToHashSet();
+
         var targetIds = new HashSet<Guid>();
         var targetedProductOutlets = new HashSet<Guid>();
 
-        foreach (var target in targets) {
+        foreach (var target in targetList) {
             var reference = Reference(GraphElementKind.Target, target.Id);
 
             if (target.Id == Guid.Empty) {
@@ -45,6 +49,14 @@ internal sealed class TargetValidator {
             }
 
             ValidateNonnegative(target.Rate, $"Target '{target.Id:D}'.Rate", reference, numericPolicy, diagnostics);
+        }
+
+        if (mode == PlanningMode.CapacityDriven
+            && !targetList.Any(target => double.IsFinite(target.Rate) && numericPolicy.NormalizeNearZero(target.Rate) > 0)) {
+            Add(
+                diagnostics,
+                ValidationDiagnosticCodes.Target.PositiveRateRequired,
+                "Capacity-driven planning requires at least one target with a positive rate.");
         }
     }
 

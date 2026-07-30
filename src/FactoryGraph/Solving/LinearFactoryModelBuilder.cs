@@ -2,10 +2,10 @@ using FactoryGraph.Contracts;
 
 namespace FactoryGraph.Solving;
 
-internal sealed class TargetDrivenModelBuilder {
+internal sealed class LinearFactoryModelBuilder {
     private const double Infinity = 1e30;
 
-    public TargetDrivenModel Build(SolveRequest request) {
+    public LinearFactoryModel Build(SolveRequest request) {
         var graph = request.Graph;
 
         var variableCount = graph.MachineGroups.Count
@@ -42,10 +42,6 @@ internal sealed class TargetDrivenModelBuilder {
         SetCapacities(graph.Supplies, supply => supply.Id, supply => supply.Capacity, supplies, upper);
         SetCapacities(graph.ProductOutlets, outlet => outlet.Id, outlet => outlet.Capacity, productOutlets, upper);
         SetCapacities(graph.SurplusOutlets, outlet => outlet.Id, outlet => outlet.Capacity, surplusOutlets, upper);
-
-        foreach (var target in request.Targets) {
-            lower[productOutlets[target.ProductOutletId]] = target.Rate;
-        }
 
         var recipes = graph.Recipes.ToDictionary(recipe => recipe.Id, StringComparer.Ordinal);
         var rows = new List<ModelRow>();
@@ -106,7 +102,7 @@ internal sealed class TargetDrivenModelBuilder {
             }
         }
 
-        return new TargetDrivenModel(
+        return new LinearFactoryModel(
             new LinearProgram(lower, upper, rows),
             activities,
             connections,

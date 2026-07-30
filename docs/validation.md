@@ -59,11 +59,11 @@ All `double` values must be finite. Validation applies `NumericPolicy.NearZeroTh
 | `MachineGroup.ActivityRatePerMachine` | Positive |
 | `MachineGroup.AvailableMachineCount` | Nonnegative when present |
 | Machine, connection, supply, product-outlet, and surplus-outlet capacities | Nonnegative when present |
-| `Target.Rate` | Nonnegative |
+| `Target.Rate` | Nonnegative; capacity-driven requests require at least one positive rate |
 | Numeric-policy tolerances and threshold | Nonnegative |
 | `SolverOptions.TimeLimit` | Positive when present |
 
-Zero capacities, machine counts, and target rates are valid. A small negative capacity within the near-zero threshold also passes its nonnegative check. A small positive recipe amount or activity rate within that threshold counts as zero and fails its positive check.
+Zero capacities, machine counts, and individual target rates are valid. Capacity-driven planning rejects a request when every target rate normalizes to zero. A small negative capacity within the near-zero threshold also passes its nonnegative check. A small positive recipe amount or activity rate within that threshold counts as zero and fails its positive check.
 
 ## Diagnostics
 
@@ -78,6 +78,7 @@ Use `SolveDiagnostic.Code` for program logic. Messages describe the error for ca
 | `validation.mode.unsupported` | The planning mode is undefined. |
 | `validation.objective.unsupported` | The objective is undefined or incompatible with the planning mode. |
 | `validation.target.duplicate-product-outlet` | More than one target references the same product outlet. |
+| `validation.target.positive-rate-required` | A capacity-driven request has no positive target rate. |
 | `validation.number.non-finite` | A numeric value is `NaN` or infinite. |
 | `validation.number.negative` | A value is negative where zero is permitted. |
 | `validation.number.positive-required` | A value is zero or negative where a positive value is required. |

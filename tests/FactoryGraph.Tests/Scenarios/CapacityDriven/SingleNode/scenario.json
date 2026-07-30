@@ -1,0 +1,145 @@
+{
+  "name": "capacity-driven-single-node",
+  "description": "A machine activity limit determines the maximum proportional target output.",
+  "dimensions": {
+    "graphShape": "single-node",
+    "constraints": ["machine-activity", "proportional-target"],
+    "resourceConditions": ["source-recipe"]
+  },
+  "request": {
+    "graph": {
+      "items": [{ "id": "product", "name": "Product" }],
+      "recipes": [
+        {
+          "id": "make",
+          "name": "Make product",
+          "inputs": [],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "recipeId": "make",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": "${capacity}"
+        }
+      ],
+      "connections": [],
+      "supplies": [],
+      "productOutlets": [
+        {
+          "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "product",
+          "capacity": null
+        }
+      ],
+      "surplusOutlets": []
+    },
+    "targets": [
+      {
+        "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+        "productOutletId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "rate": "${targetRate}"
+      }
+    ],
+    "mode": "capacityDriven",
+    "objective": "maximizeTargetOutput",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [{ "id": "product", "name": "Product" }],
+      "recipes": [
+        {
+          "id": "make",
+          "name": "Make product",
+          "inputs": [],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "recipeId": "make",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": "${capacity}",
+          "activity": "${capacity}",
+          "effectiveMachineCount": "${capacity}",
+          "requiredWholeMachineCount": "${wholeMachineCount}",
+          "utilization": 1,
+          "inputRates": [],
+          "outputRates": [{ "itemId": "product", "rate": "${capacity}" }]
+        }
+      ],
+      "connections": [],
+      "supplies": [],
+      "productOutlets": [
+        {
+          "id": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "product",
+          "capacity": null,
+          "deliveredRate": "${capacity}"
+        }
+      ],
+      "surplusOutlets": [],
+      "targets": [
+        {
+          "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
+          "productOutletId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "requestedRate": "${targetRate}",
+          "achievedRate": "${capacity}",
+          "surplusRate": "${surplusRate}",
+          "deficitRate": "${deficitRate}"
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": [
+      {
+        "kind": "machineGroup",
+        "element": {
+          "kind": "machineGroup",
+          "id": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"
+        },
+        "capacity": "${capacity}",
+        "utilization": 1,
+        "message": "Machine-group activity capacity limits target output."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "below-expected-rate",
+      "parameters": {
+        "capacity": 6,
+        "targetRate": 10,
+        "wholeMachineCount": 6,
+        "surplusRate": 0,
+        "deficitRate": 4
+      }
+    },
+    {
+      "name": "above-expected-rate",
+      "parameters": {
+        "capacity": 8,
+        "targetRate": 5,
+        "wholeMachineCount": 8,
+        "surplusRate": 3,
+        "deficitRate": 0
+      }
+    }
+  ]
+}

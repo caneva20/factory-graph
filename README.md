@@ -10,7 +10,7 @@ FactoryGraph answers questions such as:
 - Which outputs must leave as products or surplus?
 - Can the factory meet the target without exceeding its throughput limits?
 
-The built-in solver supports target-driven planning for graphs whose production flow does not loop back to an earlier step. These are called acyclic graphs. The solver does not schedule individual machines or simulate a factory over time.
+The built-in solver supports target-driven and capacity-driven planning for graphs whose production flow does not loop back to an earlier step. These are called acyclic graphs. The solver does not schedule individual machines or simulate a factory over time.
 
 ## Mental Model
 
@@ -167,24 +167,26 @@ A `SolveRequest` combines four decisions:
 
 The parameterless `FactoryGraphProcessor` uses the built-in solver. The constructor that accepts `Func<SolveRequest, SolveResult>` lets an application keep FactoryGraph validation while replacing the solve stage; the delegate receives only valid requests.
 
-For a valid target-driven request, each recipe balance, target, and capacity becomes a **constraint**, which is a rule every plan must satisfy. The **objective** tells the solver which valid plan to prefer.
+For a valid request, each recipe balance, target rule, and capacity becomes a **constraint**, which is a rule every plan must satisfy. The **objective** tells the solver which valid plan to prefer.
 
-The built-in processor currently implements `PlanningMode.TargetDriven`. This mode treats every target as a required minimum and computes the activity and flow needed to meet all targets within capacity limits.
+`PlanningMode.TargetDriven` treats every target rate as a required minimum. It computes the activity and flow needed to meet all targets within capacity limits.
 
-`PlanningMode.CapacityDriven` and `SolveObjective.MaximizeTargetOutput` exist in the public contracts, but the built-in processor does not implement that mode yet. A valid capacity-driven request returns `SolveStatus.Failed` with diagnostic code `solver.mode.not-implemented`.
+`PlanningMode.CapacityDriven` treats target rates as a desired output ratio. It maximizes one common multiplier while keeping every achieved target in that exact ratio. For targets of 10 plates and 5 screws, a multiplier of 0.6 produces 6 plates and 3 screws; a multiplier of 1.6 produces 16 plates and 8 screws. Equivalent ratios such as 10:5 and 2:1 produce the same physical plan.
 
 ### Objectives
 
 A graph can contain several valid ways to meet the same targets. Target-driven planning supports:
 
-| Objective | Behavior | Use it when |
-|---|---|---|
-| `MeetTargetsMinimizeExternalSupply` | Minimizes the sum of all `Supply` flows. | You want the lowest total external input rate. |
-| `MeetTargetsMinimizeSurplus` | Minimizes the sum of all `SurplusOutlet` flows. | You want the lowest total excess-output rate. |
+| Objective                           | Behavior                                        | Use it when                                    |
+|-------------------------------------|-------------------------------------------------|------------------------------------------------|
+| `MeetTargetsMinimizeExternalSupply` | Minimizes the sum of all `Supply` flows.        | You want the lowest total external input rate. |
+| `MeetTargetsMinimizeSurplus`        | Minimizes the sum of all `SurplusOutlet` flows. | You want the lowest total excess-output rate.  |
 
 Both objectives use unweighted sums. The model does not assign different costs to different item types.
 
 After optimizing the selected value, the solver minimizes total machine activity without degrading that value beyond the configured numeric tolerance. This removes unnecessary production in disconnected or optional paths.
+
+Capacity-driven planning supports `MaximizeTargetOutput`. At least one target rate must be positive. The common multiplier has no upper cap, so a graph with no limiting capacity can return `Unbounded`.
 
 ### Complete Example
 
@@ -337,7 +339,7 @@ For `Optimal` and `Feasible` results, `Graph` retains the input topology and add
 - surplus outlets report their flow rates; and
 - targets report requested, achieved, surplus, and deficit rates.
 
-A target requests a minimum, so its achieved rate can exceed its requested rate when shared production or recipe co-products force extra delivery. `SurplusRate` and `DeficitRate` report that difference.
+In target-driven mode, a target requests a minimum, so its achieved rate can exceed its requested rate when shared production or recipe co-products force extra delivery. In capacity-driven mode, achieved rates follow the requested target ratio. `SurplusRate` and `DeficitRate` compare each achieved rate with its requested rate in both modes.
 
 Target surplus and `SurplusOutlet` flow describe different values. Target surplus measures delivery above a requested rate. A surplus outlet carries a physical item flow out of the graph.
 
@@ -345,7 +347,7 @@ In target-driven results, exact input balance makes each supply's `RequiredRate`
 
 Diagnostics contain a stable `Code`, a caller-facing `Message`, a `Severity`, and references to related graph elements. Use the code, rather than the message, for program logic.
 
-`Bottlenecks` belongs to result modes that identify capacities limiting maximum output. The current target-driven solver returns an empty bottleneck list.
+Capacity-driven results report saturated machine-group, connection, and supply capacities on paths to positive targets as `Bottlenecks`. Each entry includes the stable graph-element ID, capacity, utilization, and a description. Target-driven results return an empty bottleneck list.
 
 ## Mermaid Export
 
@@ -425,7 +427,7 @@ The same policy prevents a value such as `2.0000000001` from requiring 3 whole m
 
 The built-in solver currently provides:
 
-- target-driven planning for acyclic graphs;
+- target-driven and capacity-driven planning for acyclic graphs;
 - multiple targets on distinct product outlets;
 - multiple inputs and outputs per recipe;
 - splits, merges, fan-in, fan-out, and disconnected graph sections;
@@ -434,7 +436,6 @@ The built-in solver currently provides:
 
 It does not currently provide:
 
-- capacity-driven maximum-output planning;
 - supported semantics for production cycles;
 - time-based simulation, inventory, transport, or scheduling; or
 - integer optimization of machine counts.
@@ -471,6 +472,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release conventions. 
 
 - [Public Contracts](docs/contracts.md) lists identity, topology, result, and collection rules.
 - [Target-Driven Planning](docs/target-driven-planning.md) defines the optimization model and status mapping.
+- [Capacity-Driven Planning](docs/capacity-driven-planning.md) defines proportional targets and bottleneck reporting.
 - [Request Validation](docs/validation.md) lists validation rules and stable diagnostic codes.
 - [Solver Backend](docs/solver-backend.md) lists the native solver dependency and supported runtimes.
 - [Scenarios](docs/scenarios.md) explains executable planning examples.

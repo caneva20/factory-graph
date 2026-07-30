@@ -1,0 +1,8 @@
+flowchart LR
+    source[Extract raw and waste: 4 activities] -->|Raw: 4| left[Make left part: 4 activities]
+    source -->|Raw: 4| right[Make right part: 4 activities]
+    left -->|Left part: 4| assembly[Assemble product: 4 activities]
+    right -->|Right part: 4| assembly
+    assembly --> product[Product target: 4 achieved]
+    source --> wasteTarget[Waste target: 2 achieved]
+    source --> wasteSurplus[Extra waste surplus: 2]

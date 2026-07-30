@@ -57,6 +57,9 @@ public static class ValidationDiagnosticCodes {
 
         /// <summary>More than one target references the same product outlet.</summary>
         public const string DuplicateProductOutlet = Path + ".duplicate-product-outlet";
+
+        /// <summary>Capacity-driven planning has no positive target rate to maximize.</summary>
+        public const string PositiveRateRequired = Path + ".positive-rate-required";
     }
 
     /// <summary>Diagnostic codes for numeric values.</summary>

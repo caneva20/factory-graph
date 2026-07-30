@@ -15,9 +15,14 @@ public static class FactoryGraphProcessorFactory {
         return Create(
             new BuiltInSolveRequestSolver([
                 new TargetDrivenSolver(
-                    new TargetDrivenModelBuilder(),
+                    new LinearFactoryModelBuilder(),
                     new HighsLinearProgramSolver(),
-                    new TargetDrivenResultProjector())
+                    new LinearFactoryResultProjector()),
+                new CapacityDrivenSolver(
+                    new CapacityDrivenModelBuilder(new LinearFactoryModelBuilder()),
+                    new HighsLinearProgramSolver(),
+                    new LinearFactoryResultProjector(),
+                    new CapacityBottleneckReporter())
             ]));
     }
 

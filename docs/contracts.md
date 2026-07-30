@@ -82,9 +82,9 @@ var request = new SolveRequest(
     new SolverOptions(new NumericPolicy()));
 ```
 
-`CapacityDriven` represents maximum-output planning in the public contracts. The built-in processor does not implement this mode and returns `Failed` with diagnostic code `solver.mode.not-implemented`.
+`CapacityDriven` maximizes target output in the requested target-rate ratio. At least one target rate must be positive. See [Capacity-Driven Planning](capacity-driven-planning.md).
 
-See `tests/FactoryGraph.Tests/Contracts/TargetDrivenContractTests.cs` for the target-driven contract shape.
+See `tests/FactoryGraph.Tests/Contracts/TargetDrivenContractTests.cs` and `CapacityDrivenContractTests.cs` for the shared contract shape.
 
 ## Results
 
@@ -92,7 +92,7 @@ See `tests/FactoryGraph.Tests/Contracts/TargetDrivenContractTests.cs` for the ta
 
 Machine-group results include activity, machine counts, utilization, and item rates. Boundary and target results include required, provided, achieved, surplus, and deficit rates. Connections include flow rates. Bottlenecks reference a machine group, connection, or supply.
 
-The target-driven solver returns an empty bottleneck list. The computed graph is absent for `InvalidRequest`, `Infeasible`, `Unbounded`, and `Failed` results.
+The target-driven solver returns an empty bottleneck list. Capacity-driven results can identify saturated machine-group, connection, and supply capacities. The computed graph is absent for `InvalidRequest`, `Infeasible`, `Unbounded`, and `Failed` results.
 
 ## Numeric Policy
 

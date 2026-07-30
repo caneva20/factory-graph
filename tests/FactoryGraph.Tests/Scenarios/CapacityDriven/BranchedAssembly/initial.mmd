@@ -1,0 +1,8 @@
+flowchart LR
+    source[Extract raw and waste] -->|Raw split| left[Make left part]
+    source -->|Raw split| right[Make right part]
+    left -->|Left part| assembly[Assemble product]
+    right -->|Right part| assembly
+    assembly --> product[Product target: 2 expected]
+    source --> wasteTarget[Waste target: 1 expected]
+    source --> wasteSurplus[Extra waste surplus]

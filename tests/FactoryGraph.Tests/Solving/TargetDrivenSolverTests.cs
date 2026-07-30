@@ -222,27 +222,6 @@ public sealed class TargetDrivenSolverTests {
     }
 
     [Fact]
-    public void BuiltInProcessorReportsCapacityDrivenModeAsNotImplemented() {
-        var request = Request(
-            items: ["product"],
-            recipes: [Recipe("make", [], [("product", 1)])],
-            groups: [Group(Id(1), "make")],
-            connections: [],
-            supplies: [],
-            productOutlets: [new ProductOutlet(Id(2), Id(1), "product")],
-            surplusOutlets: [],
-            targets: [new Target(Id(3), Id(2), 1)]) with {
-            Mode = PlanningMode.CapacityDriven,
-            Objective = SolveObjective.MaximizeTargetOutput
-        };
-
-        var result = FactoryGraphProcessorFactory.Create().Solve(request);
-
-        Assert.Equal(SolveStatus.Failed, result.Status);
-        Assert.Equal(SolverDiagnosticCodes.Mode.NotImplemented, Assert.Single(result.Diagnostics).Code);
-    }
-
-    [Fact]
     public void EmptyGraphProducesAnEmptyOptimalResult() {
         var request = Request([], [], [], [], [], [], [], []);
 
@@ -295,9 +274,9 @@ public sealed class TargetDrivenSolverTests {
             new LinearProgramResult(LinearProgramStatus.Failed, [], "secondary failure"));
 
         var solver = new TargetDrivenSolver(
-            new TargetDrivenModelBuilder(),
+            new LinearFactoryModelBuilder(),
             backend,
-            new TargetDrivenResultProjector());
+            new LinearFactoryResultProjector());
 
         var result = solver.Solve(request);
 

@@ -2,7 +2,7 @@ using FactoryGraph.Contracts;
 
 namespace FactoryGraph.Solving;
 
-internal sealed class TargetDrivenModel(
+internal sealed class LinearFactoryModel(
     LinearProgram program,
     IReadOnlyDictionary<Guid, int> activities,
     IReadOnlyDictionary<Guid, int> connections,
@@ -22,6 +22,26 @@ internal sealed class TargetDrivenModel(
     public IReadOnlyDictionary<Guid, int> SurplusOutlets { get; } = surplusOutlets;
 
     public int VariableCount => Program.VariableCount;
+
+    public LinearFactoryModel WithTargetMinimums(IEnumerable<Target> targets) {
+        var lowerBounds = Program.LowerBounds.ToArray();
+
+        foreach (var target in targets) {
+            lowerBounds[ProductOutlets[target.ProductOutletId]] = target.Rate;
+        }
+
+        return WithProgram(Program with { LowerBounds = lowerBounds });
+    }
+
+    public LinearFactoryModel WithProgram(LinearProgram program) {
+        return new LinearFactoryModel(
+            program,
+            Activities,
+            Connections,
+            Supplies,
+            ProductOutlets,
+            SurplusOutlets);
+    }
 
     public double[] PrimaryCosts(SolveObjective objective) {
         var costs = new double[VariableCount];

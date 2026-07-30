@@ -1,0 +1,310 @@
+{
+  "name": "capacity-driven-constrained-chain",
+  "description": "Each capacity type limits the maximum output of a two-stage chain with a coproduct.",
+  "dimensions": {
+    "graphShape": "simple-chain",
+    "constraints": ["machine-count", "activity", "connection", "supply", "product-outlet", "surplus-outlet", "proportional-target"],
+    "resourceConditions": ["deficit", "co-product-surplus", "binding-capacity"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "part", "name": "Part" },
+        { "id": "waste", "name": "Waste" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "source",
+          "name": "Make part",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [
+            { "itemId": "part", "amount": 1 },
+            { "itemId": "waste", "amount": 1 }
+          ]
+        },
+        {
+          "id": "finish",
+          "name": "Finish product",
+          "inputs": [{ "itemId": "part", "amount": 1 }],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-3333-3333-3333-333333333333",
+          "recipeId": "source",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": "${availableMachineCount}",
+          "activityCapacity": "${activityCapacity}"
+        },
+        {
+          "id": "22222222-3333-3333-3333-333333333333",
+          "recipeId": "finish",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "22222222-3333-3333-3333-333333333333",
+          "itemId": "part",
+          "capacity": "${connectionCapacity}"
+        }
+      ],
+      "supplies": [
+        {
+          "id": "44444444-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "itemId": "raw",
+          "capacity": "${supplyCapacity}"
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "55555555-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "22222222-3333-3333-3333-333333333333",
+          "itemId": "product",
+          "capacity": "${productOutletCapacity}"
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "66666666-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "itemId": "waste",
+          "capacity": "${surplusOutletCapacity}"
+        }
+      ]
+    },
+    "targets": [
+      {
+        "id": "77777777-3333-3333-3333-333333333333",
+        "productOutletId": "55555555-3333-3333-3333-333333333333",
+        "rate": 5
+      }
+    ],
+    "mode": "capacityDriven",
+    "objective": "maximizeTargetOutput",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "part", "name": "Part" },
+        { "id": "waste", "name": "Waste" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "source",
+          "name": "Make part",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [
+            { "itemId": "part", "amount": 1 },
+            { "itemId": "waste", "amount": 1 }
+          ]
+        },
+        {
+          "id": "finish",
+          "name": "Finish product",
+          "inputs": [{ "itemId": "part", "amount": 1 }],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-3333-3333-3333-333333333333",
+          "recipeId": "source",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": "${availableMachineCount}",
+          "activityCapacity": "${activityCapacity}",
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "raw", "rate": 4 }],
+          "outputRates": [
+            { "itemId": "part", "rate": 4 },
+            { "itemId": "waste", "rate": 4 }
+          ]
+        },
+        {
+          "id": "22222222-3333-3333-3333-333333333333",
+          "recipeId": "finish",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "part", "rate": 4 }],
+          "outputRates": [{ "itemId": "product", "rate": 4 }]
+        }
+      ],
+      "connections": [
+        {
+          "id": "33333333-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "22222222-3333-3333-3333-333333333333",
+          "itemId": "part",
+          "capacity": "${connectionCapacity}",
+          "flowRate": 4
+        }
+      ],
+      "supplies": [
+        {
+          "id": "44444444-3333-3333-3333-333333333333",
+          "destinationMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "itemId": "raw",
+          "capacity": "${supplyCapacity}",
+          "requiredRate": 4,
+          "providedRate": 4,
+          "deficitRate": 0
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "55555555-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "22222222-3333-3333-3333-333333333333",
+          "itemId": "product",
+          "capacity": "${productOutletCapacity}",
+          "deliveredRate": 4
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "66666666-3333-3333-3333-333333333333",
+          "sourceMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "itemId": "waste",
+          "capacity": "${surplusOutletCapacity}",
+          "flowRate": 4
+        }
+      ],
+      "targets": [
+        {
+          "id": "77777777-3333-3333-3333-333333333333",
+          "productOutletId": "55555555-3333-3333-3333-333333333333",
+          "requestedRate": 5,
+          "achievedRate": 4,
+          "surplusRate": 0,
+          "deficitRate": 1
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": "${bottlenecks}"
+  },
+  "cases": [
+    {
+      "name": "machine-count",
+      "parameters": {
+        "availableMachineCount": 4,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null,
+        "bottlenecks": [{
+          "kind": "machineGroup",
+          "element": { "kind": "machineGroup", "id": "11111111-3333-3333-3333-333333333333" },
+          "capacity": 4,
+          "utilization": 1,
+          "message": "Available machine count limits target output."
+        }]
+      }
+    },
+    {
+      "name": "activity",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": 4,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null,
+        "bottlenecks": [{
+          "kind": "machineGroup",
+          "element": { "kind": "machineGroup", "id": "11111111-3333-3333-3333-333333333333" },
+          "capacity": 4,
+          "utilization": 1,
+          "message": "Machine-group activity capacity limits target output."
+        }]
+      }
+    },
+    {
+      "name": "connection",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": 4,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null,
+        "bottlenecks": [{
+          "kind": "connection",
+          "element": { "kind": "connection", "id": "33333333-3333-3333-3333-333333333333" },
+          "capacity": 4,
+          "utilization": 1,
+          "message": "Connection capacity limits target output."
+        }]
+      }
+    },
+    {
+      "name": "supply",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": 4,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": null,
+        "bottlenecks": [{
+          "kind": "supply",
+          "element": { "kind": "supply", "id": "44444444-3333-3333-3333-333333333333" },
+          "capacity": 4,
+          "utilization": 1,
+          "message": "Supply capacity limits target output."
+        }]
+      }
+    },
+    {
+      "name": "product-outlet",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": 4,
+        "surplusOutletCapacity": null,
+        "bottlenecks": []
+      }
+    },
+    {
+      "name": "surplus-outlet",
+      "parameters": {
+        "availableMachineCount": null,
+        "activityCapacity": null,
+        "connectionCapacity": null,
+        "supplyCapacity": null,
+        "productOutletCapacity": null,
+        "surplusOutletCapacity": 4,
+        "bottlenecks": []
+      }
+    }
+  ]
+}

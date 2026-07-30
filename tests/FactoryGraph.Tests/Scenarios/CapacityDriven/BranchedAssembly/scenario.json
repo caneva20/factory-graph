@@ -1,0 +1,358 @@
+{
+  "name": "capacity-driven-branched-assembly",
+  "description": "A source splits material across two branches that merge into an assembly while exact target proportions route excess coproduct to surplus.",
+  "dimensions": {
+    "graphShape": "fan-in-fan-out",
+    "constraints": ["multiple-targets", "machine-activity", "proportional-target", "surplus-outlet"],
+    "resourceConditions": ["split", "merge", "multi-input", "multi-output", "co-product-surplus"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "waste", "name": "Waste" },
+        { "id": "left", "name": "Left part" },
+        { "id": "right", "name": "Right part" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "source",
+          "name": "Extract raw and waste",
+          "inputs": [],
+          "outputs": [
+            { "itemId": "raw", "amount": 2 },
+            { "itemId": "waste", "amount": 1 }
+          ]
+        },
+        {
+          "id": "left",
+          "name": "Make left part",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [{ "itemId": "left", "amount": 1 }]
+        },
+        {
+          "id": "right",
+          "name": "Make right part",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [{ "itemId": "right", "amount": 1 }]
+        },
+        {
+          "id": "assembly",
+          "name": "Assemble product",
+          "inputs": [
+            { "itemId": "left", "amount": 1 },
+            { "itemId": "right", "amount": 1 }
+          ],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-4444-4444-4444-444444444444",
+          "recipeId": "source",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": 4
+        },
+        {
+          "id": "22222222-4444-4444-4444-444444444444",
+          "recipeId": "left",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "33333333-4444-4444-4444-444444444444",
+          "recipeId": "right",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "44444444-4444-4444-4444-444444444444",
+          "recipeId": "assembly",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "aaaaaaaa-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "22222222-4444-4444-4444-444444444444",
+          "itemId": "raw",
+          "capacity": null
+        },
+        {
+          "id": "bbbbbbbb-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "33333333-4444-4444-4444-444444444444",
+          "itemId": "raw",
+          "capacity": null
+        },
+        {
+          "id": "cccccccc-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "22222222-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "left",
+          "capacity": null
+        },
+        {
+          "id": "dddddddd-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "33333333-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "right",
+          "capacity": null
+        }
+      ],
+      "supplies": [],
+      "productOutlets": [
+        {
+          "id": "55555555-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "product",
+          "capacity": null
+        },
+        {
+          "id": "66666666-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "itemId": "waste",
+          "capacity": null
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "77777777-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "itemId": "waste",
+          "capacity": null
+        }
+      ]
+    },
+    "targets": [
+      {
+        "id": "88888888-4444-4444-4444-444444444444",
+        "productOutletId": "55555555-4444-4444-4444-444444444444",
+        "rate": 2
+      },
+      {
+        "id": "99999999-4444-4444-4444-444444444444",
+        "productOutletId": "66666666-4444-4444-4444-444444444444",
+        "rate": 1
+      }
+    ],
+    "mode": "capacityDriven",
+    "objective": "maximizeTargetOutput",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "waste", "name": "Waste" },
+        { "id": "left", "name": "Left part" },
+        { "id": "right", "name": "Right part" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "source",
+          "name": "Extract raw and waste",
+          "inputs": [],
+          "outputs": [
+            { "itemId": "raw", "amount": 2 },
+            { "itemId": "waste", "amount": 1 }
+          ]
+        },
+        {
+          "id": "left",
+          "name": "Make left part",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [{ "itemId": "left", "amount": 1 }]
+        },
+        {
+          "id": "right",
+          "name": "Make right part",
+          "inputs": [{ "itemId": "raw", "amount": 1 }],
+          "outputs": [{ "itemId": "right", "amount": 1 }]
+        },
+        {
+          "id": "assembly",
+          "name": "Assemble product",
+          "inputs": [
+            { "itemId": "left", "amount": 1 },
+            { "itemId": "right", "amount": 1 }
+          ],
+          "outputs": [{ "itemId": "product", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-4444-4444-4444-444444444444",
+          "recipeId": "source",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": 4,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [],
+          "outputRates": [
+            { "itemId": "raw", "rate": 8 },
+            { "itemId": "waste", "rate": 4 }
+          ]
+        },
+        {
+          "id": "22222222-4444-4444-4444-444444444444",
+          "recipeId": "left",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "raw", "rate": 4 }],
+          "outputRates": [{ "itemId": "left", "rate": 4 }]
+        },
+        {
+          "id": "33333333-4444-4444-4444-444444444444",
+          "recipeId": "right",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "raw", "rate": 4 }],
+          "outputRates": [{ "itemId": "right", "rate": 4 }]
+        },
+        {
+          "id": "44444444-4444-4444-4444-444444444444",
+          "recipeId": "assembly",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [
+            { "itemId": "left", "rate": 4 },
+            { "itemId": "right", "rate": 4 }
+          ],
+          "outputRates": [{ "itemId": "product", "rate": 4 }]
+        }
+      ],
+      "connections": [
+        {
+          "id": "aaaaaaaa-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "22222222-4444-4444-4444-444444444444",
+          "itemId": "raw",
+          "capacity": null,
+          "flowRate": 4
+        },
+        {
+          "id": "bbbbbbbb-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "33333333-4444-4444-4444-444444444444",
+          "itemId": "raw",
+          "capacity": null,
+          "flowRate": 4
+        },
+        {
+          "id": "cccccccc-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "22222222-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "left",
+          "capacity": null,
+          "flowRate": 4
+        },
+        {
+          "id": "dddddddd-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "33333333-4444-4444-4444-444444444444",
+          "destinationMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "right",
+          "capacity": null,
+          "flowRate": 4
+        }
+      ],
+      "supplies": [],
+      "productOutlets": [
+        {
+          "id": "55555555-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "44444444-4444-4444-4444-444444444444",
+          "itemId": "product",
+          "capacity": null,
+          "deliveredRate": 4
+        },
+        {
+          "id": "66666666-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "itemId": "waste",
+          "capacity": null,
+          "deliveredRate": 2
+        }
+      ],
+      "surplusOutlets": [
+        {
+          "id": "77777777-4444-4444-4444-444444444444",
+          "sourceMachineGroupId": "11111111-4444-4444-4444-444444444444",
+          "itemId": "waste",
+          "capacity": null,
+          "flowRate": 2
+        }
+      ],
+      "targets": [
+        {
+          "id": "88888888-4444-4444-4444-444444444444",
+          "productOutletId": "55555555-4444-4444-4444-444444444444",
+          "requestedRate": 2,
+          "achievedRate": 4,
+          "surplusRate": 2,
+          "deficitRate": 0
+        },
+        {
+          "id": "99999999-4444-4444-4444-444444444444",
+          "productOutletId": "66666666-4444-4444-4444-444444444444",
+          "requestedRate": 1,
+          "achievedRate": 2,
+          "surplusRate": 1,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": [
+      {
+        "kind": "machineGroup",
+        "element": {
+          "kind": "machineGroup",
+          "id": "11111111-4444-4444-4444-444444444444"
+        },
+        "capacity": 4,
+        "utilization": 1,
+        "message": "Machine-group activity capacity limits target output."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "name": "proportional-coproduct",
+      "parameters": {}
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 # Solver Backend
 
-FactoryGraph uses [HiGHS](https://highs.dev/) through the official `Highs.Native` package. HiGHS solves the [target-driven planning model](target-driven-planning.md). FactoryGraph configures its time limit and feasibility tolerances, then maps its model status and solution values to the public result contracts.
+FactoryGraph uses [HiGHS](https://highs.dev/) through the official `Highs.Native` package. HiGHS solves the [target-driven](target-driven-planning.md) and [capacity-driven](capacity-driven-planning.md) linear programs. FactoryGraph configures its time limit and feasibility tolerances, then maps its model status and solution values to the public result contracts.
 
 ## License and Maintenance
 
@@ -12,7 +12,7 @@ FactoryGraph stores each constraint row by nonzero variable coefficient. The bac
 
 ## Performance
 
-Target-driven planning performs one native linear-program solve for the selected objective and, when needed, a second solve to minimize total machine activity. Both solves share the request time limit. Model construction and result projection run in managed code.
+Each planning mode performs one native linear-program solve for its primary objective and, when needed, a second solve to minimize total machine activity. Both solves share the request time limit. Model construction, bottleneck reporting, and result projection run in managed code.
 
 FactoryGraph does not define a solve-time guarantee. [Benchmark issue #34](https://github.com/caneva20/factory-planner/issues/34) will establish representative graph sizes, measurements, and performance budgets.
 

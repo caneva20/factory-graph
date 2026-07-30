@@ -4,9 +4,9 @@ using FactoryGraph.Contracts;
 namespace FactoryGraph.Solving;
 
 internal sealed class TargetDrivenSolver(
-    TargetDrivenModelBuilder modelBuilder,
+    LinearFactoryModelBuilder modelBuilder,
     ILinearProgramSolver linearProgramSolver,
-    TargetDrivenResultProjector resultProjector) : IPlanningModeSolver {
+    LinearFactoryResultProjector resultProjector) : IPlanningModeSolver {
     private const double Infinity = 1e30;
 
     public PlanningMode Mode => PlanningMode.TargetDriven;
@@ -15,7 +15,7 @@ internal sealed class TargetDrivenSolver(
         var stopwatch = Stopwatch.StartNew();
 
         try {
-            var model = modelBuilder.Build(request);
+            var model = modelBuilder.Build(request).WithTargetMinimums(request.Targets);
 
             if (model.VariableCount == 0) {
                 return new SolveResult(SolveStatus.Optimal, resultProjector.Project(request, model, []), [], []);
@@ -67,7 +67,7 @@ internal sealed class TargetDrivenSolver(
     }
 
     private StageResult Run(
-        TargetDrivenModel model,
+        LinearFactoryModel model,
         double[] costs,
         ModelRow? objectiveLimit,
         SolveRequest request,
@@ -103,7 +103,7 @@ internal sealed class TargetDrivenSolver(
         return new StageResult(status, result.Values, diagnostic is null ? [] : [diagnostic]);
     }
 
-    private SolveResult Result(SolveRequest request, TargetDrivenModel model, StageResult stage) {
+    private SolveResult Result(SolveRequest request, LinearFactoryModel model, StageResult stage) {
         var graph = stage.Status is SolveStatus.Optimal or SolveStatus.Feasible
             ? resultProjector.Project(request, model, stage.Values)
             : null;

@@ -113,6 +113,19 @@ public sealed class FactoryGraphProcessorTests {
     }
 
     [Fact]
+    public void CapacityDrivenModeRequiresAPositiveTargetRate() {
+        var request = CreateValidRequest() with {
+            Mode = PlanningMode.CapacityDriven,
+            Objective = SolveObjective.MaximizeTargetOutput,
+            Targets = [CreateValidRequest().Targets.Single() with { Rate = 0 }]
+        };
+
+        var diagnostic = Assert.Single(Processor().Solve(request).Diagnostics);
+
+        Assert.Equal(ValidationDiagnosticCodes.Target.PositiveRateRequired, diagnostic.Code);
+    }
+
+    [Fact]
     public void NumericPreconditionsRejectNonFiniteSignsAndProhibitedZero() {
         var baseline = CreateValidRequest();
 

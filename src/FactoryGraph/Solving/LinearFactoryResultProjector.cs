@@ -2,10 +2,10 @@ using FactoryGraph.Contracts;
 
 namespace FactoryGraph.Solving;
 
-internal sealed class TargetDrivenResultProjector {
+internal sealed class LinearFactoryResultProjector {
     public ComputedFactoryGraph Project(
         SolveRequest request,
-        TargetDrivenModel model,
+        LinearFactoryModel model,
         IReadOnlyList<double> values) {
         var graph = request.Graph;
         var policy = request.Options.NumericPolicy;

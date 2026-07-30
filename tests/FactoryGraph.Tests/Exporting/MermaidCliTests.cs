@@ -110,6 +110,9 @@ public sealed class MermaidCliTests {
                 .ToArray();
 
             Assert.Equal([
+                "CapacityDriven/BranchedAssembly.mmd",
+                "CapacityDriven/ConstrainedChain.mmd",
+                "CapacityDriven/SingleNode.mmd",
                 "Framework/BranchedAssembly.mmd",
                 "Framework/ObjectiveTradeoff.mmd",
                 "Framework/ResourceLimits.mmd",

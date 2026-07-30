@@ -10,7 +10,7 @@ internal sealed class SolveRequestValidator(
         var diagnostics = new List<SolveDiagnostic>();
         var numericPolicy = settingsValidator.Validate(request, diagnostics);
         graphValidator.Validate(request.Graph, numericPolicy, diagnostics);
-        targetValidator.Validate(request.Targets, request.Graph.ProductOutlets, numericPolicy, diagnostics);
+        targetValidator.Validate(request.Targets, request.Graph.ProductOutlets, request.Mode, numericPolicy, diagnostics);
 
         return diagnostics;
     }
