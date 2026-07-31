@@ -1,5 +1,10 @@
 # FactoryGraph
 
+[![NuGet](https://img.shields.io/nuget/v/FactoryGraph?logo=nuget&label=NuGet)](https://www.nuget.org/packages/FactoryGraph)
+[![NuGet downloads](https://img.shields.io/nuget/dt/FactoryGraph?logo=nuget&label=downloads)](https://www.nuget.org/packages/FactoryGraph)
+[![CI](https://github.com/caneva20/factory-graph/actions/workflows/ci.yml/badge.svg)](https://github.com/caneva20/factory-graph/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/github/license/caneva20/factory-graph)](LICENSE)
+
 FactoryGraph is a .NET library for planning steady-state production networks. You describe recipes, groups of machines, connections, external inputs, and desired outputs. The library computes the machine activity and item flow needed to meet those outputs.
 
 FactoryGraph answers questions such as:
@@ -12,7 +17,15 @@ FactoryGraph answers questions such as:
 
 The built-in solver supports target-driven and capacity-driven planning for acyclic graphs and recycling cycles. It solves all steady-state rates together, including material that returns to an earlier production step. The solver does not schedule individual machines or simulate a factory over time.
 
-Install the core library and optional Mermaid exporter from NuGet.org:
+## Packages
+
+| Package                                                                                                 | Use                                                |
+|---------------------------------------------------------------------------------------------------------|----------------------------------------------------|
+| [`FactoryGraph`](https://www.nuget.org/packages/FactoryGraph)                                           | Build, validate, analyze, and solve factory graphs |
+| [`FactoryGraph.Exporter.Mermaid`](https://www.nuget.org/packages/FactoryGraph.Exporter.Mermaid)         | Export requests and results as Mermaid diagrams    |
+| [`FactoryGraph.Exporter.Mermaid.Cli`](https://www.nuget.org/packages/FactoryGraph.Exporter.Mermaid.Cli) | Run the Mermaid exporter as a .NET tool            |
+
+Install version `0.1.0` from NuGet.org:
 
 ```console
 dotnet add package FactoryGraph --version 0.1.0
