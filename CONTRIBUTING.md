@@ -33,10 +33,19 @@ The public package IDs are:
 
 - `FactoryGraph`
 - `FactoryGraph.Exporter.Mermaid`
+- `FactoryGraph.Exporter.Mermaid.Cli`
 
-The repository follows Semantic Versioning. Release tags use `vMAJOR.MINOR.PATCH`, and package versions omit the `v` prefix. Before `1.0.0`, incompatible public API changes increment the minor version. Compatible fixes increment the patch version.
+The repository releases all three packages together. Release tags use `vMAJOR.MINOR.PATCH`, and package versions omit the `v` prefix. [Packages and Versioning](docs/versioning.md) defines the compatibility and support policy.
 
-Regular CI builds package artifacts for inspection but never publishes them. Release publication, package-content verification, symbols, compatibility policy, and release documentation are completed by the release work tracked separately from repository bootstrap.
+Regular CI packs all three projects, verifies package metadata and contents, and runs clean-consumer tests without publishing. Run the same checks locally with:
+
+```console
+dotnet pack FactoryGraph.slnx --configuration Release
+./eng/verify-packages.sh artifacts/packages 0.1.0
+./eng/test-packages.sh artifacts/packages 0.1.0
+```
+
+The release workflow publishes a verified `vMAJOR.MINOR.PATCH` tag to NuGet.org through Trusted Publishing. Configure the `release` environment and its `NUGET_USER` secret before creating a release tag. NuGet package versions are immutable.
 
 ## Benchmarks
 

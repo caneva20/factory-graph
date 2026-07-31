@@ -1,0 +1,81 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: read
+  id-token: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: release
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+
+      - name: Validate release tag
+        id: release
+        shell: bash
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          if [[ ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release tags must use vMAJOR.MINOR.PATCH." >&2
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Restore
+        run: dotnet restore FactoryGraph.slnx
+
+      - name: Build
+        run: dotnet build FactoryGraph.slnx --configuration Release --no-restore -p:Version=${{ steps.release.outputs.version }}
+
+      - name: Test
+        run: dotnet test FactoryGraph.slnx --configuration Release --no-build -p:Version=${{ steps.release.outputs.version }}
+
+      - name: Pack
+        run: dotnet pack FactoryGraph.slnx --configuration Release --no-build -p:Version=${{ steps.release.outputs.version }}
+
+      - name: Verify package contents
+        run: ./eng/verify-packages.sh artifacts/packages ${{ steps.release.outputs.version }}
+
+      - name: Test package consumers
+        run: ./eng/test-packages.sh artifacts/packages ${{ steps.release.outputs.version }}
+
+      - name: Upload packages
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ steps.release.outputs.version }}
+          path: artifacts/packages/*.*nupkg
+          if-no-files-found: error
+
+      - name: Log in to NuGet.org
+        id: nuget
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}
+
+      - name: Publish packages
+        shell: bash
+        env:
+          NUGET_API_KEY: ${{ steps.nuget.outputs.NUGET_API_KEY }}
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          source="https://api.nuget.org/v3/index.json"
+          dotnet nuget push "artifacts/packages/FactoryGraph.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source "$source"
+          dotnet nuget push "artifacts/packages/FactoryGraph.Exporter.Mermaid.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source "$source"
+          dotnet nuget push "artifacts/packages/FactoryGraph.Exporter.Mermaid.Cli.$VERSION.nupkg" --api-key "$NUGET_API_KEY" --source "$source"

@@ -8,6 +8,36 @@ FactoryGraph creates activity and flow variables for the whole graph and solves 
 
 For a lossy recycle, external supply must replace the material lost on each pass. A process that consumes 1 catalyst and recovers 0.75 catalyst needs 0.25 external catalyst per activity at steady state. Capacity limits can make a target-driven request infeasible. A capacity-driven cycle can be unbounded when no machine, flow, or boundary capacity limits target output.
 
+## Worked Example
+
+The `SimpleLoop` scenario converts raw material into product while circulating one catalyst through two machine groups:
+
+```mermaid
+flowchart LR
+    Raw[Raw supply] -->|4/min| React
+    React -->|4 intermediate/min| Recover
+    Recover -->|4 catalyst/min| React
+    React -->|4 product/min| Product[Product outlet]
+```
+
+`React` consumes one raw item and one catalyst, then produces one intermediate and one product. `Recover` consumes one intermediate and returns one catalyst. The request targets 4 product per minute. Its product outlet has capacity 4, and the other boundaries and machine groups have no capacity limit.
+
+Both the target-driven and capacity-driven cases produce the same rates:
+
+| Result                                      | Value  |
+|---------------------------------------------|-------:|
+| `React` activity                            |  4/min |
+| `Recover` activity                          |  4/min |
+| Raw external supply                         |  4/min |
+| Intermediate connection                     |  4/min |
+| Catalyst return connection                  |  4/min |
+| Product delivery                            |  4/min |
+| `RequiresStartupInventory`                  | `true` |
+
+The catalyst balances at steady state, so the solve needs no external catalyst flow. The empty factory cannot perform the first `React` activity because no catalyst exists yet, so cycle analysis marks the component as requiring startup inventory. This flag does not change the solved rates.
+
+See the [scenario explanation](scenarios/simple-recycling-loop.md) and the [complete JSON request and expected result](../tests/FactoryGraph.Tests/Scenarios/Cycles/SimpleLoop/scenario.json).
+
 ## Cycle Analysis
 
 `SolveResult.Analysis.CyclicComponents` identifies each multi-group strongly connected component and each self-loop. A component contains:

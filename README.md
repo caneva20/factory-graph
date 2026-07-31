@@ -12,6 +12,14 @@ FactoryGraph answers questions such as:
 
 The built-in solver supports target-driven and capacity-driven planning for acyclic graphs and recycling cycles. It solves all steady-state rates together, including material that returns to an earlier production step. The solver does not schedule individual machines or simulate a factory over time.
 
+Install the core library and optional Mermaid exporter from NuGet.org:
+
+```console
+dotnet add package FactoryGraph --version 0.1.0
+dotnet add package FactoryGraph.Exporter.Mermaid --version 0.1.0
+dotnet tool install --global FactoryGraph.Exporter.Mermaid.Cli --version 0.1.0
+```
+
 ## Mental Model
 
 ### Steady-State Planning
@@ -356,7 +364,7 @@ Capacity-driven results report saturated machine-group, connection, and supply c
 Install the command-line exporter as a .NET tool:
 
 ```shell
-dotnet tool install --global FactoryGraph.Exporter.Mermaid.Cli
+dotnet tool install --global FactoryGraph.Exporter.Mermaid.Cli --version 0.1.0
 ```
 
 Pass it a JSON-serialized `SolveRequest`. The command validates and solves the request, then writes the computed Mermaid diagram to standard output:
@@ -463,8 +471,9 @@ FactoryGraph targets .NET 10 and uses [HiGHS](https://highs.dev/) through `Highs
 dotnet restore FactoryGraph.slnx
 dotnet build FactoryGraph.slnx --configuration Release --no-restore
 dotnet test FactoryGraph.slnx --configuration Release --no-build
-dotnet pack src/FactoryGraph/FactoryGraph.csproj --configuration Release --no-build
-dotnet pack src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj --configuration Release --no-build
+dotnet pack FactoryGraph.slnx --configuration Release --no-build
+./eng/verify-packages.sh artifacts/packages 0.1.0
+./eng/test-packages.sh artifacts/packages 0.1.0
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release conventions. Track FactoryGraph work in the [FactoryGraph issue tracker](https://github.com/caneva20/factory-graph/issues). The shared [Factory Planner Project](https://github.com/users/caneva20/projects/3) coordinates work across repositories.
@@ -477,5 +486,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release conventions. 
 - [Recycling Cycles](docs/recycling-cycles.md) defines cyclic solving and startup analysis.
 - [Request Validation](docs/validation.md) lists validation rules and stable diagnostic codes.
 - [Solver Backend](docs/solver-backend.md) lists the native solver dependency and supported runtimes.
+- [Packages And Versioning](docs/versioning.md) defines compatibility, support, and publication rules.
 - [Scenarios](docs/scenarios.md) explains executable planning examples.
 - [Future Graph Constraints](docs/future-constraints.md) records requirements for future fixed and bounded values.

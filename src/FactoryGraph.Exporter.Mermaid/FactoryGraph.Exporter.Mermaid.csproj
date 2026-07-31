@@ -2,9 +2,19 @@
   <PropertyGroup>
     <PackageId>FactoryGraph.Exporter.Mermaid</PackageId>
     <Description>Mermaid exporter for FactoryGraph requests and computed results.</Description>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="../FactoryGraph/FactoryGraph.csproj" />
   </ItemGroup>
+
+  <!-- NuGet treats a bare project version as a minimum; lock the exporter to its release peer. -->
+  <Target Name="UseExactProjectReferenceVersions" AfterTargets="_GetProjectReferenceVersions">
+    <ItemGroup>
+      <_ProjectReferencesWithVersions Update="@(_ProjectReferencesWithVersions)">
+        <ProjectVersion>[%(_ProjectReferencesWithVersions.ProjectVersion)]</ProjectVersion>
+      </_ProjectReferencesWithVersions>
+    </ItemGroup>
+  </Target>
 </Project>

@@ -1,0 +1,60 @@
+{
+  "graph": {
+    "items": [
+      { "id": "raw", "name": "Raw material" },
+      { "id": "product", "name": "Product" }
+    ],
+    "recipes": [
+      {
+        "id": "produce",
+        "name": "Produce",
+        "inputs": [{ "itemId": "raw", "amount": 1 }],
+        "outputs": [{ "itemId": "product", "amount": 1 }]
+      }
+    ],
+    "machineGroups": [
+      {
+        "id": "11111111-1111-1111-1111-111111111111",
+        "recipeId": "produce",
+        "activityRatePerMachine": 1,
+        "availableMachineCount": null,
+        "activityCapacity": null
+      }
+    ],
+    "connections": [],
+    "supplies": [
+      {
+        "id": "22222222-2222-2222-2222-222222222222",
+        "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+        "itemId": "raw",
+        "capacity": null
+      }
+    ],
+    "productOutlets": [
+      {
+        "id": "33333333-3333-3333-3333-333333333333",
+        "sourceMachineGroupId": "11111111-1111-1111-1111-111111111111",
+        "itemId": "product",
+        "capacity": null
+      }
+    ],
+    "surplusOutlets": []
+  },
+  "targets": [
+    {
+      "id": "44444444-4444-4444-4444-444444444444",
+      "productOutletId": "33333333-3333-3333-3333-333333333333",
+      "rate": 2
+    }
+  ],
+  "mode": "targetDriven",
+  "objective": "meetTargetsMinimizeExternalSupply",
+  "options": {
+    "numericPolicy": {
+      "absoluteTolerance": 0.000001,
+      "relativeTolerance": 0.000001,
+      "nearZeroThreshold": 0.000000001
+    },
+    "timeLimit": null
+  }
+}

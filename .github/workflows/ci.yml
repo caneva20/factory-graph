@@ -18,7 +18,7 @@ jobs:
       - name: Set up .NET
         uses: actions/setup-dotnet@v5
         with:
-          dotnet-version: 10.0.x
+          global-json-file: global.json
 
       - name: Restore
         run: dotnet restore FactoryGraph.slnx
@@ -29,11 +29,14 @@ jobs:
       - name: Test
         run: dotnet test FactoryGraph.slnx --configuration Release --no-build
 
-      - name: Pack core
-        run: dotnet pack src/FactoryGraph/FactoryGraph.csproj --configuration Release --no-build
+      - name: Pack
+        run: dotnet pack FactoryGraph.slnx --configuration Release --no-build
 
-      - name: Pack Mermaid exporter
-        run: dotnet pack src/FactoryGraph.Exporter.Mermaid/FactoryGraph.Exporter.Mermaid.csproj --configuration Release --no-build
+      - name: Verify package contents
+        run: ./eng/verify-packages.sh artifacts/packages 0.1.0
+
+      - name: Test package consumers
+        run: ./eng/test-packages.sh artifacts/packages 0.1.0
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
