@@ -8,11 +8,12 @@ internal static class BenchmarkRequestFactory {
             throw new ArgumentOutOfRangeException(nameof(machineGroupCount), "A benchmark chain requires at least two machine groups.");
         }
 
-        var constrained = family switch {
-            BenchmarkFamilies.AcyclicChain => false,
-            BenchmarkFamilies.ConstrainedChain => true,
-            _ => throw new ArgumentOutOfRangeException(nameof(family), family, "Unknown benchmark family.")
-        };
+        var constrained = family == BenchmarkFamilies.ConstrainedChain;
+        var recycling = family == BenchmarkFamilies.RecyclingRing;
+
+        if (!constrained && !recycling && family != BenchmarkFamilies.AcyclicChain) {
+            throw new ArgumentOutOfRangeException(nameof(family), family, "Unknown benchmark family.");
+        }
 
         var items = Enumerable.Range(0, machineGroupCount + 1)
             .Select(index => new Item($"item-{index}", $"Item {index}"))
@@ -23,7 +24,9 @@ internal static class BenchmarkRequestFactory {
                 $"recipe-{index}",
                 $"Recipe {index}",
                 [new RecipeItem(items[index].Id, 1)],
-                [new RecipeItem(items[index + 1].Id, 1)]))
+                recycling && index == 0
+                    ? [new RecipeItem(items[1].Id, 1), new RecipeItem(items[^1].Id, 1)]
+                    : [new RecipeItem(items[recycling ? (index + 1) % machineGroupCount : index + 1].Id, 1)]))
             .ToArray();
 
         var machineGroups = Enumerable.Range(0, machineGroupCount)
@@ -34,12 +37,12 @@ internal static class BenchmarkRequestFactory {
                 AvailableMachineCount: constrained ? 4 : mode == PlanningMode.CapacityDriven ? 10 : null))
             .ToArray();
 
-        var connections = Enumerable.Range(0, machineGroupCount - 1)
+        var connections = Enumerable.Range(0, recycling ? machineGroupCount : machineGroupCount - 1)
             .Select(index => new ItemConnection(
                 Id(2, index),
                 machineGroups[index].Id,
-                machineGroups[index + 1].Id,
-                items[index + 1].Id,
+                machineGroups[(index + 1) % machineGroupCount].Id,
+                items[(index + 1) % machineGroupCount].Id,
                 Capacity: constrained ? 2 : null))
             .ToArray();
 
@@ -47,11 +50,11 @@ internal static class BenchmarkRequestFactory {
             Id(3, 0),
             machineGroups[0].Id,
             items[0].Id,
-            Capacity: constrained ? 3 : null);
+            Capacity: constrained ? 3 : recycling ? 0.1 : null);
 
         var productOutlet = new ProductOutlet(
             Id(4, 0),
-            machineGroups[^1].Id,
+            recycling ? machineGroups[0].Id : machineGroups[^1].Id,
             items[^1].Id,
             Capacity: constrained ? 3 : null);
 

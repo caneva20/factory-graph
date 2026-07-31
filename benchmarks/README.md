@@ -4,17 +4,16 @@ The benchmark project measures each processor stage and the complete `FactoryGra
 
 ## Workloads
 
-`AcyclicChain` connects each machine group to the next with one supply and one product outlet. `ConstrainedChain` uses the same topology and adds machine, connection, supply, and outlet capacities. Each family runs in target-driven and capacity-driven modes with 8, 32, and 128 machine groups.
+`AcyclicChain` connects each machine group to the next with one supply and one product outlet. `ConstrainedChain` uses the same topology and adds machine, connection, supply, and outlet capacities. `RecyclingRing` closes the final connection back to the first group, produces a coproduct at the first group, and includes a positive startup supply that remains unused at steady state. Each family runs in target-driven and capacity-driven modes with 8, 32, and 128 machine groups.
 
-The `Family`, `Mode`, and `MachineGroups` columns identify each input. A chain with `n` machine groups has `n - 1` connections, `n + 1` items, and `n` recipes.
-
-Cyclic workloads depend on the recycling-cycle contract tracked by [issue #3](https://github.com/caneva20/factory-graph/issues/3). Add that family before recording the issue #2 regression baseline.
+The `Family`, `Mode`, and `MachineGroups` columns identify each input. A chain with `n` machine groups has `n - 1` connections, while a recycling ring has `n`. Both shapes have `n + 1` items and `n` recipes.
 
 ## Measurements
 
 | Benchmark | Timed work |
 | --- | --- |
 | `Validation` | Request validation |
+| `TopologyAnalysis` | Strongly connected components and structural startup classification |
 | `ModelConstruction` | Linear optimization-model construction |
 | `BackendSolve` | One HiGHS invocation using a prebuilt model |
 | `ResultConstruction` | Computed-graph projection and capacity bottleneck reporting |

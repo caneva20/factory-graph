@@ -1,0 +1,192 @@
+{
+  "name": "recycling-statuses",
+  "description": "A self-loop distinguishes infeasible replenishment from unbounded capacity-driven production at numeric boundaries.",
+  "dimensions": {
+    "graphShape": "self-loop",
+    "constraints": ["target", "supply"],
+    "resourceConditions": ["zero-replenishment", "near-zero-replenishment", "unbounded"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "catalyst", "name": "Catalyst" },
+        { "id": "ore", "name": "Ore" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "process",
+          "name": "Catalytic process",
+          "inputs": [
+            { "itemId": "catalyst", "amount": 1 },
+            { "itemId": "ore", "amount": 1 }
+          ],
+          "outputs": [
+            { "itemId": "catalyst", "amount": "${catalystOutput}" },
+            { "itemId": "product", "amount": 1 }
+          ]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "recipeId": "process",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceMachineGroupId": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "destinationMachineGroupId": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "catalyst",
+          "capacity": null
+        }
+      ],
+      "supplies": [
+        {
+          "id": "33333333-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "destinationMachineGroupId": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "catalyst",
+          "capacity": "${catalystSupplyCapacity}"
+        },
+        {
+          "id": "44444444-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "destinationMachineGroupId": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "ore",
+          "capacity": null
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "55555555-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "sourceMachineGroupId": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "itemId": "product",
+          "capacity": null
+        }
+      ],
+      "surplusOutlets": []
+    },
+    "targets": [
+      {
+        "id": "66666666-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "productOutletId": "55555555-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "rate": 4
+      }
+    ],
+    "mode": "${mode}",
+    "objective": "${objective}",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "${status}",
+    "graph": null,
+    "diagnostics": "${diagnostics}",
+    "bottlenecks": [],
+    "analysis": {
+      "cyclicComponents": [
+        {
+          "machineGroupIds": ["11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb"],
+          "connectionIds": ["22222222-bbbb-bbbb-bbbb-bbbbbbbbbbbb"],
+          "requiresStartupInventory": "${requiresStartupInventory}"
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "name": "zero-replenishment",
+      "parameters": {
+        "catalystOutput": 0.75,
+        "catalystSupplyCapacity": 0,
+        "mode": "targetDriven",
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "infeasible",
+        "requiresStartupInventory": true,
+        "diagnostics": [{
+          "code": "solver.infeasible",
+          "severity": "error",
+          "message": "No solution satisfies the graph balances, targets, and capacities.",
+          "elements": []
+        }]
+      }
+    },
+    {
+      "name": "near-zero-replenishment",
+      "parameters": {
+        "catalystOutput": 0.75,
+        "catalystSupplyCapacity": 0.0000000005,
+        "mode": "targetDriven",
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "infeasible",
+        "requiresStartupInventory": true,
+        "diagnostics": [{
+          "code": "solver.infeasible",
+          "severity": "error",
+          "message": "No solution satisfies the graph balances, targets, and capacities.",
+          "elements": []
+        }]
+      }
+    },
+    {
+      "name": "at-near-zero-threshold",
+      "parameters": {
+        "catalystOutput": 0.75,
+        "catalystSupplyCapacity": 0.000000001,
+        "mode": "targetDriven",
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "infeasible",
+        "requiresStartupInventory": true,
+        "diagnostics": [{
+          "code": "solver.infeasible",
+          "severity": "error",
+          "message": "No solution satisfies the graph balances, targets, and capacities.",
+          "elements": []
+        }]
+      }
+    },
+    {
+      "name": "above-near-zero-threshold",
+      "parameters": {
+        "catalystOutput": 0.75,
+        "catalystSupplyCapacity": 0.0000000011,
+        "mode": "targetDriven",
+        "objective": "meetTargetsMinimizeExternalSupply",
+        "status": "infeasible",
+        "requiresStartupInventory": false,
+        "diagnostics": [{
+          "code": "solver.infeasible",
+          "severity": "error",
+          "message": "No solution satisfies the graph balances, targets, and capacities.",
+          "elements": []
+        }]
+      }
+    },
+    {
+      "name": "capacity-unbounded",
+      "parameters": {
+        "catalystOutput": 1,
+        "catalystSupplyCapacity": 0,
+        "mode": "capacityDriven",
+        "objective": "maximizeTargetOutput",
+        "status": "unbounded",
+        "requiresStartupInventory": true,
+        "diagnostics": [{
+          "code": "solver.unbounded",
+          "severity": "error",
+          "message": "The planning objective is unbounded.",
+          "elements": []
+        }]
+      }
+    }
+  ]
+}

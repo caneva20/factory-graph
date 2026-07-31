@@ -4,6 +4,12 @@
 .vs/
 .vscode/
 artifacts/
+!benchmarks/results/**/artifacts/
+benchmarks/results/**/artifacts/*
+!benchmarks/results/**/artifacts/results/
+benchmarks/results/**/artifacts/results/*
+!benchmarks/results/**/artifacts/results/*.md
+!benchmarks/results/**/artifacts/results/*.csv
 BenchmarkDotNet.Artifacts/
 TestResults/
 *.user

@@ -1,0 +1,9 @@
+flowchart LR
+    seed[Startup X supply: configured, steady-state 0] --> xToY[X to Y: 1 activity]
+    xToY -->|Y: 1| yToZ[Y to Z: 1 activity]
+    yToZ -->|Z: 1| zToX[Z to X: 1 activity]
+    zToX -->|X: 1| xToY
+    zToX -->|Token: 1| token[Token process: 4 activities]
+    token -->|Recovered token: 3| token
+    zToX --> primary[Primary: 1 delivered]
+    token --> secondary[Secondary: 4 delivered]

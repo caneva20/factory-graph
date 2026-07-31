@@ -1,0 +1,401 @@
+{
+  "name": "connected-recycling-components",
+  "description": "A three-group recycling component supplies startup material to a downstream self-loop without merging the components.",
+  "dimensions": {
+    "graphShape": "connected-cycles",
+    "constraints": ["multiple-targets", "product-outlet"],
+    "resourceConditions": ["multi-node-scc", "upstream-startability", "sustainable"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "x", "name": "X" },
+        { "id": "y", "name": "Y" },
+        { "id": "z", "name": "Z" },
+        { "id": "token", "name": "Token" },
+        { "id": "primary", "name": "Primary product" },
+        { "id": "secondary", "name": "Secondary product" }
+      ],
+      "recipes": [
+        {
+          "id": "x-to-y",
+          "name": "X to Y",
+          "inputs": [{ "itemId": "x", "amount": 1 }],
+          "outputs": [{ "itemId": "y", "amount": 1 }]
+        },
+        {
+          "id": "y-to-z",
+          "name": "Y to Z",
+          "inputs": [{ "itemId": "y", "amount": 1 }],
+          "outputs": [{ "itemId": "z", "amount": 1 }]
+        },
+        {
+          "id": "z-to-x",
+          "name": "Z to X",
+          "inputs": [{ "itemId": "z", "amount": 1 }],
+          "outputs": [
+            { "itemId": "x", "amount": 1 },
+            { "itemId": "token", "amount": 1 },
+            { "itemId": "primary", "amount": 1 }
+          ]
+        },
+        {
+          "id": "token-process",
+          "name": "Token process",
+          "inputs": [{ "itemId": "token", "amount": 1 }],
+          "outputs": [
+            { "itemId": "token", "amount": 0.75 },
+            { "itemId": "secondary", "amount": 1 }
+          ]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "x-to-y",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "22222222-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "y-to-z",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "z-to-x",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "token-process",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "55555555-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "22222222-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "y",
+          "capacity": null
+        },
+        {
+          "id": "66666666-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "22222222-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "z",
+          "capacity": null
+        },
+        {
+          "id": "77777777-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "x",
+          "capacity": null
+        },
+        {
+          "id": "88888888-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "token",
+          "capacity": null
+        },
+        {
+          "id": "99999999-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "token",
+          "capacity": null
+        }
+      ],
+      "supplies": [
+        {
+          "id": "aaaaaaaa-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "x",
+          "capacity": 0.1
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "bbbbbbbb-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "primary",
+          "capacity": 1
+        },
+        {
+          "id": "cccccccc-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "secondary",
+          "capacity": 4
+        }
+      ],
+      "surplusOutlets": []
+    },
+    "targets": [
+      {
+        "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+        "productOutletId": "bbbbbbbb-dddd-dddd-dddd-dddddddddddd",
+        "rate": 1
+      },
+      {
+        "id": "eeeeeeee-dddd-dddd-dddd-dddddddddddd",
+        "productOutletId": "cccccccc-dddd-dddd-dddd-dddddddddddd",
+        "rate": 4
+      }
+    ],
+    "mode": "${mode}",
+    "objective": "${objective}",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "x", "name": "X" },
+        { "id": "y", "name": "Y" },
+        { "id": "z", "name": "Z" },
+        { "id": "token", "name": "Token" },
+        { "id": "primary", "name": "Primary product" },
+        { "id": "secondary", "name": "Secondary product" }
+      ],
+      "recipes": [
+        {
+          "id": "x-to-y",
+          "name": "X to Y",
+          "inputs": [{ "itemId": "x", "amount": 1 }],
+          "outputs": [{ "itemId": "y", "amount": 1 }]
+        },
+        {
+          "id": "y-to-z",
+          "name": "Y to Z",
+          "inputs": [{ "itemId": "y", "amount": 1 }],
+          "outputs": [{ "itemId": "z", "amount": 1 }]
+        },
+        {
+          "id": "z-to-x",
+          "name": "Z to X",
+          "inputs": [{ "itemId": "z", "amount": 1 }],
+          "outputs": [
+            { "itemId": "x", "amount": 1 },
+            { "itemId": "token", "amount": 1 },
+            { "itemId": "primary", "amount": 1 }
+          ]
+        },
+        {
+          "id": "token-process",
+          "name": "Token process",
+          "inputs": [{ "itemId": "token", "amount": 1 }],
+          "outputs": [
+            { "itemId": "token", "amount": 0.75 },
+            { "itemId": "secondary", "amount": 1 }
+          ]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "x-to-y",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 1,
+          "effectiveMachineCount": 1,
+          "requiredWholeMachineCount": 1,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "x", "rate": 1 }],
+          "outputRates": [{ "itemId": "y", "rate": 1 }]
+        },
+        {
+          "id": "22222222-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "y-to-z",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 1,
+          "effectiveMachineCount": 1,
+          "requiredWholeMachineCount": 1,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "y", "rate": 1 }],
+          "outputRates": [{ "itemId": "z", "rate": 1 }]
+        },
+        {
+          "id": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "z-to-x",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 1,
+          "effectiveMachineCount": 1,
+          "requiredWholeMachineCount": 1,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "z", "rate": 1 }],
+          "outputRates": [
+            { "itemId": "x", "rate": 1 },
+            { "itemId": "token", "rate": 1 },
+            { "itemId": "primary", "rate": 1 }
+          ]
+        },
+        {
+          "id": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "recipeId": "token-process",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "token", "rate": 4 }],
+          "outputRates": [
+            { "itemId": "token", "rate": 3 },
+            { "itemId": "secondary", "rate": 4 }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "id": "55555555-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "22222222-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "y",
+          "capacity": null,
+          "flowRate": 1
+        },
+        {
+          "id": "66666666-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "22222222-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "z",
+          "capacity": null,
+          "flowRate": 1
+        },
+        {
+          "id": "77777777-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "x",
+          "capacity": null,
+          "flowRate": 1
+        },
+        {
+          "id": "88888888-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "token",
+          "capacity": null,
+          "flowRate": 1
+        },
+        {
+          "id": "99999999-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "token",
+          "capacity": null,
+          "flowRate": 3
+        }
+      ],
+      "supplies": [
+        {
+          "id": "aaaaaaaa-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "x",
+          "capacity": 0.1,
+          "requiredRate": 0,
+          "providedRate": 0,
+          "deficitRate": 0
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "bbbbbbbb-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "33333333-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "primary",
+          "capacity": 1,
+          "deliveredRate": 1
+        },
+        {
+          "id": "cccccccc-dddd-dddd-dddd-dddddddddddd",
+          "sourceMachineGroupId": "44444444-dddd-dddd-dddd-dddddddddddd",
+          "itemId": "secondary",
+          "capacity": 4,
+          "deliveredRate": 4
+        }
+      ],
+      "surplusOutlets": [],
+      "targets": [
+        {
+          "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
+          "productOutletId": "bbbbbbbb-dddd-dddd-dddd-dddddddddddd",
+          "requestedRate": 1,
+          "achievedRate": 1,
+          "surplusRate": 0,
+          "deficitRate": 0
+        },
+        {
+          "id": "eeeeeeee-dddd-dddd-dddd-dddddddddddd",
+          "productOutletId": "cccccccc-dddd-dddd-dddd-dddddddddddd",
+          "requestedRate": 4,
+          "achievedRate": 4,
+          "surplusRate": 0,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": [],
+    "analysis": {
+      "cyclicComponents": [
+        {
+          "machineGroupIds": [
+            "11111111-dddd-dddd-dddd-dddddddddddd",
+            "22222222-dddd-dddd-dddd-dddddddddddd",
+            "33333333-dddd-dddd-dddd-dddddddddddd"
+          ],
+          "connectionIds": [
+            "55555555-dddd-dddd-dddd-dddddddddddd",
+            "66666666-dddd-dddd-dddd-dddddddddddd",
+            "77777777-dddd-dddd-dddd-dddddddddddd"
+          ],
+          "requiresStartupInventory": false
+        },
+        {
+          "machineGroupIds": ["44444444-dddd-dddd-dddd-dddddddddddd"],
+          "connectionIds": ["99999999-dddd-dddd-dddd-dddddddddddd"],
+          "requiresStartupInventory": false
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "name": "target-driven",
+      "parameters": {
+        "mode": "targetDriven",
+        "objective": "meetTargetsMinimizeExternalSupply"
+      }
+    },
+    {
+      "name": "capacity-driven",
+      "parameters": {
+        "mode": "capacityDriven",
+        "objective": "maximizeTargetOutput"
+      }
+    }
+  ]
+}

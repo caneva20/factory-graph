@@ -1,0 +1,252 @@
+{
+  "name": "recycling-simple-loop",
+  "description": "Two machine groups circulate a catalyst while converting external raw material into product.",
+  "dimensions": {
+    "graphShape": "simple-loop",
+    "constraints": ["target", "product-outlet"],
+    "resourceConditions": ["perfect-recycle", "startup-inventory-required", "sustainable"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "catalyst", "name": "Catalyst" },
+        { "id": "intermediate", "name": "Intermediate" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "react",
+          "name": "React",
+          "inputs": [
+            { "itemId": "raw", "amount": 1 },
+            { "itemId": "catalyst", "amount": 1 }
+          ],
+          "outputs": [
+            { "itemId": "intermediate", "amount": 1 },
+            { "itemId": "product", "amount": 1 }
+          ]
+        },
+        {
+          "id": "recover",
+          "name": "Recover catalyst",
+          "inputs": [{ "itemId": "intermediate", "amount": 1 }],
+          "outputs": [{ "itemId": "catalyst", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "recipeId": "react",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        },
+        {
+          "id": "22222222-cccc-cccc-cccc-cccccccccccc",
+          "recipeId": "recover",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "33333333-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "destinationMachineGroupId": "22222222-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "intermediate",
+          "capacity": null
+        },
+        {
+          "id": "44444444-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "22222222-cccc-cccc-cccc-cccccccccccc",
+          "destinationMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "catalyst",
+          "capacity": null
+        }
+      ],
+      "supplies": [
+        {
+          "id": "55555555-cccc-cccc-cccc-cccccccccccc",
+          "destinationMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "raw",
+          "capacity": null
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "66666666-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "product",
+          "capacity": 4
+        }
+      ],
+      "surplusOutlets": []
+    },
+    "targets": [
+      {
+        "id": "77777777-cccc-cccc-cccc-cccccccccccc",
+        "productOutletId": "66666666-cccc-cccc-cccc-cccccccccccc",
+        "rate": 4
+      }
+    ],
+    "mode": "${mode}",
+    "objective": "${objective}",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "raw", "name": "Raw material" },
+        { "id": "catalyst", "name": "Catalyst" },
+        { "id": "intermediate", "name": "Intermediate" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "react",
+          "name": "React",
+          "inputs": [
+            { "itemId": "raw", "amount": 1 },
+            { "itemId": "catalyst", "amount": 1 }
+          ],
+          "outputs": [
+            { "itemId": "intermediate", "amount": 1 },
+            { "itemId": "product", "amount": 1 }
+          ]
+        },
+        {
+          "id": "recover",
+          "name": "Recover catalyst",
+          "inputs": [{ "itemId": "intermediate", "amount": 1 }],
+          "outputs": [{ "itemId": "catalyst", "amount": 1 }]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "recipeId": "react",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [
+            { "itemId": "raw", "rate": 4 },
+            { "itemId": "catalyst", "rate": 4 }
+          ],
+          "outputRates": [
+            { "itemId": "intermediate", "rate": 4 },
+            { "itemId": "product", "rate": 4 }
+          ]
+        },
+        {
+          "id": "22222222-cccc-cccc-cccc-cccccccccccc",
+          "recipeId": "recover",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [{ "itemId": "intermediate", "rate": 4 }],
+          "outputRates": [{ "itemId": "catalyst", "rate": 4 }]
+        }
+      ],
+      "connections": [
+        {
+          "id": "33333333-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "destinationMachineGroupId": "22222222-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "intermediate",
+          "capacity": null,
+          "flowRate": 4
+        },
+        {
+          "id": "44444444-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "22222222-cccc-cccc-cccc-cccccccccccc",
+          "destinationMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "catalyst",
+          "capacity": null,
+          "flowRate": 4
+        }
+      ],
+      "supplies": [
+        {
+          "id": "55555555-cccc-cccc-cccc-cccccccccccc",
+          "destinationMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "raw",
+          "capacity": null,
+          "requiredRate": 4,
+          "providedRate": 4,
+          "deficitRate": 0
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "66666666-cccc-cccc-cccc-cccccccccccc",
+          "sourceMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "itemId": "product",
+          "capacity": 4,
+          "deliveredRate": 4
+        }
+      ],
+      "surplusOutlets": [],
+      "targets": [
+        {
+          "id": "77777777-cccc-cccc-cccc-cccccccccccc",
+          "productOutletId": "66666666-cccc-cccc-cccc-cccccccccccc",
+          "requestedRate": 4,
+          "achievedRate": 4,
+          "surplusRate": 0,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": [],
+    "analysis": {
+      "cyclicComponents": [
+        {
+          "machineGroupIds": [
+            "11111111-cccc-cccc-cccc-cccccccccccc",
+            "22222222-cccc-cccc-cccc-cccccccccccc"
+          ],
+          "connectionIds": [
+            "33333333-cccc-cccc-cccc-cccccccccccc",
+            "44444444-cccc-cccc-cccc-cccccccccccc"
+          ],
+          "requiresStartupInventory": true
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "name": "target-driven",
+      "parameters": {
+        "mode": "targetDriven",
+        "objective": "meetTargetsMinimizeExternalSupply"
+      }
+    },
+    {
+      "name": "capacity-driven",
+      "parameters": {
+        "mode": "capacityDriven",
+        "objective": "maximizeTargetOutput"
+      }
+    }
+  ]
+}

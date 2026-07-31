@@ -177,7 +177,31 @@ public sealed record ComputedFactoryGraph(
     IReadOnlyList<ComputedTarget> Targets);
 
 /// <summary>
-///     Contains the status, computed graph, diagnostics, and bottlenecks from one solve.
+///     Identifies one cyclic set of machine groups and whether it can start without external inventory.
+/// </summary>
+/// <param name="MachineGroupIds">The machine-group IDs in graph declaration order.</param>
+/// <param name="ConnectionIds">The IDs of connections whose endpoints both belong to the component.</param>
+/// <param name="RequiresStartupInventory">
+///     <see langword="true" /> when the component cannot start from an empty state using configured supplies and startable upstream groups.
+/// </param>
+public sealed record CyclicComponent(
+    IReadOnlyList<Guid> MachineGroupIds,
+    IReadOnlyList<Guid> ConnectionIds,
+    bool RequiresStartupInventory);
+
+/// <summary>
+///     Contains structural information derived from a validated factory graph.
+/// </summary>
+/// <param name="CyclicComponents">The graph's cyclic components in graph declaration order.</param>
+public sealed record SolveAnalysis(IReadOnlyList<CyclicComponent> CyclicComponents) {
+    /// <summary>
+    ///     Gets an analysis with no cyclic components.
+    /// </summary>
+    public static SolveAnalysis Empty { get; } = new([]);
+}
+
+/// <summary>
+///     Contains the status, computed graph, diagnostics, bottlenecks, and structural analysis from one solve.
 /// </summary>
 /// <param name="Status">The solve outcome.</param>
 /// <param name="Graph">The computed graph, or <c>null</c> when the processor could not produce one.</param>
@@ -187,4 +211,9 @@ public sealed record SolveResult(
     SolveStatus Status,
     ComputedFactoryGraph? Graph,
     IReadOnlyList<SolveDiagnostic> Diagnostics,
-    IReadOnlyList<Bottleneck> Bottlenecks);
+    IReadOnlyList<Bottleneck> Bottlenecks) {
+    /// <summary>
+    ///     Gets structural information about the validated input graph.
+    /// </summary>
+    public SolveAnalysis Analysis { get; init; } = SolveAnalysis.Empty;
+}

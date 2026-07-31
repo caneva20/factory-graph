@@ -1,4 +1,5 @@
 using BenchmarkDotNet.Attributes;
+using FactoryGraph.Analysis;
 using FactoryGraph.Contracts;
 using FactoryGraph.Solving;
 using FactoryGraph.Validation;
@@ -12,7 +13,7 @@ public class ProcessorStageBenchmarks {
         PlanningMode.TargetDriven,
         8);
 
-    [Params(BenchmarkFamilies.AcyclicChain, BenchmarkFamilies.ConstrainedChain)]
+    [Params(BenchmarkFamilies.AcyclicChain, BenchmarkFamilies.ConstrainedChain, BenchmarkFamilies.RecyclingRing)]
     public string Family { get; set; } = BenchmarkFamilies.AcyclicChain;
 
     [Params(PlanningMode.TargetDriven, PlanningMode.CapacityDriven)]
@@ -30,6 +31,12 @@ public class ProcessorStageBenchmarks {
     [BenchmarkCategory("Stage", "Validation")]
     public IReadOnlyList<SolveDiagnostic> Validation() {
         return _state.Validator.Validate(_state.Request);
+    }
+
+    [Benchmark]
+    [BenchmarkCategory("Stage", "TopologyAnalysis")]
+    public SolveAnalysis TopologyAnalysis() {
+        return _state.Analyzer.Analyze(_state.Request.Graph, _state.Request.Options.NumericPolicy);
     }
 
     [Benchmark]
@@ -76,6 +83,8 @@ public class ProcessorStageBenchmarks {
         public required SolveRequest Request { get; init; }
 
         public required SolveRequestValidator Validator { get; init; }
+
+        public required FactoryGraphAnalyzer Analyzer { get; init; }
 
         public required HighsLinearProgramSolver LinearProgramSolver { get; init; }
 
@@ -132,6 +141,7 @@ public class ProcessorStageBenchmarks {
             return new BenchmarkState {
                 Request = request,
                 Validator = validator,
+                Analyzer = new FactoryGraphAnalyzer(),
                 LinearProgramSolver = linearProgramSolver,
                 ResultProjector = new LinearFactoryResultProjector(),
                 BottleneckReporter = new CapacityBottleneckReporter(),

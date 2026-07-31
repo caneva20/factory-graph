@@ -8,6 +8,8 @@ The README explains the [factory graph](../README.md#graph-concepts) and [solvin
 
 The solver creates a nonnegative variable for each machine-group activity, connection flow, supply rate, product-outlet delivery, and surplus-outlet flow. Incoming connections and supplies equal recipe consumption. Outgoing connections and outlets equal recipe production.
 
+These balances cover acyclic paths and recycling cycles. The solver computes all activity and flow variables in one linear program, so a cycle does not require a traversal order or a separate solve.
+
 The solver applies these upper bounds when present:
 
 - Machine activity is at most `AvailableMachineCount * ActivityRatePerMachine`.

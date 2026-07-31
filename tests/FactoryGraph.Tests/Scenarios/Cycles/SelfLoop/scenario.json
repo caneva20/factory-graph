@@ -1,0 +1,212 @@
+{
+  "name": "recycling-self-loop",
+  "description": "One machine group reuses three quarters of its catalyst output and replenishes the remaining quarter.",
+  "dimensions": {
+    "graphShape": "self-loop",
+    "constraints": ["target", "product-outlet"],
+    "resourceConditions": ["fractional-recycle", "partial-replenishment", "sustainable"]
+  },
+  "request": {
+    "graph": {
+      "items": [
+        { "id": "catalyst", "name": "Catalyst" },
+        { "id": "ore", "name": "Ore" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "process",
+          "name": "Catalytic process",
+          "inputs": [
+            { "itemId": "catalyst", "amount": 1 },
+            { "itemId": "ore", "amount": 1 }
+          ],
+          "outputs": [
+            { "itemId": "catalyst", "amount": 0.75 },
+            { "itemId": "product", "amount": 1 }
+          ]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "recipeId": "process",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null
+        }
+      ],
+      "connections": [
+        {
+          "id": "22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "catalyst",
+          "capacity": null
+        }
+      ],
+      "supplies": [
+        {
+          "id": "33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "catalyst",
+          "capacity": null
+        },
+        {
+          "id": "44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "ore",
+          "capacity": null
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "product",
+          "capacity": 4
+        }
+      ],
+      "surplusOutlets": []
+    },
+    "targets": [
+      {
+        "id": "66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "productOutletId": "55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+        "rate": 4
+      }
+    ],
+    "mode": "${mode}",
+    "objective": "${objective}",
+    "options": {
+      "numericPolicy": {
+        "absoluteTolerance": 0.000001,
+        "relativeTolerance": 0.000001,
+        "nearZeroThreshold": 0.000000001
+      },
+      "timeLimit": null
+    }
+  },
+  "expected": {
+    "status": "optimal",
+    "graph": {
+      "items": [
+        { "id": "catalyst", "name": "Catalyst" },
+        { "id": "ore", "name": "Ore" },
+        { "id": "product", "name": "Product" }
+      ],
+      "recipes": [
+        {
+          "id": "process",
+          "name": "Catalytic process",
+          "inputs": [
+            { "itemId": "catalyst", "amount": 1 },
+            { "itemId": "ore", "amount": 1 }
+          ],
+          "outputs": [
+            { "itemId": "catalyst", "amount": 0.75 },
+            { "itemId": "product", "amount": 1 }
+          ]
+        }
+      ],
+      "machineGroups": [
+        {
+          "id": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "recipeId": "process",
+          "activityRatePerMachine": 1,
+          "availableMachineCount": null,
+          "activityCapacity": null,
+          "activity": 4,
+          "effectiveMachineCount": 4,
+          "requiredWholeMachineCount": 4,
+          "utilization": 1,
+          "inputRates": [
+            { "itemId": "catalyst", "rate": 4 },
+            { "itemId": "ore", "rate": 4 }
+          ],
+          "outputRates": [
+            { "itemId": "catalyst", "rate": 3 },
+            { "itemId": "product", "rate": 4 }
+          ]
+        }
+      ],
+      "connections": [
+        {
+          "id": "22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "catalyst",
+          "capacity": null,
+          "flowRate": 3
+        }
+      ],
+      "supplies": [
+        {
+          "id": "33333333-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "catalyst",
+          "capacity": null,
+          "requiredRate": 1,
+          "providedRate": 1,
+          "deficitRate": 0
+        },
+        {
+          "id": "44444444-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "ore",
+          "capacity": null,
+          "requiredRate": 4,
+          "providedRate": 4,
+          "deficitRate": 0
+        }
+      ],
+      "productOutlets": [
+        {
+          "id": "55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "sourceMachineGroupId": "11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "itemId": "product",
+          "capacity": 4,
+          "deliveredRate": 4
+        }
+      ],
+      "surplusOutlets": [],
+      "targets": [
+        {
+          "id": "66666666-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "productOutletId": "55555555-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "requestedRate": 4,
+          "achievedRate": 4,
+          "surplusRate": 0,
+          "deficitRate": 0
+        }
+      ]
+    },
+    "diagnostics": [],
+    "bottlenecks": [],
+    "analysis": {
+      "cyclicComponents": [
+        {
+          "machineGroupIds": ["11111111-aaaa-aaaa-aaaa-aaaaaaaaaaaa"],
+          "connectionIds": ["22222222-aaaa-aaaa-aaaa-aaaaaaaaaaaa"],
+          "requiresStartupInventory": false
+        }
+      ]
+    }
+  },
+  "cases": [
+    {
+      "name": "target-driven",
+      "parameters": {
+        "mode": "targetDriven",
+        "objective": "meetTargetsMinimizeExternalSupply"
+      }
+    },
+    {
+      "name": "capacity-driven",
+      "parameters": {
+        "mode": "capacityDriven",
+        "objective": "maximizeTargetOutput"
+      }
+    }
+  ]
+}

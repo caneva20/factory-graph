@@ -28,6 +28,7 @@ public sealed class FactoryGraphProcessorTests {
         Assert.Equal(SolveStatus.InvalidRequest, result.Status);
         Assert.Null(result.Graph);
         Assert.Empty(result.Bottlenecks);
+        Assert.Empty(result.Analysis.CyclicComponents);
         Assert.False(invoked);
 
         Assert.Collection(
@@ -212,7 +213,8 @@ public sealed class FactoryGraphProcessorTests {
         var result = processor.Solve(request);
 
         Assert.Same(request, delegatedRequest);
-        Assert.Same(expected, result);
+        Assert.Equal(expected, result);
+        Assert.Empty(result.Analysis.CyclicComponents);
     }
 
     [Fact]

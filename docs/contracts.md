@@ -88,11 +88,13 @@ See `tests/FactoryGraph.Tests/Contracts/TargetDrivenContractTests.cs` and `Capac
 
 ## Results
 
-`SolveResult` contains a status, an optional computed graph, diagnostics, and bottlenecks. The computed graph includes the catalog and topology.
+`SolveResult` contains a status, an optional computed graph, diagnostics, bottlenecks, and topology analysis. The computed graph includes the catalog and topology.
 
 Machine-group results include activity, machine counts, utilization, and item rates. Boundary and target results include required, provided, achieved, surplus, and deficit rates. Connections include flow rates. Bottlenecks reference a machine group, connection, or supply.
 
 The target-driven solver returns an empty bottleneck list. Capacity-driven results can identify saturated machine-group, connection, and supply capacities. The computed graph is absent for `InvalidRequest`, `Infeasible`, `Unbounded`, and `Failed` results.
+
+`SolveAnalysis.CyclicComponents` identifies strongly connected machine groups that form recycling cycles. Each `CyclicComponent` contains its machine-group IDs, its internal connection IDs, and `RequiresStartupInventory`. Valid requests retain this analysis for every solve status. Invalid requests return empty analysis because their topology has not passed validation. See [Recycling Cycles](recycling-cycles.md) for startup classification rules.
 
 ## Numeric Policy
 

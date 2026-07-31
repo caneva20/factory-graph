@@ -1,0 +1,6 @@
+flowchart LR
+    zero[Zero replenishment] --> infeasible[Target-driven: infeasible]
+    near[Near-zero replenishment] --> infeasible
+    threshold[Threshold replenishment] --> infeasible
+    above[Above-threshold but insufficient] --> infeasible
+    perfect[Perfect recycle without a production bound] --> unbounded[Capacity-driven: unbounded]

@@ -16,3 +16,7 @@ See the [scenario authoring guide](scenarios/authoring.md) for required fixture 
 - [Capacity-driven single node](scenarios/capacity-driven-single-node.md) compares achieved output below and above the expected target rate.
 - [Capacity-driven constrained chain](scenarios/capacity-driven-constrained-chain.md) varies every supported capacity across a two-stage chain and verifies bottleneck reporting.
 - [Capacity-driven branched assembly](scenarios/capacity-driven-branched-assembly.md) covers proportional multiple targets, fan-in, fan-out, and coproduct surplus.
+- [Recycling self-loop](scenarios/recycling-self-loop.md) verifies fractional recovery and partial external replenishment in both planning modes.
+- [Recycling statuses](scenarios/recycling-statuses.md) covers zero and near-zero replenishment, infeasible target planning, and unbounded capacity planning.
+- [Simple recycling loop](scenarios/simple-recycling-loop.md) solves a two-machine component and flags its startup requirement in both planning modes.
+- [Connected recycling cycles](scenarios/connected-recycling-cycles.md) identifies ordered multi-node and self-loop components and propagates structural startability between them.

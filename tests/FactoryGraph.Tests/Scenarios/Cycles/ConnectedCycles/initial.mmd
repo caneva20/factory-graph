@@ -1,0 +1,9 @@
+flowchart LR
+    seed[Startup X supply] --> xToY[X to Y]
+    xToY -->|Y| yToZ[Y to Z]
+    yToZ -->|Z| zToX[Z to X]
+    zToX -->|X| xToY
+    zToX -->|Token| token[Token process]
+    token -->|Recovered token| token
+    zToX --> primary[Primary target]
+    token --> secondary[Secondary target]

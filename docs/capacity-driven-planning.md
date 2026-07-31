@@ -1,6 +1,6 @@
 # Capacity-Driven Planning
 
-The README explains the [factory graph](../README.md#graph-concepts) and [solving concepts](../README.md#solving-a-graph) used here. This document defines the capacity-driven optimization model for acyclic graphs.
+The README explains the [factory graph](../README.md#graph-concepts) and [solving concepts](../README.md#solving-a-graph) used here. This document defines the capacity-driven optimization model.
 
 `FactoryGraphProcessor` computes the largest target mix allowed by machine, flow, and boundary capacities.
 
@@ -27,6 +27,8 @@ At least one target rate must be positive. A zero-rate target stays at zero whil
 ## Model
 
 The solver uses the same nonnegative activity and flow variables, exact item balances, and capacity bounds as [target-driven planning](target-driven-planning.md). It adds λ and one proportional equality for each target.
+
+The shared balance model solves acyclic paths and recycling cycles simultaneously. Cyclic flow contributes to the same target multiplier and capacity constraints as other flow.
 
 The primary solve maximizes λ. The solver then fixes λ at its optimum and minimizes total machine activity. This leaves disconnected and optional production inactive. If no capacity bounds the target-producing paths, the result is `Unbounded`.
 

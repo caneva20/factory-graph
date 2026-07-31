@@ -1,3 +1,4 @@
+using FactoryGraph.Analysis;
 using FactoryGraph.Solving;
 using FactoryGraph.Validation;
 
@@ -32,6 +33,7 @@ public static class FactoryGraphProcessorFactory {
                 new SolverSettingsValidator(),
                 new FactoryGraphValidator(),
                 new TargetValidator()),
-            solver);
+            solver,
+            new FactoryGraphAnalyzer());
     }
 }

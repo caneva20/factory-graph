@@ -1,3 +1,4 @@
+using FactoryGraph.Analysis;
 using FactoryGraph.Contracts;
 using FactoryGraph.Solving;
 using FactoryGraph.Validation;
@@ -10,10 +11,15 @@ namespace FactoryGraph;
 public sealed class FactoryGraphProcessor {
     private readonly ISolveRequestValidator _validator;
     private readonly ISolveRequestSolver _solver;
+    private readonly FactoryGraphAnalyzer _analyzer;
 
-    internal FactoryGraphProcessor(ISolveRequestValidator validator, ISolveRequestSolver solver) {
+    internal FactoryGraphProcessor(
+        ISolveRequestValidator validator,
+        ISolveRequestSolver solver,
+        FactoryGraphAnalyzer analyzer) {
         _validator = validator;
         _solver = solver;
+        _analyzer = analyzer;
     }
 
     /// <summary>
@@ -24,8 +30,12 @@ public sealed class FactoryGraphProcessor {
     public SolveResult Solve(SolveRequest request) {
         var diagnostics = _validator.Validate(request);
 
-        return diagnostics.Count > 0
-            ? new SolveResult(SolveStatus.InvalidRequest, null, diagnostics, [])
-            : _solver.Solve(request);
+        if (diagnostics.Count > 0) {
+            return new SolveResult(SolveStatus.InvalidRequest, null, diagnostics, []);
+        }
+
+        var analysis = _analyzer.Analyze(request.Graph, request.Options.NumericPolicy);
+
+        return _solver.Solve(request) with { Analysis = analysis };
     }
 }

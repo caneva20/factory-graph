@@ -10,7 +10,7 @@ FactoryGraph answers questions such as:
 - Which outputs must leave as products or surplus?
 - Can the factory meet the target without exceeding its throughput limits?
 
-The built-in solver supports target-driven and capacity-driven planning for graphs whose production flow does not loop back to an earlier step. These are called acyclic graphs. The solver does not schedule individual machines or simulate a factory over time.
+The built-in solver supports target-driven and capacity-driven planning for acyclic graphs and recycling cycles. It solves all steady-state rates together, including material that returns to an earlier production step. The solver does not schedule individual machines or simulate a factory over time.
 
 ## Mental Model
 
@@ -349,6 +349,8 @@ Diagnostics contain a stable `Code`, a caller-facing `Message`, a `Severity`, an
 
 Capacity-driven results report saturated machine-group, connection, and supply capacities on paths to positive targets as `Bottlenecks`. Each entry includes the stable graph-element ID, capacity, utilization, and a description. Target-driven results return an empty bottleneck list.
 
+`SolveResult.Analysis.CyclicComponents` identifies recycling cycles after request validation, including results whose status is `Infeasible`, `Unbounded`, or `Failed`. Each component lists its machine-group and internal-connection IDs in graph declaration order. `RequiresStartupInventory` reports whether external material or startable upstream production can start every group in the cycle. It does not calculate startup quantities or change the steady-state solution. See [Recycling Cycles](docs/recycling-cycles.md).
+
 ## Mermaid Export
 
 Install the command-line exporter as a .NET tool:
@@ -427,7 +429,7 @@ The same policy prevents a value such as `2.0000000001` from requiring 3 whole m
 
 The built-in solver currently provides:
 
-- target-driven and capacity-driven planning for acyclic graphs;
+- target-driven and capacity-driven planning for acyclic graphs and recycling cycles;
 - multiple targets on distinct product outlets;
 - multiple inputs and outputs per recipe;
 - splits, merges, fan-in, fan-out, and disconnected graph sections;
@@ -436,8 +438,7 @@ The built-in solver currently provides:
 
 It does not currently provide:
 
-- supported semantics for production cycles;
-- time-based simulation, inventory, transport, or scheduling; or
+- startup inventory quantities, time-based simulation, inventory, transport, or scheduling; or
 - integer optimization of machine counts.
 
 `RequiredWholeMachineCount` is a derived ceiling. The solver optimizes continuous activity rates rather than choosing integer machine counts.
@@ -473,6 +474,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development and release conventions. 
 - [Public Contracts](docs/contracts.md) lists identity, topology, result, and collection rules.
 - [Target-Driven Planning](docs/target-driven-planning.md) defines the optimization model and status mapping.
 - [Capacity-Driven Planning](docs/capacity-driven-planning.md) defines proportional targets and bottleneck reporting.
+- [Recycling Cycles](docs/recycling-cycles.md) defines cyclic solving and startup analysis.
 - [Request Validation](docs/validation.md) lists validation rules and stable diagnostic codes.
 - [Solver Backend](docs/solver-backend.md) lists the native solver dependency and supported runtimes.
 - [Scenarios](docs/scenarios.md) explains executable planning examples.
