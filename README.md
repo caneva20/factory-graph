@@ -25,11 +25,23 @@ The built-in solver supports target-driven and capacity-driven planning for acyc
 | [`FactoryGraph.Exporter.Mermaid`](https://www.nuget.org/packages/FactoryGraph.Exporter.Mermaid)         | Export requests and results as Mermaid diagrams    |
 | [`FactoryGraph.Exporter.Mermaid.Cli`](https://www.nuget.org/packages/FactoryGraph.Exporter.Mermaid.Cli) | Run the Mermaid exporter as a .NET tool            |
 
-Install version `0.1.0` from NuGet.org:
+The following commands install version `0.1.0` from NuGet.org.
+
+### Core Library
 
 ```console
 dotnet add package FactoryGraph --version 0.1.0
+```
+
+### Mermaid Exporter
+
+```console
 dotnet add package FactoryGraph.Exporter.Mermaid --version 0.1.0
+```
+
+### Mermaid CLI
+
+```console
 dotnet tool install --global FactoryGraph.Exporter.Mermaid.Cli --version 0.1.0
 ```
 
