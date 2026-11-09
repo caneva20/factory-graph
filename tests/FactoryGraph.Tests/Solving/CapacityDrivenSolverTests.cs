@@ -251,6 +251,31 @@ public sealed class CapacityDrivenSolverTests {
         Assert.Equal(1, backend.AddedRowCount);
     }
 
+    [Fact]
+    public void FallbackSupplyCoversOnlyWhatExplicitSuppliesCannot() {
+        var machine = Id(1);
+        var fallback = Id(2);
+        var explicitSupply = Id(3);
+        var outlet = Id(4);
+
+        var request = Request(
+            items: ["raw", "product"],
+            recipes: [Recipe("make", [("raw", 1)], [("product", 1)])],
+            groups: [new MachineGroup(machine, "make", 1, ActivityCapacity: 6)],
+            connections: [],
+            supplies: [new Supply(fallback, machine, "raw", IsFallback: true), new Supply(explicitSupply, machine, "raw", 4)],
+            productOutlets: [new ProductOutlet(outlet, machine, "product")],
+            surplusOutlets: [],
+            targets: [new Target(Id(5), outlet, 10)]);
+
+        var result = Solve(request);
+
+        Assert.Equal(SolveStatus.Optimal, result.Status);
+        AssertClose(6, result.Graph!.Targets.Single().AchievedRate);
+        AssertClose(4, result.Graph.Supplies.Single(supply => supply.Id == explicitSupply).ProvidedRate);
+        AssertClose(2, result.Graph.Supplies.Single(supply => supply.Id == fallback).ProvidedRate);
+    }
+
     private static SolveResult Solve(SolveRequest request) => FactoryGraphProcessorFactory.Create().Solve(request);
 
     private static SolveRequest Request(

@@ -313,6 +313,32 @@ public sealed class TargetDrivenSolverTests {
         Assert.Equal(1, backend.AddedRowCount);
     }
 
+    [Theory]
+    [InlineData(SolveObjective.MeetTargetsMinimizeExternalSupply)]
+    [InlineData(SolveObjective.MeetTargetsMinimizeSurplus)]
+    public void FallbackSupplyCoversOnlyWhatExplicitSuppliesCannot(SolveObjective objective) {
+        var machine = Id(1);
+        var fallback = Id(2);
+        var explicitSupply = Id(3);
+        var outlet = Id(4);
+
+        var request = Request(
+            items: ["raw", "product"],
+            recipes: [Recipe("make", [("raw", 1)], [("product", 1)])],
+            groups: [Group(machine, "make")],
+            connections: [],
+            supplies: [new Supply(fallback, machine, "raw", IsFallback: true), new Supply(explicitSupply, machine, "raw", 3)],
+            productOutlets: [new ProductOutlet(outlet, machine, "product")],
+            surplusOutlets: [],
+            targets: [new Target(Id(5), outlet, 5)]);
+
+        var result = FactoryGraphProcessorFactory.Create().Solve(request with { Objective = objective });
+
+        Assert.Equal(SolveStatus.Optimal, result.Status);
+        Assert.Equal(3, result.Graph!.Supplies.Single(supply => supply.Id == explicitSupply).ProvidedRate);
+        Assert.Equal(2, result.Graph.Supplies.Single(supply => supply.Id == fallback).ProvidedRate);
+    }
+
     private static SolveRequest Request(
         IReadOnlyList<string> items,
         IReadOnlyList<Recipe> recipes,

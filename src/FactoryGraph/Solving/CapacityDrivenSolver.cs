@@ -15,33 +15,14 @@ internal sealed class CapacityDrivenSolver(
 
         try {
             var model = modelBuilder.Build(request);
-            var primaryCosts = model.PrimaryCosts();
             using var session = linearProgramSolver.CreateSession(model.FactoryModel.Program, request.Options.NumericPolicy);
-            var primary = Run(session, primaryCosts, null, request, stopwatch);
-
-            if (primary.Status != SolveStatus.Optimal) return Result(request, model, primary);
-
-            var primaryValue = Dot(primaryCosts, primary.Values);
-
-            var objectiveLimit = new ModelRow(
-                new Dictionary<int, double> { [model.ScaleVariable] = 1 },
-                -primaryValue,
-                -primaryValue);
-
-            if (Remaining(request.Options.TimeLimit, stopwatch.Elapsed) is { } duration && duration <= TimeSpan.Zero) {
-                return Result(request, model, PrimaryFallback(primary, "The time limit expired before activity minimization."));
-            }
-
-            var secondary = Run(
+            var runner = new LexicographicStageRunner(
                 session,
-                model.FactoryModel.ActivityCosts(),
-                objectiveLimit,
                 request,
-                stopwatch);
+                stopwatch,
+                "No solution satisfies the graph balances, target proportions, and capacities.");
 
-            return secondary.Status is SolveStatus.Optimal or SolveStatus.Feasible
-                ? Result(request, model, secondary)
-                : Result(request, model, PrimaryFallback(primary, "Activity minimization did not produce a usable solution."));
+            return Result(request, model, runner.Optimize(Stages(model)));
         } catch (Exception exception) {
             return new SolveResult(
                 Status: SolveStatus.Failed,
@@ -51,39 +32,21 @@ internal sealed class CapacityDrivenSolver(
         }
     }
 
-    private StageResult Run(
-        ILinearProgramSession session,
-        double[] costs,
-        ModelRow? objectiveLimit,
-        SolveRequest request,
-        Stopwatch stopwatch) {
-        var remaining = Remaining(request.Options.TimeLimit, stopwatch.Elapsed);
-        var result = objectiveLimit is null
-            ? session.Solve(costs, remaining)
-            : session.AddRowAndSolve(costs, objectiveLimit, remaining);
-
-        var status = result.Status switch {
-            LinearProgramStatus.Optimal => SolveStatus.Optimal,
-            LinearProgramStatus.Feasible => SolveStatus.Feasible,
-            LinearProgramStatus.Infeasible => SolveStatus.Infeasible,
-            LinearProgramStatus.Unbounded => SolveStatus.Unbounded,
-            _ => SolveStatus.Failed
+    private static List<CostStage> Stages(CapacityDrivenModel model) {
+        var stages = new List<CostStage> {
+            new("target scale maximization", model.PrimaryCosts(), value => new ModelRow(
+                new Dictionary<int, double> { [model.ScaleVariable] = 1 },
+                -value,
+                -value))
         };
 
-        var diagnostic = status switch {
-            SolveStatus.Feasible => Diagnostic(
-                SolverDiagnosticCodes.LimitReached,
-                $"The linear solver stopped with status '{result.Detail}' after finding a feasible solution.",
-                DiagnosticSeverity.Warning),
-            SolveStatus.Infeasible => Diagnostic(
-                SolverDiagnosticCodes.Infeasible,
-                "No solution satisfies the graph balances, target proportions, and capacities."),
-            SolveStatus.Unbounded => Diagnostic(SolverDiagnosticCodes.Unbounded, "The planning objective is unbounded."),
-            SolveStatus.Failed => Diagnostic(SolverDiagnosticCodes.Failed, $"The linear solver stopped with status '{result.Detail}'."),
-            _ => null
-        };
+        if (model.FactoryModel.FallbackSupplies.Count > 0) {
+            stages.Add(new CostStage("fallback supply minimization", model.FactoryModel.FallbackSupplyCosts()));
+        }
 
-        return new StageResult(status, result.Values, diagnostic is null ? [] : [diagnostic]);
+        stages.Add(new CostStage("activity minimization", model.FactoryModel.ActivityCosts()));
+
+        return stages;
     }
 
     private SolveResult Result(SolveRequest request, CapacityDrivenModel model, StageResult stage) {
@@ -97,29 +60,6 @@ internal sealed class CapacityDrivenSolver(
         return new SolveResult(stage.Status, graph, stage.Diagnostics, bottlenecks);
     }
 
-    private static StageResult PrimaryFallback(StageResult primary, string message) {
-        return primary with {
-            Status = SolveStatus.Feasible,
-            Diagnostics = [Diagnostic(SolverDiagnosticCodes.SecondaryOptimizationIncomplete, message, DiagnosticSeverity.Warning)]
-        };
-    }
-
-    private static TimeSpan? Remaining(TimeSpan? limit, TimeSpan elapsed) => limit - elapsed;
-
-    private static double Dot(IReadOnlyList<double> left, IReadOnlyList<double> right) {
-        var result = 0d;
-        for (var index = 0; index < left.Count; index++) result += left[index] * right[index];
-
-        return result;
-    }
-
-    private static SolveDiagnostic Diagnostic(
-        string code,
-        string message,
-        DiagnosticSeverity severity = DiagnosticSeverity.Error) => new(code, severity, message, []);
-
-    private sealed record StageResult(
-        SolveStatus Status,
-        double[] Values,
-        IReadOnlyList<SolveDiagnostic> Diagnostics);
+    private static SolveDiagnostic Diagnostic(string code, string message) =>
+        new(code, DiagnosticSeverity.Error, message, []);
 }

@@ -20,7 +20,7 @@ A target sets its product outlet's lower bound to the requested rate. Product ou
 
 ## Objectives
 
-`MeetTargetsMinimizeExternalSupply` minimizes total external supply. `MeetTargetsMinimizeSurplus` minimizes total surplus-outlet flow. The solver then holds that optimum within the request's numeric tolerance and minimizes total machine activity, leaving unnecessary production inactive.
+`MeetTargetsMinimizeExternalSupply` minimizes total external supply. `MeetTargetsMinimizeSurplus` minimizes total surplus-outlet flow. The solver then holds that optimum within the request's numeric tolerance. If the request has fallback supplies, it minimizes their total flow next, so a fallback supply provides only what the other supplies cannot. Finally it minimizes total machine activity, leaving unnecessary production inactive.
 
 ## Results
 

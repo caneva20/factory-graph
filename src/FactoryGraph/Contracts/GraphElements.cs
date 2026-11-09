@@ -74,11 +74,16 @@ public sealed record ItemConnection(
 /// <param name="DestinationMachineGroupId">The receiving machine-group ID.</param>
 /// <param name="ItemId">The supplied item ID.</param>
 /// <param name="Capacity">The maximum supplied rate, or <c>null</c> for unlimited supply.</param>
+/// <param name="IsFallback">
+///     Whether the supply stands in for a missing source. After the objective is optimized, the solver draws from a
+///     fallback supply only when the non-fallback supplies cannot provide the required rate.
+/// </param>
 public sealed record Supply(
     Guid Id,
     Guid DestinationMachineGroupId,
     string ItemId,
-    double? Capacity = null);
+    double? Capacity = null,
+    bool IsFallback = false);
 
 /// <summary>
 ///     Defines an intended-product outlet for a machine-group output.

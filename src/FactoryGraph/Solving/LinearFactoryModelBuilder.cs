@@ -102,7 +102,8 @@ internal sealed class LinearFactoryModelBuilder {
             connections,
             supplies,
             productOutlets,
-            surplusOutlets);
+            surplusOutlets,
+            graph.Supplies.Where(supply => supply.IsFallback).Select(supply => supplies[supply.Id]).ToArray());
     }
 
     private static Dictionary<TKey, int> Index<T, TKey>(

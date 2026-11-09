@@ -21,7 +21,7 @@ internal sealed class HighsLinearProgramSolver : ILinearProgramSolver {
         private readonly NumericPolicy _numericPolicy;
         private readonly HighsLpSolver _solver = new();
         private bool _modelLoaded;
-        private ModelRow? _additionalRow;
+        private readonly List<ModelRow> _additionalRows = [];
         private int[]? _variableIndices;
 
         public Session(LinearProgram program, NumericPolicy numericPolicy) {
@@ -43,12 +43,8 @@ internal sealed class HighsLinearProgramSolver : ILinearProgramSolver {
             IReadOnlyList<double> costs,
             ModelRow additionalRow,
             TimeSpan? timeLimit) {
-            if (_additionalRow is not null) {
-                throw new InvalidOperationException("A linear-program session supports one additional row.");
-            }
-
             Prepare(costs, additionalRow);
-            _additionalRow = additionalRow;
+            _additionalRows.Add(additionalRow);
             return Run(timeLimit);
         }
 
@@ -143,7 +139,7 @@ internal sealed class HighsLinearProgramSolver : ILinearProgramSolver {
             var solution = _solver.getSolution().colvalue;
 
             return new LinearProgramResult(
-                MapStatus(nativeStatus, _program, _additionalRow, solution, _numericPolicy),
+                MapStatus(nativeStatus, _program, _additionalRows, solution, _numericPolicy),
                 solution,
                 nativeStatus.ToString());
         }
@@ -194,7 +190,7 @@ internal sealed class HighsLinearProgramSolver : ILinearProgramSolver {
     private static LinearProgramStatus MapStatus(
         HighsModelStatus status,
         LinearProgram program,
-        ModelRow? additionalRow,
+        IReadOnlyList<ModelRow> additionalRows,
         double[] values,
         NumericPolicy numericPolicy) {
         return status switch {
@@ -202,14 +198,14 @@ internal sealed class HighsLinearProgramSolver : ILinearProgramSolver {
             HighsModelStatus.kInfeasible => LinearProgramStatus.Infeasible,
             HighsModelStatus.kUnbounded => LinearProgramStatus.Unbounded,
             HighsModelStatus.kTimeLimit or HighsModelStatus.kIterationLimit
-                when IsFeasible(program, additionalRow, values, numericPolicy) => LinearProgramStatus.Feasible,
+                when IsFeasible(program, additionalRows, values, numericPolicy) => LinearProgramStatus.Feasible,
             _ => LinearProgramStatus.Failed
         };
     }
 
     private static bool IsFeasible(
         LinearProgram program,
-        ModelRow? additionalRow,
+        IReadOnlyList<ModelRow> additionalRows,
         double[] values,
         NumericPolicy numericPolicy) {
         if (values.Length != program.VariableCount || values.Any(value => !double.IsFinite(value))) {
@@ -232,7 +228,7 @@ internal sealed class HighsLinearProgramSolver : ILinearProgramSolver {
             if (!IsRowFeasible(row, values, numericPolicy)) return false;
         }
 
-        return additionalRow is null || IsRowFeasible(additionalRow, values, numericPolicy);
+        return additionalRows.All(row => IsRowFeasible(row, values, numericPolicy));
     }
 
     private static bool IsRowFeasible(ModelRow row, double[] values, NumericPolicy numericPolicy) {

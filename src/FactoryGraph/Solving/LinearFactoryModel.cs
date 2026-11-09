@@ -8,7 +8,8 @@ internal sealed class LinearFactoryModel(
     IReadOnlyDictionary<Guid, int> connections,
     IReadOnlyDictionary<Guid, int> supplies,
     IReadOnlyDictionary<Guid, int> productOutlets,
-    IReadOnlyDictionary<Guid, int> surplusOutlets) {
+    IReadOnlyDictionary<Guid, int> surplusOutlets,
+    IReadOnlyList<int> fallbackSupplies) {
     public LinearProgram Program { get; } = program;
 
     public IReadOnlyDictionary<Guid, int> Activities { get; } = activities;
@@ -20,6 +21,8 @@ internal sealed class LinearFactoryModel(
     public IReadOnlyDictionary<Guid, int> ProductOutlets { get; } = productOutlets;
 
     public IReadOnlyDictionary<Guid, int> SurplusOutlets { get; } = surplusOutlets;
+
+    public IReadOnlyList<int> FallbackSupplies { get; } = fallbackSupplies;
 
     public int VariableCount => Program.VariableCount;
 
@@ -40,7 +43,8 @@ internal sealed class LinearFactoryModel(
             Connections,
             Supplies,
             ProductOutlets,
-            SurplusOutlets);
+            SurplusOutlets,
+            FallbackSupplies);
     }
 
     public double[] PrimaryCosts(SolveObjective objective) {
@@ -51,6 +55,16 @@ internal sealed class LinearFactoryModel(
             : SurplusOutlets.Values;
 
         foreach (var variable in variables) {
+            costs[variable] = 1;
+        }
+
+        return costs;
+    }
+
+    public double[] FallbackSupplyCosts() {
+        var costs = new double[VariableCount];
+
+        foreach (var variable in FallbackSupplies) {
             costs[variable] = 1;
         }
 

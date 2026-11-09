@@ -30,7 +30,7 @@ The solver uses the same nonnegative activity and flow variables, exact item bal
 
 The shared balance model solves acyclic paths and recycling cycles simultaneously. Cyclic flow contributes to the same target multiplier and capacity constraints as other flow.
 
-The primary solve maximizes λ. The solver then fixes λ at its optimum and minimizes total machine activity. This leaves disconnected and optional production inactive. If no capacity bounds the target-producing paths, the result is `Unbounded`.
+The primary solve maximizes λ. The solver then fixes λ at its optimum. If the request has fallback supplies, it minimizes their total flow, then minimizes total machine activity. This leaves disconnected and optional production inactive. If no capacity bounds the target-producing paths, the result is `Unbounded`.
 
 ## Results
 
@@ -52,4 +52,4 @@ For a machine group with both `AvailableMachineCount` and `ActivityCapacity`, th
 
 FactoryGraph maps HiGHS statuses to `Optimal`, `Feasible`, `Infeasible`, `Unbounded`, or `Failed`. A time or iteration limit returns `Feasible` when the backend supplies values that satisfy the model under the request's numeric policy. Every non-optimal result includes a diagnostic.
 
-`SolverOptions.TimeLimit` covers target maximization and follow-up activity minimization. If the second stage cannot produce a usable result, FactoryGraph returns the primary solution as `Feasible` with `solver.secondary-optimization-incomplete`.
+`SolverOptions.TimeLimit` covers target maximization and the follow-up minimization stages. If a later stage cannot produce a usable result, FactoryGraph returns the primary solution as `Feasible` with `solver.secondary-optimization-incomplete`.
