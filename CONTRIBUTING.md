@@ -40,10 +40,27 @@ The repository releases all three packages together. Release tags use `vMAJOR.MI
 Regular CI packs all three projects, verifies package metadata and contents, and runs clean-consumer tests without publishing. Run the same checks locally with:
 
 ```console
+version="$(./eng/package-version.sh)"
 dotnet pack FactoryGraph.slnx --configuration Release
-./eng/verify-packages.sh artifacts/packages 0.1.0
-./eng/test-packages.sh artifacts/packages 0.1.0
+./eng/verify-packages.sh artifacts/packages "$version"
+./eng/test-packages.sh artifacts/packages "$version"
 ```
+
+### Local package feed
+
+NuGet.org takes a while to index a new push. To use unpublished changes from another project, pack into a local feed:
+
+```console
+./eng/pack-local.sh
+```
+
+The script packs a `<VersionPrefix>-local.<timestamp>` version, verifies it, runs the clean-consumer test, and replaces the previous local packages in `artifacts/local-packages`. Pass `--skip-smoke` to skip the consumer test. Register the folder once per machine:
+
+```console
+dotnet nuget add source "$PWD/artifacts/local-packages" --name factorygraph-local
+```
+
+A consumer opts in by passing the printed version, for example `dotnet restore -p:FactoryGraphVersion=0.2.0-local.20261109T153000`, if its project reads that property.
 
 The release workflow publishes a verified `vMAJOR.MINOR.PATCH` tag to NuGet.org through Trusted Publishing. Configure the `release` environment and its `NUGET_USER` secret before creating a release tag. NuGet package versions are immutable.
 

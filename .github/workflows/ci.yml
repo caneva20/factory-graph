@@ -32,11 +32,15 @@ jobs:
       - name: Pack
         run: dotnet pack FactoryGraph.slnx --configuration Release --no-build
 
+      - name: Resolve package version
+        id: version
+        run: echo "version=$(./eng/package-version.sh)" >> "$GITHUB_OUTPUT"
+
       - name: Verify package contents
-        run: ./eng/verify-packages.sh artifacts/packages 0.1.0
+        run: ./eng/verify-packages.sh artifacts/packages ${{ steps.version.outputs.version }}
 
       - name: Test package consumers
-        run: ./eng/test-packages.sh artifacts/packages 0.1.0
+        run: ./eng/test-packages.sh artifacts/packages ${{ steps.version.outputs.version }}
 
       - name: Upload packages
         uses: actions/upload-artifact@v4
