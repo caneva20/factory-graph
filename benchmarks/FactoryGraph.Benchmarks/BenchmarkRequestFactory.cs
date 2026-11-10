@@ -47,8 +47,7 @@ internal static class BenchmarkRequestFactory {
             .ToArray();
 
         var supply = new Supply(
-            Id(3, 0),
-            machineGroups[0].Id,
+            Id(3, 0), [machineGroups[0].Id],
             items[0].Id,
             Capacity: constrained ? 3 : recycling ? 0.1 : null);
 
@@ -69,7 +68,7 @@ internal static class BenchmarkRequestFactory {
 
         return new SolveRequest(
             graph,
-            [new Target(Id(5, 0), productOutlet.Id, 1)],
+            [new Target(Id(5, 0), [productOutlet.Id], 1)],
             mode,
             mode == PlanningMode.TargetDriven
                 ? SolveObjective.MeetTargetsMinimizeExternalSupply

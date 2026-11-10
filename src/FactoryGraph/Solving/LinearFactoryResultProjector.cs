@@ -52,9 +52,13 @@ internal sealed class LinearFactoryResultProjector {
         var supplies = graph.Supplies.Select(supply => {
             var provided = policy.NormalizeNearZero(values[model.Supplies[supply.Id]]);
 
+            var destinations = supply.DestinationMachineGroupIds.Select(destinationId => new ComputedSupplyDestination(
+                destinationId,
+                policy.NormalizeNearZero(values[model.SupplyDestinations[(supply.Id, destinationId)]]))).ToArray();
+
             return new ComputedSupply(
                 supply.Id,
-                supply.DestinationMachineGroupId,
+                destinations,
                 supply.ItemId,
                 supply.Capacity,
                 provided,
@@ -69,8 +73,6 @@ internal sealed class LinearFactoryResultProjector {
             outlet.Capacity,
             policy.NormalizeNearZero(values[model.ProductOutlets[outlet.Id]]))).ToArray();
 
-        var deliveredRates = productOutlets.ToDictionary(outlet => outlet.Id, outlet => outlet.DeliveredRate);
-
         var surplusOutlets = graph.SurplusOutlets.Select(outlet => new ComputedSurplusOutlet(
             outlet.Id,
             outlet.SourceMachineGroupId,
@@ -79,11 +81,11 @@ internal sealed class LinearFactoryResultProjector {
             policy.NormalizeNearZero(values[model.SurplusOutlets[outlet.Id]]))).ToArray();
 
         var targets = request.Targets.Select(target => {
-            var achieved = deliveredRates[target.ProductOutletId];
+            var achieved = policy.NormalizeNearZero(values[model.Targets[target.Id]]);
 
             return new ComputedTarget(
                 target.Id,
-                target.ProductOutletId,
+                target.ProductOutletIds,
                 target.Rate,
                 achieved,
                 policy.NormalizeNearZero(Math.Max(0, achieved - target.Rate)),

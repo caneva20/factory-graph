@@ -24,12 +24,12 @@ public sealed class TargetDrivenSolverTests {
                 new ItemConnection(Id(11), sourceB, merge, "part-b")
             ],
             supplies: [
-                new Supply(Id(20), sourceA, "raw-a"),
-                new Supply(Id(21), sourceB, "raw-b")
+                new Supply(Id(20), [sourceA], "raw-a"),
+                new Supply(Id(21), [sourceB], "raw-b")
             ],
             productOutlets: [new ProductOutlet(productOutlet, merge, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(30), productOutlet, 5)]);
+            targets: [new Target(Id(30), [productOutlet], 5)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request);
 
@@ -68,14 +68,14 @@ public sealed class TargetDrivenSolverTests {
                 new ItemConnection(Id(10), source, consumerA, "shared"),
                 new ItemConnection(Id(11), source, consumerB, "shared")
             ],
-            supplies: [new Supply(Id(20), source, "raw")],
+            supplies: [new Supply(Id(20), [source], "raw")],
             productOutlets: [
                 new ProductOutlet(productOutletA, consumerA, "a"),
                 new ProductOutlet(productOutletB, consumerB, "b"),
                 new ProductOutlet(Id(7), disconnected, "unused")
             ],
             surplusOutlets: [],
-            targets: [new Target(Id(30), productOutletA, 3), new Target(Id(31), productOutletB, 4)]);
+            targets: [new Target(Id(30), [productOutletA], 3), new Target(Id(31), [productOutletB], 4)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request);
 
@@ -106,11 +106,11 @@ public sealed class TargetDrivenSolverTests {
                 new ItemConnection(Id(10), producerA, final, "intermediate"),
                 new ItemConnection(Id(11), producerB, final, "intermediate")
             ],
-            [new Supply(Id(20), producerA, "raw"), new Supply(Id(21), producerB, "raw")],
+            [new Supply(Id(20), [producerA], "raw"), new Supply(Id(21), [producerB], "raw")],
             [new ProductOutlet(productOutlet, final, "product")],
             [new SurplusOutlet(Id(22), producerA, "waste")]);
 
-        var target = new Target(Id(30), productOutlet, 1);
+        var target = new Target(Id(30), [productOutlet], 1);
 
         var minimizeSupply = FactoryGraphProcessorFactory.Create().Solve(new SolveRequest(
             graph, [target], PlanningMode.TargetDriven, SolveObjective.MeetTargetsMinimizeExternalSupply, Options()));
@@ -135,13 +135,13 @@ public sealed class TargetDrivenSolverTests {
             recipes: [Recipe("co-product", [("raw", 1)], [("a", 1), ("b", 1)])],
             groups: [Group(machine, "co-product")],
             connections: [],
-            supplies: [new Supply(Id(10), machine, "raw")],
+            supplies: [new Supply(Id(10), [machine], "raw")],
             productOutlets: [
                 new ProductOutlet(firstProductOutlet, machine, "a"),
                 new ProductOutlet(secondProductOutlet, machine, "b")
             ],
             surplusOutlets: [],
-            targets: [new Target(Id(20), firstProductOutlet, 5), new Target(Id(21), secondProductOutlet, 2)]);
+            targets: [new Target(Id(20), [firstProductOutlet], 5), new Target(Id(21), [secondProductOutlet], 2)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request);
 
@@ -168,10 +168,10 @@ public sealed class TargetDrivenSolverTests {
                 new MachineGroup(assemblers, "assemble-gear", 2, AvailableMachineCount: 2)
             ],
             connections: [new ItemConnection(Id(10), smelters, assemblers, "plate")],
-            supplies: [new Supply(Id(20), smelters, "ore", Capacity: 10)],
+            supplies: [new Supply(Id(20), [smelters], "ore", Capacity: 10)],
             productOutlets: [new ProductOutlet(productOutlet, assemblers, "gear", Capacity: 5)],
             surplusOutlets: [new SurplusOutlet(Id(21), smelters, "slag", Capacity: 2)],
-            targets: [new Target(Id(30), productOutlet, 3)]);
+            targets: [new Target(Id(30), [productOutlet], 3)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request);
 
@@ -209,10 +209,10 @@ public sealed class TargetDrivenSolverTests {
             ],
             groups: [group, Group(final, "final")],
             connections: [new ItemConnection(Id(10), source, final, "part", limitedElement == "connection" ? 4 : null)],
-            supplies: [new Supply(Id(20), source, "raw", limitedElement == "supply" ? 4 : null)],
+            supplies: [new Supply(Id(20), [source], "raw", limitedElement == "supply" ? 4 : null)],
             productOutlets: [new ProductOutlet(productOutlet, final, "product", limitedElement == "product-outlet" ? 4 : null)],
             surplusOutlets: [new SurplusOutlet(Id(21), source, "waste", limitedElement == "surplus-outlet" ? 4 : null)],
-            targets: [new Target(Id(30), productOutlet, 5)]);
+            targets: [new Target(Id(30), [productOutlet], 5)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request);
 
@@ -245,7 +245,7 @@ public sealed class TargetDrivenSolverTests {
             supplies: [],
             productOutlets: [new ProductOutlet(productOutlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(3), productOutlet, 6)]);
+            targets: [new Target(Id(3), [productOutlet], 6)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request);
 
@@ -264,10 +264,10 @@ public sealed class TargetDrivenSolverTests {
             recipes: [Recipe("make", [("raw", 1), ("raw", 2)], [("product", 2), ("product", 1)])],
             groups: [Group(machine, "make")],
             connections: [],
-            supplies: [new Supply(Id(3), machine, "raw")],
+            supplies: [new Supply(Id(3), [machine], "raw")],
             productOutlets: [new ProductOutlet(productOutlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(4), productOutlet, 6)]);
+            targets: [new Target(Id(4), [productOutlet], 6)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request);
         var computed = Machine(result, machine);
@@ -289,10 +289,10 @@ public sealed class TargetDrivenSolverTests {
             recipes: [Recipe("make", [("raw", 1)], [("product", 1)])],
             groups: [Group(machine, "make")],
             connections: [],
-            supplies: [new Supply(Id(3), machine, "raw")],
+            supplies: [new Supply(Id(3), [machine], "raw")],
             productOutlets: [new ProductOutlet(productOutlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(4), productOutlet, 1)]);
+            targets: [new Target(Id(4), [productOutlet], 1)]);
 
         var backend = new SequenceLinearProgramSolver(
             new LinearProgramResult(LinearProgramStatus.Optimal, [1, 1, 1], "primary optimal"),
@@ -327,10 +327,10 @@ public sealed class TargetDrivenSolverTests {
             recipes: [Recipe("make", [("raw", 1)], [("product", 1)])],
             groups: [Group(machine, "make")],
             connections: [],
-            supplies: [new Supply(fallback, machine, "raw", IsFallback: true), new Supply(explicitSupply, machine, "raw", 3)],
+            supplies: [new Supply(fallback, [machine], "raw", IsFallback: true), new Supply(explicitSupply, [machine], "raw", 3)],
             productOutlets: [new ProductOutlet(outlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(5), outlet, 5)]);
+            targets: [new Target(Id(5), [outlet], 5)]);
 
         var result = FactoryGraphProcessorFactory.Create().Solve(request with { Objective = objective });
 

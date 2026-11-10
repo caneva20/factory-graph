@@ -119,7 +119,7 @@
       "supplies": [
         {
           "id": "aaaaaaaa-dddd-dddd-dddd-dddddddddddd",
-          "destinationMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "destinationMachineGroupIds": ["11111111-dddd-dddd-dddd-dddddddddddd"],
           "itemId": "x",
           "capacity": 0.1
         }
@@ -143,12 +143,12 @@
     "targets": [
       {
         "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
-        "productOutletId": "bbbbbbbb-dddd-dddd-dddd-dddddddddddd",
+        "productOutletIds": ["bbbbbbbb-dddd-dddd-dddd-dddddddddddd"],
         "rate": 1
       },
       {
         "id": "eeeeeeee-dddd-dddd-dddd-dddddddddddd",
-        "productOutletId": "cccccccc-dddd-dddd-dddd-dddddddddddd",
+        "productOutletIds": ["cccccccc-dddd-dddd-dddd-dddddddddddd"],
         "rate": 4
       }
     ],
@@ -313,7 +313,7 @@
       "supplies": [
         {
           "id": "aaaaaaaa-dddd-dddd-dddd-dddddddddddd",
-          "destinationMachineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd",
+          "destinations": [{ "machineGroupId": "11111111-dddd-dddd-dddd-dddddddddddd", "flowRate": 0 }],
           "itemId": "x",
           "capacity": 0.1,
           "requiredRate": 0,
@@ -341,7 +341,7 @@
       "targets": [
         {
           "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
-          "productOutletId": "bbbbbbbb-dddd-dddd-dddd-dddddddddddd",
+          "productOutletIds": ["bbbbbbbb-dddd-dddd-dddd-dddddddddddd"],
           "requestedRate": 1,
           "achievedRate": 1,
           "surplusRate": 0,
@@ -349,7 +349,7 @@
         },
         {
           "id": "eeeeeeee-dddd-dddd-dddd-dddddddddddd",
-          "productOutletId": "cccccccc-dddd-dddd-dddd-dddddddddddd",
+          "productOutletIds": ["cccccccc-dddd-dddd-dddd-dddddddddddd"],
           "requestedRate": 4,
           "achievedRate": 4,
           "surplusRate": 0,

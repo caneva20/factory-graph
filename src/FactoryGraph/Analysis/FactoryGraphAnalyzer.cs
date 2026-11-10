@@ -33,7 +33,7 @@ internal sealed class FactoryGraphAnalyzer {
 
         var usableSupplies = graph.Supplies
             .Where(supply => supply.Capacity is null || numericPolicy.NormalizeNearZero(supply.Capacity.Value) > 0)
-            .Select(supply => (supply.DestinationMachineGroupId, supply.ItemId))
+            .SelectMany(supply => supply.DestinationMachineGroupIds.Select(destinationId => (destinationId, supply.ItemId)))
             .ToHashSet();
 
         var incoming = graph.Connections

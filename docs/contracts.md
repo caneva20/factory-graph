@@ -12,7 +12,7 @@ A factory graph describes item flow through a production line:
 - An `ItemConnection` carries a produced item to another machine group that consumes it.
 - A `Supply` brings an item into the graph for a machine group to consume.
 - A `ProductOutlet` takes an intended product out of the graph.
-- A `Target` requests a delivery rate for one product outlet.
+- A `Target` requests a delivery rate for one or more product outlets.
 - A `SurplusOutlet` takes excess output.
 
 ```mermaid
@@ -63,7 +63,7 @@ All rates in a request use one time unit, such as items per minute.
 
 An `ItemConnection` carries one item between machine groups. The source recipe must produce the item, and the destination recipe must consume it.
 
-A `Supply` feeds a machine-group input. Setting `IsFallback` marks a supply that stands in for a missing source: after the objective is optimized, the solver draws from it only when the other supplies cannot provide the required rate. A `ProductOutlet` delivers an intended machine-group output. A `Target` sets a requested rate for a product outlet. A `SurplusOutlet` accepts excess output.
+A `Supply` feeds the inputs of one or more machine groups. Its capacity limits their combined consumption, and the solver splits the flow among them freely. Setting `IsFallback` marks a supply that stands in for a missing source: after the objective is optimized, the solver draws from it only when the other supplies cannot provide the required rate. A `ProductOutlet` delivers an intended machine-group output. A `Target` sets a requested rate for the combined delivery of its product outlets, which must carry the same item. A `SurplusOutlet` accepts excess output.
 
 Contracts permit malformed values. `FactoryGraphProcessor` reports duplicate IDs, missing endpoints, incompatible items, and invalid numbers before solving. See [Request Validation](validation.md) for the complete rules and diagnostic codes.
 
@@ -71,12 +71,12 @@ Contracts permit malformed values. `FactoryGraphProcessor` reports duplicate IDs
 
 `TargetDriven` computes the activity and resources needed to meet target rates within configured limits.
 
-Each product outlet may have at most one target.
+Each product outlet may belong to at most one target. The split among a target's outlets, and among a supply's destinations, is unspecified when several plans cost the same.
 
 ```csharp
 var request = new SolveRequest(
     graph,
-    [new Target(targetId, productOutletId, Rate: 10)],
+    [new Target(targetId, [productOutletId], Rate: 10)],
     PlanningMode.TargetDriven,
     SolveObjective.MeetTargetsMinimizeExternalSupply,
     new SolverOptions(new NumericPolicy()));

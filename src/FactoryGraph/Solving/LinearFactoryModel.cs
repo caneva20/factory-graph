@@ -7,8 +7,10 @@ internal sealed class LinearFactoryModel(
     IReadOnlyDictionary<Guid, int> activities,
     IReadOnlyDictionary<Guid, int> connections,
     IReadOnlyDictionary<Guid, int> supplies,
+    IReadOnlyDictionary<(Guid SupplyId, Guid MachineGroupId), int> supplyDestinations,
     IReadOnlyDictionary<Guid, int> productOutlets,
     IReadOnlyDictionary<Guid, int> surplusOutlets,
+    IReadOnlyDictionary<Guid, int> targets,
     IReadOnlyList<int> fallbackSupplies) {
     public LinearProgram Program { get; } = program;
 
@@ -18,9 +20,15 @@ internal sealed class LinearFactoryModel(
 
     public IReadOnlyDictionary<Guid, int> Supplies { get; } = supplies;
 
+    /// <summary>Maps each supply and destination machine group to the variable for the flow between them.</summary>
+    public IReadOnlyDictionary<(Guid SupplyId, Guid MachineGroupId), int> SupplyDestinations { get; } = supplyDestinations;
+
     public IReadOnlyDictionary<Guid, int> ProductOutlets { get; } = productOutlets;
 
     public IReadOnlyDictionary<Guid, int> SurplusOutlets { get; } = surplusOutlets;
+
+    /// <summary>Maps each target to the variable for the combined delivery of its product outlets.</summary>
+    public IReadOnlyDictionary<Guid, int> Targets { get; } = targets;
 
     public IReadOnlyList<int> FallbackSupplies { get; } = fallbackSupplies;
 
@@ -30,7 +38,7 @@ internal sealed class LinearFactoryModel(
         var lowerBounds = Program.LowerBounds.ToArray();
 
         foreach (var target in targets) {
-            lowerBounds[ProductOutlets[target.ProductOutletId]] = target.Rate;
+            lowerBounds[Targets[target.Id]] = target.Rate;
         }
 
         return WithProgram(Program with { LowerBounds = lowerBounds });
@@ -42,8 +50,10 @@ internal sealed class LinearFactoryModel(
             Activities,
             Connections,
             Supplies,
+            SupplyDestinations,
             ProductOutlets,
             SurplusOutlets,
+            Targets,
             FallbackSupplies);
     }
 

@@ -29,18 +29,24 @@ internal static class SolveRequestDiagramBuilder {
         }
 
         foreach (var supply in graph.Supplies) {
+            var isShared = supply.DestinationMachineGroupIds.Count > 1;
+
             nodes.Add(new MermaidNode(
                 1,
                 Id("supply", supply.Id),
-                Label("Supply", items[supply.ItemId].Name),
+                isShared && supply.Capacity is { } sharedCapacity
+                    ? Label("Supply", items[supply.ItemId].Name, $"capacity: {Number(sharedCapacity, options)}")
+                    : Label("Supply", items[supply.ItemId].Name),
                 "supply"));
 
-            edges.Add(new MermaidEdge(
-                0,
-                Id("supply", supply.Id),
-                Id("supply", supply.Id),
-                Id("machine", supply.DestinationMachineGroupId),
-                WithCapacity(items[supply.ItemId].Name, supply.Capacity, options)));
+            foreach (var destinationId in supply.DestinationMachineGroupIds) {
+                edges.Add(new MermaidEdge(
+                    0,
+                    $"{Id("supply", supply.Id)}_{destinationId:N}",
+                    Id("supply", supply.Id),
+                    Id("machine", destinationId),
+                    WithCapacity(items[supply.ItemId].Name, isShared ? null : supply.Capacity, options)));
+            }
         }
 
         foreach (var outlet in graph.ProductOutlets) {
@@ -83,7 +89,7 @@ internal static class SolveRequestDiagramBuilder {
         }
 
         foreach (var target in request.Targets) {
-            var outlet = graph.ProductOutlets.Single(value => value.Id == target.ProductOutletId);
+            var outlet = graph.ProductOutlets.Single(value => value.Id == target.ProductOutletIds[0]);
 
             nodes.Add(new MermaidNode(
                 4,
@@ -91,13 +97,15 @@ internal static class SolveRequestDiagramBuilder {
                 Label("Target", items[outlet.ItemId].Name, $"requested: {Number(target.Rate, options)}"),
                 "target"));
 
-            edges.Add(new MermaidEdge(
-                4,
-                Id("target", target.Id),
-                Id("target", target.Id),
-                Id("product", target.ProductOutletId),
-                string.Empty,
-                IsDotted: true));
+            foreach (var outletId in target.ProductOutletIds) {
+                edges.Add(new MermaidEdge(
+                    4,
+                    $"{Id("target", target.Id)}_{outletId:N}",
+                    Id("target", target.Id),
+                    Id("product", outletId),
+                    string.Empty,
+                    IsDotted: true));
+            }
         }
 
         return new MermaidDiagram(nodes, edges);

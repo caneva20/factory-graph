@@ -12,7 +12,9 @@ internal sealed class LinearFactoryModelBuilder {
                             + graph.Connections.Count
                             + graph.Supplies.Count
                             + graph.ProductOutlets.Count
-                            + graph.SurplusOutlets.Count;
+                            + graph.SurplusOutlets.Count
+                            + graph.Supplies.Where(HasSharedDestinations).Sum(supply => supply.DestinationMachineGroupIds.Count)
+                            + request.Targets.Count(HasSharedOutlets);
 
         var lower = new double[variableCount];
         var upper = Enumerable.Repeat(Infinity, variableCount).ToArray();
@@ -23,6 +25,9 @@ internal sealed class LinearFactoryModelBuilder {
         var supplies = Index(graph.Supplies, supply => supply.Id, ref nextVariable);
         var productOutlets = Index(graph.ProductOutlets, outlet => outlet.Id, ref nextVariable);
         var surplusOutlets = Index(graph.SurplusOutlets, outlet => outlet.Id, ref nextVariable);
+
+        var supplyDestinations = new Dictionary<(Guid SupplyId, Guid MachineGroupId), int>();
+        var targets = new Dictionary<Guid, int>(request.Targets.Count);
 
         foreach (var group in graph.MachineGroups) {
             var capacity = Infinity;
@@ -85,7 +90,25 @@ internal sealed class LinearFactoryModelBuilder {
         }
 
         foreach (var supply in graph.Supplies) {
-            AddFlow(inputRows, (supply.DestinationMachineGroupId, supply.ItemId), supplies[supply.Id]);
+            var total = supplies[supply.Id];
+
+            if (HasSharedDestinations(supply)) {
+                var coefficients = new Dictionary<int, double>(supply.DestinationMachineGroupIds.Count + 1) { [total] = -1 };
+
+                foreach (var destinationId in supply.DestinationMachineGroupIds) {
+                    var variable = nextVariable++;
+                    supplyDestinations.Add((supply.Id, destinationId), variable);
+                    coefficients[variable] = 1;
+                }
+
+                rows.Add(ModelRow.Equality(coefficients));
+            } else {
+                supplyDestinations.Add((supply.Id, supply.DestinationMachineGroupIds[0]), total);
+            }
+
+            foreach (var destinationId in supply.DestinationMachineGroupIds) {
+                AddFlow(inputRows, (destinationId, supply.ItemId), supplyDestinations[(supply.Id, destinationId)]);
+            }
         }
 
         foreach (var outlet in graph.ProductOutlets) {
@@ -96,15 +119,37 @@ internal sealed class LinearFactoryModelBuilder {
             AddFlow(outputRows, (outlet.SourceMachineGroupId, outlet.ItemId), surplusOutlets[outlet.Id]);
         }
 
+        foreach (var target in request.Targets) {
+            if (HasSharedOutlets(target)) {
+                var delivered = nextVariable++;
+                var coefficients = new Dictionary<int, double>(target.ProductOutletIds.Count + 1) { [delivered] = -1 };
+
+                foreach (var outletId in target.ProductOutletIds) {
+                    coefficients[productOutlets[outletId]] = 1;
+                }
+
+                rows.Add(ModelRow.Equality(coefficients));
+                targets.Add(target.Id, delivered);
+            } else {
+                targets.Add(target.Id, productOutlets[target.ProductOutletIds[0]]);
+            }
+        }
+
         return new LinearFactoryModel(
             new LinearProgram(lower, upper, rows),
             activities,
             connections,
             supplies,
+            supplyDestinations,
             productOutlets,
             surplusOutlets,
+            targets,
             graph.Supplies.Where(supply => supply.IsFallback).Select(supply => supplies[supply.Id]).ToArray());
     }
+
+    private static bool HasSharedDestinations(Supply supply) => supply.DestinationMachineGroupIds.Count > 1;
+
+    private static bool HasSharedOutlets(Target target) => target.ProductOutletIds.Count > 1;
 
     private static Dictionary<TKey, int> Index<T, TKey>(
         IReadOnlyCollection<T> values,

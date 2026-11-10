@@ -101,7 +101,7 @@ public sealed class FactoryGraphAnalyzerTests {
                 Connection(11, firstId, secondId, "second"),
                 Connection(12, secondId, firstId, "first")
             ],
-            [new Supply(Id(21), firstId, "first", capacity)]);
+            [new Supply(Id(21), [firstId], "first", capacity)]);
 
         var component = Assert.Single(new FactoryGraphAnalyzer().Analyze(graph, NumericPolicy).CyclicComponents);
 
@@ -115,7 +115,7 @@ public sealed class FactoryGraphAnalyzerTests {
             [RecyclingRecipe("recycle", "material")],
             [Group(groupId, "recycle")],
             [Connection(11, groupId, groupId, "material")],
-            [new Supply(Id(21), groupId, "material")]);
+            [new Supply(Id(21), [groupId], "material")]);
 
         var component = Assert.Single(new FactoryGraphAnalyzer().Analyze(graph, NumericPolicy).CyclicComponents);
 

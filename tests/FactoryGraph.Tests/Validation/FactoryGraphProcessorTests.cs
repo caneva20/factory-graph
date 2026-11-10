@@ -100,7 +100,7 @@ public sealed class FactoryGraphProcessorTests {
         request = request with {
             Targets = [
                 request.Targets.Single(),
-                new Target(Guid.Parse("77777777-7777-7777-7777-777777777777"), request.Targets.Single().ProductOutletId, 2)
+                new Target(Guid.Parse("77777777-7777-7777-7777-777777777777"), request.Targets.Single().ProductOutletIds, 2)
             ]
         };
 
@@ -262,10 +262,10 @@ public sealed class FactoryGraphProcessorTests {
                 ],
                 MachineGroups: [new MachineGroup(machineGroupId, "smelt", 1)],
                 Connections: [],
-                Supplies: [new Supply(supplyId, machineGroupId, "ore")],
+                Supplies: [new Supply(supplyId, [machineGroupId], "ore")],
                 ProductOutlets: [new ProductOutlet(productOutletId, machineGroupId, "plate")],
                 SurplusOutlets: []),
-            Targets: [new Target(targetId, productOutletId, 1)],
+            Targets: [new Target(targetId, [productOutletId], 1)],
             PlanningMode.TargetDriven,
             SolveObjective.MeetTargetsMinimizeExternalSupply,
             new SolverOptions(new NumericPolicy()));

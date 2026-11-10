@@ -33,7 +33,7 @@
       "supplies": [
         {
           "id": "22222222-2222-2222-2222-222222222222",
-          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinationMachineGroupIds": ["11111111-1111-1111-1111-111111111111"],
           "itemId": "ore",
           "capacity": null
         }
@@ -51,7 +51,7 @@
     "targets": [
       {
         "id": "44444444-4444-4444-4444-444444444444",
-        "productOutletId": "33333333-3333-3333-3333-333333333333",
+        "productOutletIds": ["33333333-3333-3333-3333-333333333333"],
         "rate": "${rate}"
       }
     ],
@@ -100,7 +100,7 @@
       "supplies": [
         {
           "id": "22222222-2222-2222-2222-222222222222",
-          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinations": [{ "machineGroupId": "11111111-1111-1111-1111-111111111111", "flowRate": "${rate}" }],
           "itemId": "ore",
           "capacity": null,
           "requiredRate": "${rate}",
@@ -121,7 +121,7 @@
       "targets": [
         {
           "id": "44444444-4444-4444-4444-444444444444",
-          "productOutletId": "33333333-3333-3333-3333-333333333333",
+          "productOutletIds": ["33333333-3333-3333-3333-333333333333"],
           "requestedRate": "${rate}",
           "achievedRate": "${rate}",
           "surplusRate": 0,

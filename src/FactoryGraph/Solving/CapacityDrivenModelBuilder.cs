@@ -28,7 +28,7 @@ internal sealed class CapacityDrivenModelBuilder(LinearFactoryModelBuilder facto
         for (var index = 0; index < request.Targets.Count; index++) {
             var target = request.Targets[index];
             rows[factoryRows.Count + index] = ModelRow.Equality(new Dictionary<int, double>(2) {
-                [factoryModel.ProductOutlets[target.ProductOutletId]] = 1,
+                [factoryModel.Targets[target.Id]] = 1,
                 [scaleVariable] = -target.Rate
             });
         }

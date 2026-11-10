@@ -57,7 +57,7 @@ internal sealed class CapacityBottleneckReporter {
                 policy);
         }
 
-        foreach (var supply in graph.Supplies.Where(supply => relevantGroups.Contains(supply.DestinationMachineGroupId))) {
+        foreach (var supply in graph.Supplies.Where(supply => supply.DestinationMachineGroupIds.Any(relevantGroups.Contains))) {
             AddFlowBottleneck(
                 result,
                 supply.Capacity,
@@ -90,7 +90,9 @@ internal sealed class CapacityBottleneckReporter {
 
         foreach (var target in request.Targets) {
             if (policy.NormalizeNearZero(target.Rate) > 0) {
-                relevant.Add(outlets[target.ProductOutletId].SourceMachineGroupId);
+                foreach (var outletId in target.ProductOutletIds) {
+                    relevant.Add(outlets[outletId].SourceMachineGroupId);
+                }
             }
         }
 

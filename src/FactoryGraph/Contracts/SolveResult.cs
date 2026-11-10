@@ -93,20 +93,29 @@ public sealed record ComputedConnection(
 ///     Reports required and provided external supply.
 /// </summary>
 /// <param name="Id">The input supply ID.</param>
-/// <param name="DestinationMachineGroupId">The input destination machine-group ID.</param>
+/// <param name="Destinations">The solved flow to each input destination, in input order.</param>
 /// <param name="ItemId">The input item ID.</param>
-/// <param name="Capacity">The configured supply capacity, or <c>null</c> when absent.</param>
-/// <param name="RequiredRate">The supply rate required by solved machine activity.</param>
-/// <param name="ProvidedRate">The supply rate available to the solved graph.</param>
+/// <param name="Capacity">The configured combined supply capacity, or <c>null</c> when absent.</param>
+/// <param name="RequiredRate">The combined supply rate required by solved machine activity.</param>
+/// <param name="ProvidedRate">The combined supply rate available to the solved graph.</param>
 /// <param name="DeficitRate">The required rate not provided by this supply.</param>
 public sealed record ComputedSupply(
     Guid Id,
-    Guid DestinationMachineGroupId,
+    IReadOnlyList<ComputedSupplyDestination> Destinations,
     string ItemId,
     double? Capacity,
     double RequiredRate,
     double ProvidedRate,
     double DeficitRate);
+
+/// <summary>
+///     Reports the solved flow from a supply to one machine group.
+/// </summary>
+/// <param name="MachineGroupId">The receiving machine-group ID.</param>
+/// <param name="FlowRate">The supply rate consumed by the machine group.</param>
+public sealed record ComputedSupplyDestination(
+    Guid MachineGroupId,
+    double FlowRate);
 
 /// <summary>
 ///     Reports the solved output delivered to a product outlet.
@@ -142,14 +151,14 @@ public sealed record ComputedSurplusOutlet(
 ///     Reports achieved output and deviation for one target.
 /// </summary>
 /// <param name="Id">The input target ID.</param>
-/// <param name="ProductOutletId">The input product-outlet ID.</param>
+/// <param name="ProductOutletIds">The input product-outlet IDs.</param>
 /// <param name="RequestedRate">The requested output rate.</param>
-/// <param name="AchievedRate">The solved output rate.</param>
+/// <param name="AchievedRate">The solved output rate, summed over the product outlets.</param>
 /// <param name="SurplusRate">The amount by which achieved output exceeds the request.</param>
 /// <param name="DeficitRate">The amount by which achieved output falls short of the request.</param>
 public sealed record ComputedTarget(
     Guid Id,
-    Guid ProductOutletId,
+    IReadOnlyList<Guid> ProductOutletIds,
     double RequestedRate,
     double AchievedRate,
     double SurplusRate,

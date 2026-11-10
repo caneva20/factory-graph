@@ -188,10 +188,10 @@ public sealed class MermaidExporterTests {
                     new ComputedConnection(forward, machineA, machineB, "catalyst", 2, 2),
                     new ComputedConnection(recycle, machineB, machineA, "catalyst", null, 1)
                 ],
-                [new ComputedSupply(supply, machineA, "ore", 5, 5, 4, 1)],
+                [new ComputedSupply(supply, [new ComputedSupplyDestination(machineA, 4)], "ore", 5, 5, 4, 1)],
                 [new ComputedProductOutlet(product, machineB, "product", null, 3)],
                 [new ComputedSurplusOutlet(surplus, machineA, "catalyst", null, 1)],
-                [new ComputedTarget(target, product, 4, 3, 0, 1)]),
+                [new ComputedTarget(target, [product], 4, 3, 0, 1)]),
             [],
             [
                 new Bottleneck(BottleneckKind.MachineGroup, new GraphElementReference(GraphElementKind.MachineGroup, machineA), 4, 1,

@@ -150,13 +150,13 @@
       "supplies": [
         {
           "id": "77777777-7777-7777-7777-777777777777",
-          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinationMachineGroupIds": ["11111111-1111-1111-1111-111111111111"],
           "itemId": "ore",
           "capacity": 6.5
         },
         {
           "id": "88888888-8888-8888-8888-888888888888",
-          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupIds": ["22222222-2222-2222-2222-222222222222"],
           "itemId": "copper",
           "capacity": 2
         }
@@ -193,12 +193,12 @@
     "targets": [
       {
         "id": "dddddddd-1111-1111-1111-111111111111",
-        "productOutletId": "99999999-9999-9999-9999-999999999999",
+        "productOutletIds": ["99999999-9999-9999-9999-999999999999"],
         "rate": 2
       },
       {
         "id": "eeeeeeee-1111-1111-1111-111111111111",
-        "productOutletId": "aaaaaaaa-1111-1111-1111-111111111111",
+        "productOutletIds": ["aaaaaaaa-1111-1111-1111-111111111111"],
         "rate": 3
       }
     ],
@@ -408,7 +408,7 @@
       "supplies": [
         {
           "id": "77777777-7777-7777-7777-777777777777",
-          "destinationMachineGroupId": "11111111-1111-1111-1111-111111111111",
+          "destinations": [{ "machineGroupId": "11111111-1111-1111-1111-111111111111", "flowRate": 6.5 }],
           "itemId": "ore",
           "capacity": 6.5,
           "requiredRate": 6.5,
@@ -417,7 +417,7 @@
         },
         {
           "id": "88888888-8888-8888-8888-888888888888",
-          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinations": [{ "machineGroupId": "22222222-2222-2222-2222-222222222222", "flowRate": 2 }],
           "itemId": "copper",
           "capacity": 2,
           "requiredRate": 2,
@@ -460,7 +460,7 @@
       "targets": [
         {
           "id": "dddddddd-1111-1111-1111-111111111111",
-          "productOutletId": "99999999-9999-9999-9999-999999999999",
+          "productOutletIds": ["99999999-9999-9999-9999-999999999999"],
           "requestedRate": 2,
           "achievedRate": 2,
           "surplusRate": 0,
@@ -468,7 +468,7 @@
         },
         {
           "id": "eeeeeeee-1111-1111-1111-111111111111",
-          "productOutletId": "aaaaaaaa-1111-1111-1111-111111111111",
+          "productOutletIds": ["aaaaaaaa-1111-1111-1111-111111111111"],
           "requestedRate": 3,
           "achievedRate": 3,
           "surplusRate": 0,

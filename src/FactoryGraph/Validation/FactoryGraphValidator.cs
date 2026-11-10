@@ -199,16 +199,31 @@ internal sealed class FactoryGraphValidator {
         foreach (var supply in supplies) {
             var reference = Reference(GraphElementKind.Supply, supply.Id);
 
-            var destination = ResolveMachineGroup(supply.DestinationMachineGroupId, "destination", "Supply", supply.Id, reference,
-                machineGroups, diagnostics);
-
             var itemExists = ValidateItemReference(supply.ItemId, "Supply", supply.Id, reference, itemIds, diagnostics);
-            var recipe = GetRecipe(destination, recipes);
+            var seen = new HashSet<Guid>(supply.DestinationMachineGroupIds.Count);
 
-            if (itemExists && recipe is not null && !Consumes(recipe, supply.ItemId)) {
-                Add(diagnostics, ValidationDiagnosticCodes.Item.Incompatible,
-                    $"Supply '{supply.Id:D}' destination does not consume item '{supply.ItemId}'.", reference,
-                    Reference(GraphElementKind.MachineGroup, supply.DestinationMachineGroupId));
+            if (supply.DestinationMachineGroupIds.Count == 0) {
+                Add(diagnostics, ValidationDiagnosticCodes.Supply.DestinationRequired,
+                    $"Supply '{supply.Id:D}' must have at least one destination machine group.", reference);
+            }
+
+            foreach (var destinationId in supply.DestinationMachineGroupIds) {
+                var destination = ResolveMachineGroup(destinationId, "destination", "Supply", supply.Id, reference,
+                    machineGroups, diagnostics);
+
+                if (destinationId != Guid.Empty && !seen.Add(destinationId)) {
+                    Add(diagnostics, ValidationDiagnosticCodes.Supply.DuplicateDestination,
+                        $"Supply '{supply.Id:D}' lists destination machine group '{destinationId:D}' more than once.", reference,
+                        Reference(GraphElementKind.MachineGroup, destinationId));
+                }
+
+                var recipe = GetRecipe(destination, recipes);
+
+                if (itemExists && recipe is not null && !Consumes(recipe, supply.ItemId)) {
+                    Add(diagnostics, ValidationDiagnosticCodes.Item.Incompatible,
+                        $"Supply '{supply.Id:D}' destination does not consume item '{supply.ItemId}'.", reference,
+                        Reference(GraphElementKind.MachineGroup, destinationId));
+                }
             }
 
             if (supply.Capacity is { } capacity) {

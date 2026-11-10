@@ -5,14 +5,14 @@ namespace FactoryGraph.Validation;
 internal sealed class TargetValidator {
     public void Validate(
         IReadOnlyList<Target> targets,
-        IReadOnlyList<ProductOutlet> productOutlets,
+        IReadOnlyList<ProductOutlet> productOutletList,
         PlanningMode mode,
         NumericPolicy numericPolicy,
         ICollection<SolveDiagnostic> diagnostics) {
-        var productOutletIds = productOutlets
+        var productOutlets = productOutletList
             .Where(outlet => outlet.Id != Guid.Empty)
-            .Select(outlet => outlet.Id)
-            .ToHashSet();
+            .GroupBy(outlet => outlet.Id)
+            .ToDictionary(group => group.Key, group => group.First());
 
         var targetIds = new HashSet<Guid>(targets.Count);
         var targetedProductOutlets = new HashSet<Guid>(targets.Count);
@@ -30,20 +30,39 @@ internal sealed class TargetValidator {
                     reference);
             }
 
-            if (target.ProductOutletId == Guid.Empty || !productOutletIds.Contains(target.ProductOutletId)) {
+            if (target.ProductOutletIds.Count == 0) {
                 Add(
                     diagnostics,
-                    ValidationDiagnosticCodes.Reference.NotFound,
-                    $"Target '{target.Id:D}' references missing product outlet '{target.ProductOutletId:D}'.",
-                    reference,
-                    Reference(GraphElementKind.ProductOutlet, target.ProductOutletId));
-            } else if (!targetedProductOutlets.Add(target.ProductOutletId)) {
-                Add(
-                    diagnostics,
-                    ValidationDiagnosticCodes.Target.DuplicateProductOutlet,
-                    $"Product outlet '{target.ProductOutletId:D}' cannot have more than one target.",
-                    reference,
-                    new GraphElementReference(GraphElementKind.ProductOutlet, target.ProductOutletId));
+                    ValidationDiagnosticCodes.Target.ProductOutletRequired,
+                    $"Target '{target.Id:D}' must have at least one product outlet.",
+                    reference);
+            }
+
+            var outletItems = new HashSet<string>(StringComparer.Ordinal);
+
+            foreach (var productOutletId in target.ProductOutletIds) {
+                if (productOutletId == Guid.Empty || !productOutlets.TryGetValue(productOutletId, out var outlet)) {
+                    Add(
+                        diagnostics,
+                        ValidationDiagnosticCodes.Reference.NotFound,
+                        $"Target '{target.Id:D}' references missing product outlet '{productOutletId:D}'.",
+                        reference,
+                        Reference(GraphElementKind.ProductOutlet, productOutletId));
+                } else if (!targetedProductOutlets.Add(productOutletId)) {
+                    Add(
+                        diagnostics,
+                        ValidationDiagnosticCodes.Target.DuplicateProductOutlet,
+                        $"Product outlet '{productOutletId:D}' cannot be referenced more than once by targets.",
+                        reference,
+                        new GraphElementReference(GraphElementKind.ProductOutlet, productOutletId));
+                } else if (outletItems.Add(outlet.ItemId) && outletItems.Count > 1) {
+                    Add(
+                        diagnostics,
+                        ValidationDiagnosticCodes.Item.Incompatible,
+                        $"Target '{target.Id:D}' product outlets must deliver the same item.",
+                        reference,
+                        new GraphElementReference(GraphElementKind.ProductOutlet, productOutletId));
+                }
             }
 
             ValidateNonnegative(target.Rate, $"Target '{target.Id:D}'.Rate", reference, numericPolicy, diagnostics);

@@ -79,13 +79,13 @@
       "supplies": [
         {
           "id": "66666666-2222-2222-2222-222222222222",
-          "destinationMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "destinationMachineGroupIds": ["11111111-2222-2222-2222-222222222222"],
           "itemId": "raw",
           "capacity": null
         },
         {
           "id": "77777777-2222-2222-2222-222222222222",
-          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinationMachineGroupIds": ["22222222-2222-2222-2222-222222222222"],
           "itemId": "raw",
           "capacity": null
         }
@@ -110,7 +110,7 @@
     "targets": [
       {
         "id": "aaaaaaaa-2222-2222-2222-222222222222",
-        "productOutletId": "88888888-2222-2222-2222-222222222222",
+        "productOutletIds": ["88888888-2222-2222-2222-222222222222"],
         "rate": 1
       }
     ],
@@ -222,7 +222,7 @@
       "supplies": [
         {
           "id": "66666666-2222-2222-2222-222222222222",
-          "destinationMachineGroupId": "11111111-2222-2222-2222-222222222222",
+          "destinations": [{ "machineGroupId": "11111111-2222-2222-2222-222222222222", "flowRate": "${cheapSupply}" }],
           "itemId": "raw",
           "capacity": null,
           "requiredRate": "${cheapSupply}",
@@ -231,7 +231,7 @@
         },
         {
           "id": "77777777-2222-2222-2222-222222222222",
-          "destinationMachineGroupId": "22222222-2222-2222-2222-222222222222",
+          "destinations": [{ "machineGroupId": "22222222-2222-2222-2222-222222222222", "flowRate": "${cleanSupply}" }],
           "itemId": "raw",
           "capacity": null,
           "requiredRate": "${cleanSupply}",
@@ -260,7 +260,7 @@
       "targets": [
         {
           "id": "aaaaaaaa-2222-2222-2222-222222222222",
-          "productOutletId": "88888888-2222-2222-2222-222222222222",
+          "productOutletIds": ["88888888-2222-2222-2222-222222222222"],
           "requestedRate": 1,
           "achievedRate": 1,
           "surplusRate": 0,

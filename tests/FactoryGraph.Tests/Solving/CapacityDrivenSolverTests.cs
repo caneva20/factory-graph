@@ -23,10 +23,10 @@ public sealed class CapacityDrivenSolverTests {
                 new MachineGroup(final, "final", 1, ActivityCapacity: 6)
             ],
             connections: [new ItemConnection(connection, source, final, "part", 6)],
-            supplies: [new Supply(supply, source, "raw", 6)],
+            supplies: [new Supply(supply, [source], "raw", 6)],
             productOutlets: [new ProductOutlet(outlet, final, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(6), outlet, 10)]);
+            targets: [new Target(Id(6), [outlet], 10)]);
 
         var result = Solve(request);
 
@@ -66,7 +66,7 @@ public sealed class CapacityDrivenSolverTests {
                 new ProductOutlet(outletB, machineB, "b")
             ],
             surplusOutlets: [],
-            targets: [new Target(Id(5), outletA, targetA), new Target(Id(6), outletB, targetB)]);
+            targets: [new Target(Id(5), [outletA], targetA), new Target(Id(6), [outletB], targetB)]);
 
         var result = Solve(request);
 
@@ -88,7 +88,7 @@ public sealed class CapacityDrivenSolverTests {
             supplies: [],
             productOutlets: [new ProductOutlet(outlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(3), outlet, 5)]);
+            targets: [new Target(Id(3), [outlet], 5)]);
 
         var target = Solve(request).Graph!.Targets.Single();
 
@@ -115,7 +115,7 @@ public sealed class CapacityDrivenSolverTests {
                 new ProductOutlet(outletB, machine, "b")
             ],
             surplusOutlets: [new SurplusOutlet(surplusB, machine, "b")],
-            targets: [new Target(Id(5), outletA, 1), new Target(Id(6), outletB, 1)]);
+            targets: [new Target(Id(5), [outletA], 1), new Target(Id(6), [outletB], 1)]);
 
         var result = Solve(request);
 
@@ -155,7 +155,7 @@ public sealed class CapacityDrivenSolverTests {
             supplies: [],
             productOutlets: [new ProductOutlet(outlet, assembly, "product")],
             surplusOutlets: [new SurplusOutlet(Id(10), source, "waste")],
-            targets: [new Target(Id(11), outlet, 10)]);
+            targets: [new Target(Id(11), [outlet], 10)]);
 
         var result = Solve(request);
 
@@ -186,7 +186,7 @@ public sealed class CapacityDrivenSolverTests {
                 new ProductOutlet(Id(4), disconnected, "unused")
             ],
             surplusOutlets: [],
-            targets: [new Target(Id(5), outlet, 1)]);
+            targets: [new Target(Id(5), [outlet], 1)]);
 
         var result = Solve(request);
 
@@ -207,7 +207,7 @@ public sealed class CapacityDrivenSolverTests {
             supplies: [],
             productOutlets: [new ProductOutlet(outlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(3), outlet, 1)]);
+            targets: [new Target(Id(3), [outlet], 1)]);
 
         var result = Solve(request);
 
@@ -229,7 +229,7 @@ public sealed class CapacityDrivenSolverTests {
             supplies: [],
             productOutlets: [new ProductOutlet(outlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(3), outlet, 1)]);
+            targets: [new Target(Id(3), [outlet], 1)]);
 
         var backend = new SequenceLinearProgramSolver(
             new LinearProgramResult(LinearProgramStatus.Optimal, [1, 1, 1], "primary optimal"),
@@ -263,10 +263,10 @@ public sealed class CapacityDrivenSolverTests {
             recipes: [Recipe("make", [("raw", 1)], [("product", 1)])],
             groups: [new MachineGroup(machine, "make", 1, ActivityCapacity: 6)],
             connections: [],
-            supplies: [new Supply(fallback, machine, "raw", IsFallback: true), new Supply(explicitSupply, machine, "raw", 4)],
+            supplies: [new Supply(fallback, [machine], "raw", IsFallback: true), new Supply(explicitSupply, [machine], "raw", 4)],
             productOutlets: [new ProductOutlet(outlet, machine, "product")],
             surplusOutlets: [],
-            targets: [new Target(Id(5), outlet, 10)]);
+            targets: [new Target(Id(5), [outlet], 10)]);
 
         var result = Solve(request);
 

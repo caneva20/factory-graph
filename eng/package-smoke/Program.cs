@@ -22,13 +22,13 @@ var graph = new FactoryGraphDefinition(
     ],
     MachineGroups: [new MachineGroup(machineGroupId, "produce", ActivityRatePerMachine: 1)],
     Connections: [],
-    Supplies: [new Supply(supplyId, machineGroupId, "raw")],
+    Supplies: [new Supply(supplyId, [machineGroupId], "raw")],
     ProductOutlets: [new ProductOutlet(productOutletId, machineGroupId, "product")],
     SurplusOutlets: []);
 
 var request = new SolveRequest(
     graph,
-    Targets: [new Target(Guid.NewGuid(), productOutletId, Rate: 2)],
+    Targets: [new Target(Guid.NewGuid(), [productOutletId], Rate: 2)],
     Mode: PlanningMode.TargetDriven,
     Objective: SolveObjective.MeetTargetsMinimizeExternalSupply,
     Options: new SolverOptions(new NumericPolicy()));

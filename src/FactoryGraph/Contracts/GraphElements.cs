@@ -68,19 +68,22 @@ public sealed record ItemConnection(
     double? Capacity = null);
 
 /// <summary>
-///     Defines an external item source for a machine-group input.
+///     Defines an external item source for one or more machine-group inputs.
 /// </summary>
 /// <param name="Id">The supply ID.</param>
-/// <param name="DestinationMachineGroupId">The receiving machine-group ID.</param>
+/// <param name="DestinationMachineGroupIds">
+///     The receiving machine-group IDs. The solver splits the supply among them freely, and the capacity limits
+///     their combined consumption.
+/// </param>
 /// <param name="ItemId">The supplied item ID.</param>
-/// <param name="Capacity">The maximum supplied rate, or <c>null</c> for unlimited supply.</param>
+/// <param name="Capacity">The maximum combined supplied rate, or <c>null</c> for unlimited supply.</param>
 /// <param name="IsFallback">
 ///     Whether the supply stands in for a missing source. After the objective is optimized, the solver draws from a
 ///     fallback supply only when the non-fallback supplies cannot provide the required rate.
 /// </param>
 public sealed record Supply(
     Guid Id,
-    Guid DestinationMachineGroupId,
+    IReadOnlyList<Guid> DestinationMachineGroupIds,
     string ItemId,
     double? Capacity = null,
     bool IsFallback = false);
@@ -112,14 +115,17 @@ public sealed record SurplusOutlet(
     double? Capacity = null);
 
 /// <summary>
-///     Defines a requested output rate for a product outlet.
+///     Defines a requested output rate for one or more product outlets.
 /// </summary>
 /// <param name="Id">The target ID.</param>
-/// <param name="ProductOutletId">The target product-outlet ID.</param>
+/// <param name="ProductOutletIds">
+///     The target product-outlet IDs. The requested rate applies to their combined delivery, and the solver
+///     divides it among them freely.
+/// </param>
 /// <param name="Rate">The requested rate per time unit.</param>
 public sealed record Target(
     Guid Id,
-    Guid ProductOutletId,
+    IReadOnlyList<Guid> ProductOutletIds,
     double Rate);
 
 /// <summary>

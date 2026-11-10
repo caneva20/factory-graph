@@ -69,7 +69,7 @@
       "supplies": [
         {
           "id": "55555555-cccc-cccc-cccc-cccccccccccc",
-          "destinationMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "destinationMachineGroupIds": ["11111111-cccc-cccc-cccc-cccccccccccc"],
           "itemId": "raw",
           "capacity": null
         }
@@ -87,7 +87,7 @@
     "targets": [
       {
         "id": "77777777-cccc-cccc-cccc-cccccccccccc",
-        "productOutletId": "66666666-cccc-cccc-cccc-cccccccccccc",
+        "productOutletIds": ["66666666-cccc-cccc-cccc-cccccccccccc"],
         "rate": 4
       }
     ],
@@ -186,7 +186,7 @@
       "supplies": [
         {
           "id": "55555555-cccc-cccc-cccc-cccccccccccc",
-          "destinationMachineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc",
+          "destinations": [{ "machineGroupId": "11111111-cccc-cccc-cccc-cccccccccccc", "flowRate": 4 }],
           "itemId": "raw",
           "capacity": null,
           "requiredRate": 4,
@@ -207,7 +207,7 @@
       "targets": [
         {
           "id": "77777777-cccc-cccc-cccc-cccccccccccc",
-          "productOutletId": "66666666-cccc-cccc-cccc-cccccccccccc",
+          "productOutletIds": ["66666666-cccc-cccc-cccc-cccccccccccc"],
           "requestedRate": 4,
           "achievedRate": 4,
           "surplusRate": 0,

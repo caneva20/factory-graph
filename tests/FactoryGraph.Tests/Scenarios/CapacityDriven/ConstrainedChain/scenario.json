@@ -59,7 +59,7 @@
       "supplies": [
         {
           "id": "44444444-3333-3333-3333-333333333333",
-          "destinationMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "destinationMachineGroupIds": ["11111111-3333-3333-3333-333333333333"],
           "itemId": "raw",
           "capacity": "${supplyCapacity}"
         }
@@ -84,7 +84,7 @@
     "targets": [
       {
         "id": "77777777-3333-3333-3333-333333333333",
-        "productOutletId": "55555555-3333-3333-3333-333333333333",
+        "productOutletIds": ["55555555-3333-3333-3333-333333333333"],
         "rate": 5
       }
     ],
@@ -169,7 +169,7 @@
       "supplies": [
         {
           "id": "44444444-3333-3333-3333-333333333333",
-          "destinationMachineGroupId": "11111111-3333-3333-3333-333333333333",
+          "destinations": [{ "machineGroupId": "11111111-3333-3333-3333-333333333333", "flowRate": 4 }],
           "itemId": "raw",
           "capacity": "${supplyCapacity}",
           "requiredRate": 4,
@@ -198,7 +198,7 @@
       "targets": [
         {
           "id": "77777777-3333-3333-3333-333333333333",
-          "productOutletId": "55555555-3333-3333-3333-333333333333",
+          "productOutletIds": ["55555555-3333-3333-3333-333333333333"],
           "requestedRate": 5,
           "achievedRate": 4,
           "surplusRate": 0,

@@ -37,10 +37,10 @@ public sealed class CapacityDrivenContractTests
                         AvailableMachineCount: 3)
                 ],
                 Connections: [],
-                Supplies: [new Supply(supplyId, machineGroupId, "copper-ore")],
+                Supplies: [new Supply(supplyId, [machineGroupId], "copper-ore")],
                 ProductOutlets: [new ProductOutlet(productOutletId, machineGroupId, "copper-plate")],
                 SurplusOutlets: []),
-            [new Target(targetId, productOutletId, 10)],
+            [new Target(targetId, [productOutletId], 10)],
             PlanningMode.CapacityDriven,
             SolveObjective.MaximizeTargetOutput,
             new SolverOptions(new NumericPolicy()));
@@ -69,10 +69,10 @@ public sealed class CapacityDrivenContractTests
                         [new ItemRate("copper-plate", 6)])
                 ],
                 Connections: [],
-                Supplies: [new ComputedSupply(supplyId, machineGroupId, "copper-ore", null, 6, 6, 0)],
+                Supplies: [new ComputedSupply(supplyId, [new ComputedSupplyDestination(machineGroupId, 6)], "copper-ore", null, 6, 6, 0)],
                 ProductOutlets: [new ComputedProductOutlet(productOutletId, machineGroupId, "copper-plate", null, 6)],
                 SurplusOutlets: [],
-                Targets: [new ComputedTarget(targetId, productOutletId, 10, 6, 0, 4)]),
+                Targets: [new ComputedTarget(targetId, [productOutletId], 10, 6, 0, 4)]),
             [],
             [
                 new Bottleneck(

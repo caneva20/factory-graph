@@ -31,10 +31,10 @@ public sealed class TargetDrivenContractTests
                 Recipes: recipes,
                 MachineGroups: [new MachineGroup(machineGroupId, "smelt-iron", 2)],
                 Connections: [],
-                Supplies: [new Supply(supplyId, machineGroupId, "iron-ore")],
+                Supplies: [new Supply(supplyId, [machineGroupId], "iron-ore")],
                 ProductOutlets: [new ProductOutlet(productOutletId, machineGroupId, "iron-plate")],
                 SurplusOutlets: []),
-            [new Target(targetId, productOutletId, 10)],
+            [new Target(targetId, [productOutletId], 10)],
             PlanningMode.TargetDriven,
             SolveObjective.MeetTargetsMinimizeExternalSupply,
             new SolverOptions(new NumericPolicy()));
@@ -59,10 +59,10 @@ public sealed class TargetDrivenContractTests
                         OutputRates: [new ItemRate("iron-plate", 10)])
                 ],
                 [],
-                [new ComputedSupply(supplyId, machineGroupId, "iron-ore", null, 10, 10, 0)],
+                [new ComputedSupply(supplyId, [new ComputedSupplyDestination(machineGroupId, 10)], "iron-ore", null, 10, 10, 0)],
                 [new ComputedProductOutlet(productOutletId, machineGroupId, "iron-plate", null, 10)],
                 [],
-                [new ComputedTarget(targetId, productOutletId, 10, 10, 0, 0)]),
+                [new ComputedTarget(targetId, [productOutletId], 10, 10, 0, 0)]),
             [],
             []);
 
@@ -71,7 +71,7 @@ public sealed class TargetDrivenContractTests
         Assert.Equal(supplyId, result.Graph.Supplies.Single().Id);
         Assert.Equal(productOutletId, result.Graph.ProductOutlets.Single().Id);
         Assert.Equal(targetId, result.Graph.Targets.Single().Id);
-        Assert.Equal(productOutletId, result.Graph.Targets.Single().ProductOutletId);
+        Assert.Equal([productOutletId], result.Graph.Targets.Single().ProductOutletIds);
         Assert.Equal(5, result.Graph.MachineGroups.Single().EffectiveMachineCount);
         Assert.Equal(10, result.Graph.Targets.Single().AchievedRate);
     }

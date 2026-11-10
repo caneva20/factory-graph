@@ -158,12 +158,14 @@ A graph must identify where each item comes from and where each produced item go
 | Concept          | Direction                      | Purpose                                                                                        |
 |------------------|--------------------------------|------------------------------------------------------------------------------------------------|
 | `ItemConnection` | Machine group to machine group | Keeps an item inside the graph and transfers it from a producing recipe to a consuming recipe. |
-| `Supply`         | Outside to machine group       | Provides an external input such as mined ore or imported material.                             |
+| `Supply`         | Outside to machine groups      | Provides an external input such as mined ore or imported material to one or more machine groups. |
 | `ProductOutlet`  | Machine group to outside       | Delivers an intended product such as gears.                                                     |
 | `SurplusOutlet`  | Machine group to outside       | Carries excess or byproduct output that is not an intended delivery.                            |
-| `Target`         | Refers to a product outlet     | Requests a minimum delivery rate without changing the reusable graph topology.                 |
+| `Target`         | Refers to product outlets      | Requests a minimum delivery rate without changing the reusable graph topology.                 |
 
-`ProductOutlet` says where an intended product leaves the graph. `Target` says how much that outlet must deliver for one solve request. This separation lets callers reuse the same graph with different goals. Each product outlet may have at most one target; use separate product outlets for separate destinations.
+`ProductOutlet` says where an intended product leaves the graph. `Target` says how much that outlet must deliver for one solve request. This separation lets callers reuse the same graph with different goals. A product outlet may belong to at most one target, but a target may list several product outlets of the same item. The requested rate applies to their combined delivery.
+
+A supply may list several destination machine groups. Its capacity limits their combined consumption, and a `null` capacity leaves it unlimited. The solver divides a shared supply or target among its destinations or outlets freely, and equal-cost splits are unspecified.
 
 Every connection and boundary can have a `Capacity`, expressed as an item rate. For example, a connection capacity of 5 means at most 5 items per minute may flow through it. A `null` capacity means that element does not impose an upper bound.
 
@@ -286,7 +288,7 @@ var graph = new FactoryGraphDefinition(
     [
         new Supply(
             oreSupplyId,
-            DestinationMachineGroupId: smeltersId,
+            DestinationMachineGroupIds: [smeltersId],
             ItemId: "ore",
             Capacity: 10)
     ],
@@ -309,7 +311,7 @@ var graph = new FactoryGraphDefinition(
 
 var request = new SolveRequest(
     graph,
-    Targets: [new Target(gearTargetId, gearOutletId, Rate: 3)],
+    Targets: [new Target(gearTargetId, [gearOutletId], Rate: 3)],
     Mode: PlanningMode.TargetDriven,
     Objective: SolveObjective.MeetTargetsMinimizeExternalSupply,
     Options: new SolverOptions(new NumericPolicy()));
@@ -464,6 +466,7 @@ The built-in solver currently provides:
 
 - target-driven and capacity-driven planning for acyclic graphs and recycling cycles;
 - multiple targets on distinct product outlets;
+- supplies shared by several machine groups and targets that combine several product outlets;
 - multiple inputs and outputs per recipe;
 - splits, merges, fan-in, fan-out, and disconnected graph sections;
 - machine, activity, connection, supply, product-outlet, and surplus-outlet capacities; and

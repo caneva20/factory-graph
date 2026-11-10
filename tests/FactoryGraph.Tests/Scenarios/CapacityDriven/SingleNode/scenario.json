@@ -41,7 +41,7 @@
     "targets": [
       {
         "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
-        "productOutletId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "productOutletIds": ["bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"],
         "rate": "${targetRate}"
       }
     ],
@@ -98,7 +98,7 @@
       "targets": [
         {
           "id": "cccccccc-cccc-cccc-cccc-cccccccccccc",
-          "productOutletId": "bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "productOutletIds": ["bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"],
           "requestedRate": "${targetRate}",
           "achievedRate": "${capacity}",
           "surplusRate": "${surplusRate}",

@@ -51,11 +51,25 @@ public static class ValidationDiagnosticCodes {
         public const string Unsupported = Path + ".unsupported";
     }
 
+    /// <summary>Diagnostic codes for external supplies.</summary>
+    public static class Supply {
+        private const string Path = ValidationDiagnosticCodes.Path + ".supply";
+
+        /// <summary>A supply has no destination machine group.</summary>
+        public const string DestinationRequired = Path + ".destination-required";
+
+        /// <summary>A supply lists the same destination machine group more than once.</summary>
+        public const string DuplicateDestination = Path + ".duplicate-destination";
+    }
+
     /// <summary>Diagnostic codes for product-outlet targets.</summary>
     public static class Target {
         private const string Path = ValidationDiagnosticCodes.Path + ".target";
 
-        /// <summary>More than one target references the same product outlet.</summary>
+        /// <summary>A target has no product outlet.</summary>
+        public const string ProductOutletRequired = Path + ".product-outlet-required";
+
+        /// <summary>A product outlet is referenced more than once, by one target or by several.</summary>
         public const string DuplicateProductOutlet = Path + ".duplicate-product-outlet";
 
         /// <summary>Capacity-driven planning has no positive target rate to maximize.</summary>

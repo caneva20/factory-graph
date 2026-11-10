@@ -20,23 +20,24 @@ References must resolve as follows:
 | Recipe input or output | Item |
 | Machine group | Recipe |
 | Connection | Source machine group, destination machine group, and item |
-| Supply | Destination machine group and item |
+| Supply | Destination machine groups and item |
 | Product outlet | Source machine group and item |
 | Surplus outlet | Source machine group and item |
-| Target | Product outlet |
+| Target | Product outlets |
 
 Validation checks item compatibility after resolving the related item, machine group, and recipe:
 
 - A connection source must produce the connection item.
 - A connection destination must consume the connection item.
-- A supply destination must consume the supplied item.
+- Every supply destination must consume the supplied item.
+- Every product outlet of a target must deliver the same item.
 - A product-outlet or surplus-outlet source must produce its item.
 
 An unresolved reference suppresses dependent compatibility diagnostics. This keeps one missing endpoint from producing unrelated item errors.
 
 Disconnected graph components are valid. Validation does not require every item, recipe, or machine group to participate in a path.
 
-Each product outlet may have at most one target. Separate product outlets represent separate external destinations or independently requested rates.
+A supply needs at least one destination and cannot list a destination twice. A target needs at least one product outlet, and a product outlet may appear only once across all targets. Separate product outlets represent separate external destinations or independently requested rates.
 
 ## Modes And Objectives
 
@@ -77,7 +78,10 @@ Use `SolveDiagnostic.Code` for program logic. Messages describe the error for ca
 | `validation.item.incompatible` | An item does not match the recipe at a connection or boundary. |
 | `validation.mode.unsupported` | The planning mode is undefined. |
 | `validation.objective.unsupported` | The objective is undefined or incompatible with the planning mode. |
-| `validation.target.duplicate-product-outlet` | More than one target references the same product outlet. |
+| `validation.supply.destination-required` | A supply has no destination machine group. |
+| `validation.supply.duplicate-destination` | A supply lists the same destination machine group more than once. |
+| `validation.target.product-outlet-required` | A target has no product outlet. |
+| `validation.target.duplicate-product-outlet` | A product outlet is referenced more than once, by one target or by several. |
 | `validation.target.positive-rate-required` | A capacity-driven request has no positive target rate. |
 | `validation.number.non-finite` | A numeric value is `NaN` or infinite. |
 | `validation.number.negative` | A value is negative where zero is permitted. |

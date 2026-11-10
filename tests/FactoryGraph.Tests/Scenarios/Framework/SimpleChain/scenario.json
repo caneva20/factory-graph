@@ -55,7 +55,7 @@
       "supplies": [
         {
           "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
-          "destinationMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinationMachineGroupIds": ["aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"],
           "itemId": "ore",
           "capacity": null
         }
@@ -73,7 +73,7 @@
     "targets": [
       {
         "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-        "productOutletId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+        "productOutletIds": ["eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"],
         "rate": 3
       }
     ],
@@ -151,7 +151,7 @@
       "supplies": [
         {
           "id": "dddddddd-dddd-dddd-dddd-dddddddddddd",
-          "destinationMachineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
+          "destinations": [{ "machineGroupId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "flowRate": 6 }],
           "itemId": "ore",
           "capacity": null,
           "requiredRate": 6,
@@ -172,7 +172,7 @@
       "targets": [
         {
           "id": "ffffffff-ffff-ffff-ffff-ffffffffffff",
-          "productOutletId": "eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee",
+          "productOutletIds": ["eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee"],
           "requestedRate": 3,
           "achievedRate": 3,
           "surplusRate": 0,

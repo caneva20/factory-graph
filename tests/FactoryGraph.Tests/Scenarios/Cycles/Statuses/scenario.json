@@ -48,13 +48,13 @@
       "supplies": [
         {
           "id": "33333333-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-          "destinationMachineGroupId": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "destinationMachineGroupIds": ["11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb"],
           "itemId": "catalyst",
           "capacity": "${catalystSupplyCapacity}"
         },
         {
           "id": "44444444-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-          "destinationMachineGroupId": "11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+          "destinationMachineGroupIds": ["11111111-bbbb-bbbb-bbbb-bbbbbbbbbbbb"],
           "itemId": "ore",
           "capacity": null
         }
@@ -72,7 +72,7 @@
     "targets": [
       {
         "id": "66666666-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
-        "productOutletId": "55555555-bbbb-bbbb-bbbb-bbbbbbbbbbbb",
+        "productOutletIds": ["55555555-bbbb-bbbb-bbbb-bbbbbbbbbbbb"],
         "rate": 4
       }
     ],
